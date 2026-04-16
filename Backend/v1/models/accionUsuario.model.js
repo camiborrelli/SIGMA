@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 export const AccionUsuarioSchema = new Schema({
   usuario: { type: Schema.Types.ObjectId, ref: "Usuario" },

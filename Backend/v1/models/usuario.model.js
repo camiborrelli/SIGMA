@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 export const UsuarioSchema = new Schema({
   nombre: String,

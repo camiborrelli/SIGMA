@@ -1,3 +1,5 @@
+import mongoose, { Schema } from "mongoose";
+
 export const ObraSchema = new Schema({
   nombre: String,
   ubicacion: String,
