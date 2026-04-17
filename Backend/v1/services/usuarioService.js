@@ -1,6 +1,9 @@
 import Usuario from "../models/usuario.model.js";
 import bcrypt from "bcrypt";
+<<<<<<< HEAD
 import jwt from "jsonwebtoken";
+=======
+>>>>>>> 89538b8 (RegistrarEquiposFix)
 
 export const registrarUsuario = async (data) => {
   const { nombre, apellido, email, password } = data;
@@ -16,7 +19,10 @@ export const registrarUsuario = async (data) => {
     throw new Error("El usuario ya está registrado");
   }
 
+<<<<<<< HEAD
   //Hash de password
+=======
+>>>>>>> 89538b8 (RegistrarEquiposFix)
   const passwordHash = await bcrypt.hash(password, 10);
 
   //Crear usuario
@@ -28,6 +34,7 @@ export const registrarUsuario = async (data) => {
   });
 
   return await nuevoUsuario.save();
+<<<<<<< HEAD
 };
 
 export const loginUsuario = async ({ email, password }) => {
@@ -60,4 +67,6 @@ export const loginUsuario = async ({ email, password }) => {
   );
 
   return { usuario, token };
+=======
+>>>>>>> 89538b8 (RegistrarEquiposFix)
 };

@@ -7,13 +7,15 @@ import {
 export const registrarMaquinariaController = async (req, res) => {
   try {
     const { nombre, tipo, estado, obraId } = req.body;
-    const nuevaMaquinatia = await registrarMaquinariaServices({
+    const nuevaMaquinaria = await registrarMaquinariaServices({
       nombre,
       tipo,
       estado,
+      stock,
+      fechaCompra,
       obraId,
     });
-    res.status(201).json(nuevaMaquinatia);
+    res.status(201).json(nuevaMaquinaria);
   } catch (error) {
     if (error.code === "DUPLICATE_NAME") {
       return res.status(409).json({ error: error.message });
