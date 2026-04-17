@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import Obra from "./obra.model.js";
 
 export const MaquinariaSchema = new Schema({
-  nombre: String,
+  nombre: { type: String, required: true, unique: true },
   modelo: String,
   estado: {
     type: String,
