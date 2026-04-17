@@ -1,5 +1,6 @@
 import Usuario from "../models/usuario.model.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export const registrarUsuario = async (data) => {
   const { nombre, apellido, email, password } = data;
@@ -15,6 +16,7 @@ export const registrarUsuario = async (data) => {
     throw new Error("El usuario ya está registrado");
   }
 
+  //Hash de password
   const passwordHash = await bcrypt.hash(password, 10);
 
   //Crear usuario
@@ -26,4 +28,36 @@ export const registrarUsuario = async (data) => {
   });
 
   return await nuevoUsuario.save();
+};
+
+export const loginUsuario = async ({ email, password }) => {
+  //Validaciones
+  if (!email || !password) {
+    throw new Error("Email y contraseña son obligatorios");
+  }
+
+  //Buscar usuario
+  const usuario = await Usuario.findOne({ email });
+  if (!usuario) {
+    throw new Error("Credenciales inválidas");
+  }
+
+  //Comparar password
+  const passwordValida = await bcrypt.compare(password, usuario.password);
+  if (!passwordValida) {
+    throw new Error("Credenciales inválidas");
+  }
+
+  //Generar token
+  const token = jwt.sign(
+    {
+      id: usuario._id,
+      email: usuario.email,
+      rol: usuario.rol,
+    },
+    process.env.JWT_SECRET || "secreto_super_seguro",
+    { expiresIn: "1h" }
+  );
+
+  return { usuario, token };
 };
