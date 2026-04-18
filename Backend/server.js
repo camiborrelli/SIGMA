@@ -1,10 +1,9 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import { connectDB } from "./v1/db.js";
 
 import maquinariaRoutes from "./v1/routes/maquinaria.routes.js";
-import usuarioRoutes from "./v1/routes/usuarioRoutes.js";
+import usuarioRoutes from "./v1/routes/usuario.routes.js";
 
 const app = express();
 

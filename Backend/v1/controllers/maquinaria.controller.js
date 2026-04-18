@@ -9,6 +9,7 @@ export const registrarMaquinariaController = async (req, res) => {
     const { nombre, tipo, estado, obraId } = req.body;
     const nuevaMaquinaria = await registrarMaquinariaServices({
       nombre,
+      modelo,
       tipo,
       estado,
       stock,

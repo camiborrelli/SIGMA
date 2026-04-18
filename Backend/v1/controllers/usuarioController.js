@@ -1,32 +1,26 @@
-import { registrarUsuario } from "../services/usuarioService.js";
-<<<<<<< HEAD
-import { loginUsuario } from "../services/usuarioService.js";
-=======
->>>>>>> 89538b8 (RegistrarEquiposFix)
+import { registrarUsuario } from "../services/usuario.service.js";
+import { loginUsuario } from "../services/usuario.service.js";
 
 export const register = async (req, res) => {
   try {
     const usuario = await registrarUsuario(req.body);
-<<<<<<< HEAD
+
     //Ocultar password
     const { password, ...usuarioSinPassword } = usuario.toObject();
 
     res.status(201).json({
       message: "Usuario registrado correctamente",
       usuario: usuarioSinPassword,
-=======
-
-    res.status(201).json({
-      message: "Usuario registrado correctamente",
-      usuario,
->>>>>>> 89538b8 (RegistrarEquiposFix)
     });
   } catch (error) {
-    res.status(400).json({
-      error: error.message,
-    });
+    if (error.message === "El usuario ya está registrado") {
+      return res.status(409).json({ error: error.message });
+    }
+    if (error.message === "Todos los campos son obligatorios") {
+      return res.status(400).json({ error: error.message });
+    }
+    res.status(500).json({ error: "Error al registrar usuario" });
   }
-<<<<<<< HEAD
 };
 
 export const login = async (req, res) => {
@@ -46,6 +40,4 @@ export const login = async (req, res) => {
       error: error.message,
     });
   }
-=======
->>>>>>> 89538b8 (RegistrarEquiposFix)
 };

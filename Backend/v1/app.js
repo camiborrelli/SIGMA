@@ -3,7 +3,7 @@ import cors from "cors";
 import { connectDB } from "./db.js";
 
 import maquinariaRoutes from "./routes/maquinaria.routes.js";
-import usuarioRoutes from "./routes/usuarioRoutes.js";
+import usuarioRoutes from "./routes/usuario.routes.js";
 
 const app = express();
 
@@ -11,20 +11,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const startServer = async () => {
-  try {
-    await connectDB();
+app.use("/maquinaria", require("./v1/routes/maquinaria.routes.js"));
+app.use("/obra", require("./v1/routes/obra.routes.js"));
 
-    //Rutas
-    app.use("/maquinaria", maquinariaRoutes);
-    app.use("/usuarios", usuarioRoutes);
+app.listen(process.env.PORT || 5001, () => {
+  console.log(`Servidor corriendo en puerto ${process.env.PORT || 5001}`);
+});
 
-    app.listen(5001, () => {
-      console.log("Servidor corriendo en puerto 5001");
-    });
-  } catch (error) {
-    console.error("Error al iniciar:", error);
-  }
-};
-
-startServer();
+module.exports = app;
