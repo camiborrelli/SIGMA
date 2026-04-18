@@ -4,14 +4,21 @@ import Obra from "./obra.model.js";
 export const MaquinariaSchema = new Schema({
   nombre: String,
   modelo: String,
+  tipo: {
+    type: String,
+    enum: ["Maquina", "Herramienta"],
+  },
   estado: {
     type: String,
-    enum: ["Disponible", "Asignada", "Mantenimiento", "DeBbaja"],
+    enum: ["Disponible", "En mantenimiento", "Fuera de servicio", "Asignada"],
     default: "Disponible",
   },
   stock: Number,
   fechaCompra: Date,
-  ubicacion: String,
+  obra: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Obra",
+  },
 });
 
 export default mongoose.model("Maquinaria", MaquinariaSchema);

@@ -3,15 +3,21 @@ import Maquinaria from "../models/maquinaria.model.js";
 export const registrarMaquinariaServices = async ({
   nombre,
   tipo,
+  modelo,
   estado,
+  stock,
+  fechaCompra,
   obraId,
 }) => {
-  const nuevaMaquinatia = new Maquinaria({
+  const nuevaMaquinaria = new Maquinaria({
     nombre,
     tipo,
+    modelo,
     estado,
-    obra: obraId,
+    stock,
+    fechaCompra,
+    obraId,
   });
-  await nuevaMaquinatia.save();
-  return nuevaMaquinatia;
+  await nuevaMaquinaria.save();
+  return nuevaMaquinaria;
 };
