@@ -2,6 +2,7 @@ import express from "express";
 import {
   registrarMaquinariaController,
   getMaquinariasActivasController,
+  getMaquinariasController,
   eliminarMaquinariaController,
 } from "../controllers/maquinaria.controller.js";
 // import { verificarToken } from "../middlewares/auth.middleware.js";
@@ -18,6 +19,7 @@ router.post(
   registrarMaquinariaController,
 );
 router.get("/activas", getMaquinariasActivasController);
+router.get("/", getMaquinariasController);
 router.delete("/:id", eliminarMaquinariaController);
 
 export default router;

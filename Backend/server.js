@@ -4,6 +4,7 @@ import { connectDB } from "./v1/db.js";
 
 import maquinariaRoutes from "./v1/routes/maquinaria.routes.js";
 import usuarioRoutes from "./v1/routes/usuario.routes.js";
+import obrasRoutes from "./v1/routes/obra.routes.js";
 
 const app = express();
 

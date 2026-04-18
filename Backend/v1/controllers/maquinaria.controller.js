@@ -1,6 +1,7 @@
 import {
   registrarMaquinariaServices,
   getMaquinariasActivasServices,
+  getMaquinariasServices,
   eliminarMaquinariaServices,
 } from "../services/maquinaria.services.js";
 
@@ -28,12 +29,23 @@ export const registrarMaquinariaController = async (req, res) => {
   }
 };
 
+//LISTADO DE EQUIPOS
+
 export const getMaquinariasActivasController = async (req, res) => {
   try {
     const maquinarias = await getMaquinariasActivasServices();
     res.status(200).json(maquinarias);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener maquinarias activas" });
+  }
+};
+
+export const getMaquinariasController = async (req, res) => {
+  try {
+    const maquinarias = await getMaquinariasServices();
+    res.status(200).json(maquinarias);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener maquinarias" });
   }
 };
 
