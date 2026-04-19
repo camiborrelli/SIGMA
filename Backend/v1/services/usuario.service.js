@@ -55,7 +55,7 @@ export const loginUsuario = async ({ email, password }) => {
       email: usuario.email,
       rol: usuario.rol,
     },
-    process.env.JWT_SECRET || "secreto_super_seguro",
+    process.env.JWT_SECRET,
     { expiresIn: "1h" },
   );
 
