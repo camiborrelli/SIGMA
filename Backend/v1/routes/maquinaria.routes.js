@@ -5,13 +5,10 @@ import {
   getMaquinariasController,
   eliminarMaquinariaController,
 } from "../controllers/maquinaria.controller.js";
-// import { verificarToken } from "../middlewares/auth.middleware.js";
 import { validateBody } from "../middlewares/validation.middleware.js";
 import { registrarMaquinariaSchema } from "../validators/maquinaria.validators.js";
 
 const router = express.Router();
-
-// router.use(verificarToken);
 
 router.post(
   "/",
