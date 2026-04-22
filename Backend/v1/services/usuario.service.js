@@ -79,3 +79,7 @@ export const cambiarRolUsuario = async (idUsuario, nuevoRol) => {
 
   return await usuario.save();
 };
+
+export const obtenerUsuarios = async () => {
+  return await Usuario.find({ rol: "Funcionario" }).select("-password");
+};

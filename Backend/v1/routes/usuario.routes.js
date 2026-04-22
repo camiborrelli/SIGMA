@@ -1,5 +1,5 @@
 import express from "express";
-import { register, login, cambiarRol } from "../controllers/usuarioController.js";
+import { register, login, cambiarRol, getUsuarios } from "../controllers/usuarioController.js";
 import { verificarToken } from "../middlewares/auth.js";
 import { soloAdmin } from "../middlewares/roles.js";
 
@@ -14,5 +14,7 @@ router.put(
   soloAdmin,
   cambiarRol
 );
+
+router.get("/", verificarToken, soloAdmin, getUsuarios);
 
 export default router;
