@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import "./LoginRegistro.css";
 
 const Login = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -141,7 +142,7 @@ const Login = () => {
             }
           />
 
-          <button className="btn">INICIAR SESIÓN</button>
+          <button className="btn btn-register">INICIAR SESIÓN</button>
         </form>
 
         <p className="link">

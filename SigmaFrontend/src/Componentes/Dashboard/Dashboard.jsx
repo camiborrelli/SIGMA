@@ -11,8 +11,36 @@ const Dashboard = () => {
     window.location.href = "/";
     Navigate("/");
   };
+
+  const registrarMaquinaria = () => {
+    Navigate("/registrarMaquinaria");
+  };
+
+  let usuario = null;
+  try {
+    usuario = JSON.parse(localStorage.getItem("usuario"));
+  } catch (e) {
+    usuario = null;
+  }
+  const rol = usuario ? usuario.rol : null;
+
   return (
     <div className="container">
+      <div className="container-inicio">
+        <div className="inicio-texto">
+          <h1>Gestion de equipos</h1>
+          <p>Administra maquinas y herramientas de la empresa Transamerican</p>
+        </div>
+        {rol === "admin" && (
+          <div className="inicio-acciones">
+            <button className="btn btn-acciones">Registro de acciones</button>
+            <button className="btn btn-register" onClick={registrarMaquinaria}>
+              + Nuevo Equipo
+            </button>
+          </div>
+        )}
+      </div>
+
       <div className="card dashboard-card">
         <ListadoGeneral />
       </div>

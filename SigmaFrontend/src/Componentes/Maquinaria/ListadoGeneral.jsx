@@ -35,8 +35,6 @@ const ListadoGeneral = () => {
     fetchMaquinaria();
   }, []);
 
-  console.log("Maquinaria obtenida:", maquinaria);
-
   const columns = [
     { header: "Nombre", accessor: "nombre" },
     { header: "Tipo", accessor: "tipo" },

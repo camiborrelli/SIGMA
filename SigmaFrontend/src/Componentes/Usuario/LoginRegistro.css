@@ -1,0 +1,43 @@
+/* Styles specific for Login and Registro components (moved from Dashboard.css) */
+.root {
+  --red: #f82727;
+  --white: #fff;
+}
+
+.container {
+  background: #f4f6f8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 24px;
+}
+
+.container-inicio {
+  background: #f4f6f8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100vh;
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px;
+  margin-top: 20px;
+  width: 100%;
+  background: #c62828; /* rojo original usado en el proyecto */
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #a61c1c;
+  transform: translateY(-1px);
+}
+
+.btn-register {
+  background: #c62828;
+  color: white;
+}
