@@ -15,3 +15,11 @@ export const registrarObraServices = async ({
   await nuevaObra.save();
   return nuevaObra;
 };
+
+export const getObraPorIdServices = async (id) => {
+  return await Obra.findById(id);
+};
+
+export const getObrasServices = async () => {
+  return await Obra.find();
+};

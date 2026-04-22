@@ -30,6 +30,26 @@ h2 {
   margin-bottom: 20px;
 }
 
+/* Maquinarias list in dashboard */
+.card h2 {
+  text-align: center;
+}
+
+.maquinas-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.maquina-item {
+  color: #6f6b78;
+  font-size: 18px;
+}
+
 label {
   display: block;
   margin-top: 10px;
