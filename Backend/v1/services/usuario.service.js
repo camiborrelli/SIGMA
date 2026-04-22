@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 export const registrarUsuario = async (data) => {
-  const { nombre, apellido, email, password } = data;
+  const { nombre, apellido, email, password, rol } = data;
 
   //Validaciones
   if (!nombre || !apellido || !email || !password) {
@@ -21,10 +21,11 @@ export const registrarUsuario = async (data) => {
 
   //Crear usuario
   const nuevoUsuario = new Usuario({
-    nombre,
-    apellido,
-    email,
-    password: passwordHash,
+  nombre,
+  apellido,
+  email,
+  password: passwordHash,
+  rol: rol || "Funcionario",
   });
 
   return await nuevoUsuario.save();
@@ -60,4 +61,21 @@ export const loginUsuario = async ({ email, password }) => {
   );
 
   return { usuario, token };
+};
+
+export const cambiarRolUsuario = async (idUsuario, nuevoRol) => {
+  //Validar rol
+  if (!["Admin", "Funcionario"].includes(nuevoRol)) {
+    throw new Error("Rol inválido");
+  }
+
+  const usuario = await Usuario.findById(idUsuario);
+
+  if (!usuario) {
+    throw new Error("Usuario no encontrado");
+  }
+
+  usuario.rol = nuevoRol;
+
+  return await usuario.save();
 };
