@@ -3,11 +3,14 @@ import {
   getMaquinariasActivasServices,
   getMaquinariasServices,
   eliminarMaquinariaServices,
+  countMaquinariasByEstado,
+  countMaquinariasSummary,
 } from "../services/maquinaria.services.js";
 
 export const registrarMaquinariaController = async (req, res) => {
   try {
-    const { nombre, tipo, modelo, estado, stock, fechaCompra, obraId } = req.body;
+    const { nombre, tipo, modelo, estado, stock, fechaCompra, obraId } =
+      req.body;
     const nuevaMaquinaria = await registrarMaquinariaServices({
       nombre,
       modelo,
@@ -59,5 +62,22 @@ export const eliminarMaquinariaController = async (req, res) => {
     res.status(200).json({ message: "Maquinaria eliminada correctamente" });
   } catch (error) {
     res.status(500).json({ error: "Error al eliminar maquinaria" });
+  }
+};
+
+export const countMaquinariasController = async (req, res) => {
+  try {
+    const estado = req.params?.estado || req.query?.estado;
+    if (estado) {
+      const count = await countMaquinariasByEstado(estado);
+      return res.status(200).json({ estado, count });
+    }
+    console.log("Contando maquinarias, estado filter:", estado);
+    // no estado provided -> return summary counts
+    const counts = await countMaquinariasSummary();
+    return res.status(200).json(counts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al contar maquinarias" });
   }
 };

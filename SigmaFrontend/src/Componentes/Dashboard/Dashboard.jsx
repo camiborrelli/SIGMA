@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ListadoGeneral from "../Maquinaria/ListadoGeneral";
 import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +24,60 @@ const Dashboard = () => {
   }
   const rol = usuario ? usuario.rol : null;
 
+  const [totalEquipos, setTotalEquipos] = useState(null);
+  const [equiposDisponibles, setEquiposDisponibles] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const calcularCantidadEquipos = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await fetch("http://localhost:5001/maquinaria", {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        });
+        if (!res.ok) {
+          const r = await res.json().catch(() => ({}));
+          if (mounted) alert(r.error || "Error al obtener maquinaria");
+          if (mounted) setTotalEquipos(0);
+        } else {
+          const data = await res.json();
+          if (mounted) setTotalEquipos(data.length || 0);
+        }
+      } catch (err) {
+        if (mounted) alert("Error de conexión");
+        if (mounted) setTotalEquipos(0);
+      }
+    };
+
+    const equiposDisponibles = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await fetch(
+          "http://localhost:5001/maquinaria/counts?estado=Disponible",
+          {
+            headers: {
+              Authorization: token ? `Bearer ${token}` : "",
+            },
+          },
+        );
+        if (!res.ok) {
+          const r = await res.json().catch(() => ({}));
+          if (mounted) alert(r.error || "Error al obtener maquinaria");
+        }
+      } catch (err) {
+        if (mounted) alert("Error de conexión");
+      }
+    };
+
+    calcularCantidadEquipos();
+    equiposDisponibles();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <div className="container">
       <div className="container-inicio">
@@ -39,6 +93,29 @@ const Dashboard = () => {
             </button>
           </div>
         )}
+      </div>
+
+      <div className="resumen-general">
+        <div className="resumen-item">
+          <p>{totalEquipos}</p>
+          <h3>Total Equipos</h3>
+        </div>
+        <div className="resumen-item">
+          <p>{equiposDisponibles}</p>
+          <h3>Disponibles</h3>
+        </div>
+        {/* <div className="resumen-item">
+          <p>{equiposAsignados}</p>
+          <h3>Asignados</h3>
+        </div>
+        <div className="resumen-item">
+          <p>{equiposMantenimiento}</p>
+          <h3>Mantenimiento</h3>
+        </div>
+        <div className="resumen-item">
+          <p>{equiposDadosDeBaja}</p>
+          <h3>Dados de Baja</h3>
+        </div>  */}
       </div>
 
       <div className="card dashboard-card">
