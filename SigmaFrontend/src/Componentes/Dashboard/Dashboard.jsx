@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ListadoGeneral from "../Maquinaria/ListadoGeneral";
+import ListadoUsuarios from "../Usuario/ListadoUsuarios";
 import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";
 
@@ -84,10 +85,10 @@ const Dashboard = () => {
     <div className="container">
       <div className="container-inicio">
         <div className="inicio-texto">
-          <h1>Gestion de equipos</h1>
+          <h1 className="titulo-principal">Gestion de equipos</h1>
           <p>Administra maquinas y herramientas de la empresa Transamerican</p>
         </div>
-        {rol === "admin" && (
+        {rol === "Admin" && (
           <div className="inicio-acciones">
             <button className="btn btn-acciones">Registro de acciones</button>
             <button className="btn btn-register" onClick={registrarMaquinaria}>
@@ -123,6 +124,13 @@ const Dashboard = () => {
       <div className="card dashboard-card">
         <ListadoGeneral />
       </div>
+
+      {rol === "Admin" && (
+        <div className="card dashboard-card">
+          <h1 className="titulo-principal">Gestión de usuarios</h1>
+          <ListadoUsuarios />
+        </div>
+      )}
 
       <button onClick={logout}>Cerrar sesion</button>
     </div>

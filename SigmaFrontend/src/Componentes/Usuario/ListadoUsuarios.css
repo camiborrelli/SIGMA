@@ -1,0 +1,64 @@
+.usuarios-container {
+  width: 100%;
+}
+
+.titulo {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.sigma-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.sigma-th {
+  background-color: #f4f6f8;
+  text-align: left;
+  padding: 12px;
+  font-size: 14px;
+  color: #333;
+}
+
+.sigma-tr {
+  background-color: #ffffff;
+}
+
+.sigma-tr.alt {
+  background-color: #f4f6f8;
+}
+
+.sigma-td {
+  padding: 12px;
+  font-size: 14px;
+  color: #333;
+}
+
+.estado-funcionario {
+  background-color: #1976d2;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.btn-cambiar-rol {
+  background-color: #c62828;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-cambiar-rol:hover {
+  background-color: #a61c1c;
+}
+
+.error {
+  color: red;
+  margin-top: 10px;
+}
