@@ -53,21 +53,23 @@ const Dashboard = () => {
 
     const equiposDisponibles = async () => {
       const token = localStorage.getItem("token");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
       try {
-        const res = await fetch(
-          "http://localhost:5001/maquinaria/counts?estado=Disponible",
-          {
-            headers: {
-              Authorization: token ? `Bearer ${token}` : "",
-            },
-          },
-        );
+        const res = await fetch("http://localhost:5001/maquinaria/activas", {
+          headers,
+        });
         if (!res.ok) {
           const r = await res.json().catch(() => ({}));
           if (mounted) alert(r.error || "Error al obtener maquinaria");
+          if (mounted) setEquiposDisponibles(0);
+        } else {
+          const data = await res.json();
+          if (mounted)
+            setEquiposDisponibles(Array.isArray(data) ? data.length : 0);
         }
       } catch (err) {
         if (mounted) alert("Error de conexión");
+        if (mounted) setEquiposDisponibles(0);
       }
     };
 
@@ -96,11 +98,11 @@ const Dashboard = () => {
       </div>
 
       <div className="resumen-general">
-        <div className="resumen-item">
+        <div className="resumen-item resumen-item--total">
           <p>{totalEquipos}</p>
           <h3>Total Equipos</h3>
         </div>
-        <div className="resumen-item">
+        <div className="resumen-item resumen-item--disponibles">
           <p>{equiposDisponibles}</p>
           <h3>Disponibles</h3>
         </div>
