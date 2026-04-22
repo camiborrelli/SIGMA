@@ -1,5 +1,5 @@
 import { registrarUsuario } from "../services/usuario.service.js";
-import { loginUsuario } from "../services/usuario.service.js";
+import { loginUsuario, cambiarRolUsuario } from "../services/usuario.service.js";
 
 export const register = async (req, res) => {
   try {
@@ -37,6 +37,27 @@ export const login = async (req, res) => {
     });
   } catch (error) {
     res.status(401).json({
+      error: error.message,
+    });
+  }
+};
+
+export const cambiarRol = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { rol } = req.body;
+
+    const usuarioActualizado = await cambiarRolUsuario(id, rol);
+
+    const { password, ...usuarioSinPassword } =
+      usuarioActualizado.toObject();
+
+    res.status(200).json({
+      message: "Rol actualizado correctamente",
+      usuario: usuarioSinPassword,
+    });
+  } catch (error) {
+    res.status(400).json({
       error: error.message,
     });
   }
