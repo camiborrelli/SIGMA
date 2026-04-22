@@ -1,0 +1,105 @@
+/* Table base */
+.sigma-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Inter, Arial, sans-serif;
+}
+
+.sigma-th {
+  text-align: left;
+  padding: 14px 16px;
+  background: #f5f7fa;
+  color: #333;
+  font-weight: 600;
+  font-size: 14px;
+  border-bottom: 1px solid #e6e9ee;
+}
+
+.sigma-td {
+  padding: 16px;
+  border-bottom: 1px solid #f0f2f5;
+  vertical-align: middle;
+  color: #4b4b4b;
+  font-size: 14px;
+}
+
+.sigma-tr.alt {
+  background: #ffffff;
+}
+
+.estado-badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  font-size: 12px;
+}
+.estado-disponible {
+  background: #16a34a;
+}
+.estado-asignado {
+  background: #dc2626;
+}
+.estado-mantenimiento {
+  background: #f59e0b;
+}
+
+.obra-text {
+  color: #6b6b74;
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.action-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+}
+.action-btn:hover {
+  background: #f2f4f7;
+}
+
+.icon-edit {
+  color: #2563eb;
+}
+.icon-key {
+  color: #f59e0b;
+}
+.icon-delete {
+  color: #ef4444;
+}
+
+/* small icon visual */
+.icon {
+  font-size: 16px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+  color: #333;
+}
+
+.maquinaria-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}

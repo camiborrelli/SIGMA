@@ -42,10 +42,44 @@ const ListadoGeneral = () => {
     { header: "Tipo", accessor: "tipo" },
     { header: "Modelo", accessor: "modelo" },
     { header: "Stock", accessor: "stock" },
-    { header: "Estado", accessor: "estado" },
+    {
+      header: "Estado",
+      accessor: (row) => {
+        const val = row.estado || "Disponible";
+        const cls =
+          val === "Disponible"
+            ? "estado-disponible"
+            : val === "Asignada"
+              ? "estado-asignado"
+              : "estado-mantenimiento";
+        return <span className={`estado-badge ${cls}`}>{val}</span>;
+      },
+    },
     {
       header: "Obra Asignada",
-      accessor: (row) => row.obra?.nombre || "Sin asignar",
+      accessor: (row) => {
+        const name =
+          row.obra && typeof row.obra === "object"
+            ? row.obra.nombre
+            : row.obra || "Sin asignar";
+        return <div className="obra-text">{name || "Sin asignar"}</div>;
+      },
+    },
+    {
+      header: "Acciones",
+      accessor: (row) => (
+        <div className="actions">
+          <button className="action-btn icon-edit" title="Editar">
+            <span className="icon">✏️</span>
+          </button>
+          <button className="action-btn icon-key" title="Asignar">
+            <span className="icon">🔑</span>
+          </button>
+          <button className="action-btn icon-delete" title="Eliminar">
+            <span className="icon">🗑️</span>
+          </button>
+        </div>
+      ),
     },
   ];
 
