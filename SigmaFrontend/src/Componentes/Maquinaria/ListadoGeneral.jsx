@@ -35,16 +35,19 @@ const ListadoGeneral = () => {
     fetchMaquinaria();
   }, []);
 
+  console.log("Maquinaria obtenida:", maquinaria);
+
   const columns = [
     { header: "Nombre", accessor: "nombre" },
     { header: "Tipo", accessor: "tipo" },
     { header: "Modelo", accessor: "modelo" },
     { header: "Stock", accessor: "stock" },
     { header: "Estado", accessor: "estado" },
-    { header: "Obra Asignada", accessor: "obraAsignada" },
+    {
+      header: "Obra Asignada",
+      accessor: (row) => row.obra?.nombre || "Sin asignar",
+    },
   ];
-
-  console.log("Maquinaria obtenida:", maquinaria);
 
   return (
     <div>

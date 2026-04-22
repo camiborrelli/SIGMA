@@ -16,9 +16,11 @@ export const registrarMaquinariaServices = async ({
     estado,
     stock,
     fechaCompra,
-    obraId,
+    obra: obraId,
   });
   await nuevaMaquinaria.save();
+  // devolver obra poblada para que el frontend reciba el nombre de la obra
+  await nuevaMaquinaria.populate("obra");
   return nuevaMaquinaria;
 };
 
@@ -27,7 +29,7 @@ export const getMaquinariasActivasServices = async () => {
 };
 
 export const getMaquinariasServices = async () => {
-  return await Maquinaria.find();
+  return await Maquinaria.find().populate("obra");
 };
 
 export const eliminarMaquinariaServices = async (id) => {

@@ -3,9 +3,9 @@ const Table = ({ columns, data }) => {
     <table style={{ borderCollapse: "collapse", width: "100%" }}>
       <thead>
         <tr>
-          {columns.map((col) => (
+          {columns.map((col, idx) => (
             <th
-              key={col.accessor}
+              key={col.header || idx}
               style={{ border: "1px solid #ddd", padding: "8px" }}
             >
               {col.header}
@@ -16,12 +16,14 @@ const Table = ({ columns, data }) => {
       <tbody>
         {data.map((row, i) => (
           <tr key={i}>
-            {columns.map((col) => (
+            {columns.map((col, j) => (
               <td
-                key={col.accessor}
+                key={col.header || j}
                 style={{ border: "1px solid #ddd", padding: "8px" }}
               >
-                {row[col.accessor]}
+                {typeof col.accessor === "function"
+                  ? col.accessor(row)
+                  : row[col.accessor]}
               </td>
             ))}
           </tr>

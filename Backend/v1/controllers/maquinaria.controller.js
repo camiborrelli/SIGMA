@@ -7,7 +7,7 @@ import {
 
 export const registrarMaquinariaController = async (req, res) => {
   try {
-    const { nombre, tipo, estado, obraId } = req.body;
+    const { nombre, tipo, modelo, estado, stock, fechaCompra, obraId } = req.body;
     const nuevaMaquinaria = await registrarMaquinariaServices({
       nombre,
       modelo,
