@@ -7,8 +7,9 @@ body {
 .container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
+  align-items: flex-start;
+  min-height: 50vh;
+  padding-top: 20px;
 }
 
 /*TARJETA*/
@@ -17,11 +18,11 @@ body {
   padding: 30px;
   width: 360px;
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
-  color: black; /* 🔥 antes gris */
+  color: black;
   margin-bottom: 20px;
 }
 
@@ -54,8 +55,8 @@ label {
   display: block;
   margin-top: 10px;
   font-size: 14px;
-  color: black;        /* 🔥 negro */
-  text-align: left;    /* 🔥 izquierda */
+  color: black; /* 🔥 negro */
+  text-align: left; /* 🔥 izquierda */
 }
 
 input {
@@ -120,7 +121,7 @@ input {
 /* BOTONES BASE */
 .role-btn {
   flex: 1;
-  padding: 16px;      /* 🔥 un poco más alto */
+  padding: 16px; /* 🔥 un poco más alto */
   border-radius: 12px;
   border: 1px solid #ddd;
   background: white;

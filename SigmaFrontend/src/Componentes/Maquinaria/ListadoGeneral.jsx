@@ -57,9 +57,9 @@ const ListadoGeneral = () => {
       header: "Obra Asignada",
       accessor: (row) => {
         const name =
-          row.obra && typeof row.obra === "object"
-            ? row.obra.nombre
-            : row.obra || "Sin asignar";
+          row.ubicacion && typeof row.ubicacion === "object"
+            ? row.ubicacion.nombre
+            : row.ubicacion || "Sin asignar";
         return <div className="obra-text">{name || "Sin asignar"}</div>;
       },
     },

@@ -9,12 +9,9 @@ const EquiposAsignados = () => {
       const token = localStorage.getItem("token");
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
       try {
-        const res = await fetch(
-          "http://localhost:5001/maquinaria/activas?estado=Asignada",
-          {
-            headers,
-          },
-        );
+        const res = await fetch("http://localhost:5001/maquinaria/asignadas", {
+          headers,
+        });
         if (!res.ok) {
           const r = await res.json().catch(() => ({}));
           if (mounted) alert(r.error || "Error al obtener maquinaria asignada");

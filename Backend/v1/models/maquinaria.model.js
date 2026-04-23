@@ -11,14 +11,15 @@ export const MaquinariaSchema = new Schema({
   },
   estado: {
     type: String,
-    enum: ["Disponible", "En mantenimiento", "Fuera de servicio", "Asignada"],
+    enum: ["Disponible", "En mantenimiento", "Dada de baja", "Asignada"],
     default: "Disponible",
   },
   stock: Number,
   fechaCompra: Date,
-  obra: {
+  ubicacion: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Obra",
+    default: null,
   },
 });
 

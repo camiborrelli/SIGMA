@@ -12,26 +12,28 @@ import {
 
 export const registrarMaquinariaController = async (req, res) => {
   try {
-    const { nombre, tipo, modelo, estado, stock, fechaCompra, obraId } =
-      req.body;
+    const { nombre, tipo, modelo, stock, fechaCompra, obraId } = req.body;
     const nuevaMaquinaria = await registrarMaquinariaServices({
       nombre,
       modelo,
       tipo,
-      estado,
       stock,
       fechaCompra,
-      obraId,
+      ubicacion: obraId,
     });
     res.status(201).json(nuevaMaquinaria);
   } catch (error) {
+    console.error("Error registrando maquinaria:", error);
     if (error.code === "DUPLICATE_NAME") {
       return res.status(409).json({ error: error.message });
     }
     if (error.message && error.message.includes("obra")) {
       return res.status(400).json({ error: error.message });
     }
-    res.status(500).json({ error: "Error al registrar maquinaria" });
+    // Dev: return error message to help debugging
+    return res
+      .status(500)
+      .json({ error: error.message || "Error al registrar maquinaria" });
   }
 };
 

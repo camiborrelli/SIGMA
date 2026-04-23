@@ -7,41 +7,49 @@ export const registrarMaquinariaServices = async ({
   estado,
   stock,
   fechaCompra,
-  obraId,
+  ubicacion,
 }) => {
   const nuevaMaquinaria = new Maquinaria({
     nombre,
     tipo,
     modelo,
-    estado,
     stock,
     fechaCompra,
-    obra: obraId,
   });
+
+  // Si no se proporciona una obra (ubicacion), dejar en depósito y estado Disponible
+  if (ubicacion == null || ubicacion === "" || ubicacion === undefined) {
+    // no obra: dejar ubicacion nula y estado Disponible
+    nuevaMaquinaria.ubicacion = null;
+    nuevaMaquinaria.estado = "Disponible";
+  } else {
+    // Si se proporciona una obra, asignar la maquinaria a esa obra
+    nuevaMaquinaria.ubicacion = ubicacion;
+    nuevaMaquinaria.estado = "Asignada";
+  }
   await nuevaMaquinaria.save();
-  // devolver obra poblada para que el frontend reciba el nombre de la obra
-  await nuevaMaquinaria.populate("obra");
+  await nuevaMaquinaria.populate("ubicacion");
   return nuevaMaquinaria;
 };
 
 export const getMaquinariasActivasServices = async () => {
-  return await Maquinaria.find({ estado: "Disponible" }).populate("obra");
+  return await Maquinaria.find({ estado: "Disponible" }).populate("ubicacion");
 };
 
 export const getMaquinariasServices = async () => {
-  return await Maquinaria.find().populate("obra");
+  return await Maquinaria.find().populate("ubicacion");
 };
 
 export const getMaquinariasMantenimientoServices = async () => {
-  return await Maquinaria.find({ estado: "Mantenimiento" }).populate("obra");
+  return await Maquinaria.find({ estado: "En mantenimiento" }).populate("ubicacion");
 };
 
 export const getMaquinariasAsignadasServices = async () => {
-  return await Maquinaria.find({ estado: "Asignada" }).populate("obra");
+  return await Maquinaria.find({ estado: "Asignada" }).populate("ubicacion");
 };
 
 export const getMaquinariasDadasDeBajaServices = async () => {
-  return await Maquinaria.find({ estado: "Dada de Baja" }).populate("obra");
+  return await Maquinaria.find({ estado: "Dada de Baja" }).populate("ubicacion");
 };
 
 export const eliminarMaquinariaServices = async (id) => {
