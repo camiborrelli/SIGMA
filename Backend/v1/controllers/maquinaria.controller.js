@@ -108,7 +108,7 @@ export const countMaquinariasController = async (req, res) => {
       const count = await countMaquinariasByEstado(estado);
       return res.status(200).json({ estado, count });
     }
-    console.log("Contando maquinarias, estado filter:", estado);
+
     // no estado provided -> return summary counts
     const counts = await countMaquinariasSummary();
     return res.status(200).json(counts);

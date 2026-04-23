@@ -4,6 +4,7 @@ import Login from "./Componentes/Usuario/Login";
 import Registro from "./Componentes/Usuario/Registro";
 import ListadoGeneral from "./Componentes/Maquinaria/ListadoGeneral";
 import Dashboard from "./Componentes/Dashboard/Dashboard";
+import RegistrarMaquinaria from "./Componentes/Maquinaria/RegistrarMaquinaria";
 import Tabla from "./Componentes/Tabla";
 import { Routes, Route } from "react-router-dom";
 
@@ -29,6 +30,10 @@ function App() {
           <Route path="/register" element={<Registro />} />
           <Route path="/maquinaria" element={<ListadoGeneral />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route
+            path="/registrarMaquinaria"
+            element={<RegistrarMaquinaria />}
+          />
           <Route path="/tabla" element={<Tabla />} />
         </Routes>
       </div>

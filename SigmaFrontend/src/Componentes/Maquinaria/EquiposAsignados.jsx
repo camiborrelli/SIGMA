@@ -14,16 +14,18 @@ const EquiposAsignados = () => {
         });
         if (!res.ok) {
           const r = await res.json().catch(() => ({}));
+          console.error("Error fetching /maquinaria/asignadas:", res.status, r);
           if (mounted) alert(r.error || "Error al obtener maquinaria asignada");
-          if (mounted) setEquiposAsignados(0);
+          // do not overwrite existing count on error
         } else {
           const data = await res.json();
-          if (mounted)
-            setEquiposAsignados(Array.isArray(data) ? data.length : 0);
+          console.log("/maquinaria/asignadas response:", data);
+          if (mounted) setEquiposAsignados(Array.isArray(data) ? data.length : 0);
         }
       } catch (err) {
+        console.error("Network error fetching /maquinaria/asignadas:", err);
         if (mounted) alert("Error de conexión");
-        if (mounted) setEquiposAsignados(0);
+        // do not overwrite existing count on network error
       }
     };
 

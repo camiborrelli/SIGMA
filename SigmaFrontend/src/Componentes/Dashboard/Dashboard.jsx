@@ -80,32 +80,6 @@ const Dashboard = () => {
     calcularCantidadEquipos();
     equiposDisponibles();
 
-    const fetchSummary = async () => {
-      const token = localStorage.getItem("token");
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      try {
-        const res = await fetch("http://localhost:5001/maquinaria/cantidad", {
-          headers,
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (mounted) {
-            setCounts(data || {});
-            setTotalEquipos(data?.total ?? 0);
-            setEquiposDisponibles(data?.Disponible ?? 0);
-          }
-        } else {
-          if (mounted) {
-            setCounts({});
-          }
-        }
-      } catch (err) {
-        if (mounted) setCounts({});
-      }
-    };
-
-    fetchSummary();
-
     return () => {
       mounted = false;
     };
