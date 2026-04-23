@@ -32,6 +32,18 @@ export const getMaquinariasServices = async () => {
   return await Maquinaria.find().populate("obra");
 };
 
+export const getMaquinariasMantenimientoServices = async () => {
+  return await Maquinaria.find({ estado: "Mantenimiento" }).populate("obra");
+};
+
+export const getMaquinariasAsignadasServices = async () => {
+  return await Maquinaria.find({ estado: "Asignada" }).populate("obra");
+};
+
+export const getMaquinariasDadasDeBajaServices = async () => {
+  return await Maquinaria.find({ estado: "Dada de Baja" }).populate("obra");
+};
+
 export const eliminarMaquinariaServices = async (id) => {
   return await Maquinaria.findByIdAndDelete(id);
 };

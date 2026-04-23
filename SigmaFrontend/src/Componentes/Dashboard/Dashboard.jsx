@@ -2,14 +2,16 @@ import React, { useState, useEffect } from "react";
 import ListadoGeneral from "../Maquinaria/ListadoGeneral";
 import ListadoUsuarios from "../Usuario/ListadoUsuarios";
 import "./Dashboard.css";
+import EquiposAsignados from "../Maquinaria/EquiposAsignados";
 import { useNavigate } from "react-router-dom";
+import EquiposMantenimiento from "../Maquinaria/EquiposMantenimiento";
+import EquiposDadosDeBaja from "../Maquinaria/EquiposDadosDeBaja";
 
 const Dashboard = () => {
   const Navigate = useNavigate();
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("usuario");
-    window.location.href = "/";
     Navigate("/");
   };
 
@@ -27,6 +29,7 @@ const Dashboard = () => {
 
   const [totalEquipos, setTotalEquipos] = useState(null);
   const [equiposDisponibles, setEquiposDisponibles] = useState(null);
+  const [counts, setCounts] = useState({});
 
   useEffect(() => {
     let mounted = true;
@@ -76,6 +79,33 @@ const Dashboard = () => {
 
     calcularCantidadEquipos();
     equiposDisponibles();
+
+    const fetchSummary = async () => {
+      const token = localStorage.getItem("token");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      try {
+        const res = await fetch("http://localhost:5001/maquinaria/cantidad", {
+          headers,
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (mounted) {
+            setCounts(data || {});
+            setTotalEquipos(data?.total ?? 0);
+            setEquiposDisponibles(data?.Disponible ?? 0);
+          }
+        } else {
+          if (mounted) {
+            setCounts({});
+          }
+        }
+      } catch (err) {
+        if (mounted) setCounts({});
+      }
+    };
+
+    fetchSummary();
+
     return () => {
       mounted = false;
     };
@@ -98,27 +128,60 @@ const Dashboard = () => {
         )}
       </div>
 
-      <div className="resumen-general">
-        <div className="resumen-item resumen-item--total">
-          <p>{totalEquipos}</p>
-          <h3>Total Equipos</h3>
+      <div className="summary-grid">
+        <div className="summary-card summary-card--total">
+          <div className="summary-card__icon">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M3 7a1 1 0 011-1h16a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V7z"
+                stroke="#2563eb"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <div>
+            <p className="summary-card__number">{totalEquipos}</p>
+            <h4 className="summary-card__label">Total Equipos</h4>
+          </div>
         </div>
-        <div className="resumen-item resumen-item--disponibles">
-          <p>{equiposDisponibles}</p>
-          <h3>Disponibles</h3>
+
+        <div className="summary-card summary-card--disponibles">
+          <div className="summary-card__icon">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 6L9 17l-5-5"
+                stroke="#10b981"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <div>
+            <p className="summary-card__number">{equiposDisponibles}</p>
+            <h4 className="summary-card__label">Disponibles</h4>
+          </div>
         </div>
-        {/* <div className="resumen-item">
-          <p>{equiposAsignados}</p>
-          <h3>Asignados</h3>
-        </div>
-        <div className="resumen-item">
-          <p>{equiposMantenimiento}</p>
-          <h3>Mantenimiento</h3>
-        </div>
-        <div className="resumen-item">
-          <p>{equiposDadosDeBaja}</p>
-          <h3>Dados de Baja</h3>
-        </div>  */}
+
+        <EquiposAsignados />
+
+        <EquiposMantenimiento />
+
+        <EquiposDadosDeBaja />
       </div>
 
       <div className="card dashboard-card">

@@ -5,6 +5,9 @@ import {
   getMaquinariasController,
   eliminarMaquinariaController,
   countMaquinariasController,
+  getMaquinariasMantenimientoController,
+  getMaquinariasAsignadasController,
+  getMaquinariasDadasDeBajaController,
 } from "../controllers/maquinaria.controller.js";
 import { validateBody } from "../middlewares/validation.middleware.js";
 import { registrarMaquinariaSchema } from "../validators/maquinaria.validators.js";
@@ -21,6 +24,14 @@ router.post(
   registrarMaquinariaController,
 );
 router.get("/activas", verificarToken, getMaquinariasActivasController);
+router.get(
+  "/mantenimiento",
+  verificarToken,
+  getMaquinariasMantenimientoController,
+);
+router.get("/asignadas", verificarToken, getMaquinariasAsignadasController);
+router.get("/bajas", verificarToken, getMaquinariasDadasDeBajaController);
+
 // Public summary endpoint (no token) for quick testing or public dashboards
 router.get("/cantidad", verificarToken, countMaquinariasController);
 router.get("/", verificarToken, getMaquinariasController);

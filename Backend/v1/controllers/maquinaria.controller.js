@@ -5,6 +5,9 @@ import {
   eliminarMaquinariaServices,
   countMaquinariasByEstado,
   countMaquinariasSummary,
+  getMaquinariasMantenimientoServices,
+  getMaquinariasAsignadasServices,
+  getMaquinariasDadasDeBajaServices,
 } from "../services/maquinaria.services.js";
 
 export const registrarMaquinariaController = async (req, res) => {
@@ -49,6 +52,37 @@ export const getMaquinariasController = async (req, res) => {
     res.status(200).json(maquinarias);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener maquinarias" });
+  }
+};
+
+export const getMaquinariasMantenimientoController = async (req, res) => {
+  try {
+    const maquinarias = await getMaquinariasMantenimientoServices();
+    res.status(200).json(maquinarias);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Error al obtener maquinarias en mantenimiento" });
+  }
+};
+
+export const getMaquinariasAsignadasController = async (req, res) => {
+  try {
+    const maquinarias = await getMaquinariasAsignadasServices();
+    res.status(200).json(maquinarias);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener maquinarias asignadas" });
+  }
+};
+
+export const getMaquinariasDadasDeBajaController = async (req, res) => {
+  try {
+    const maquinarias = await getMaquinariasDadasDeBajaServices();
+    res.status(200).json(maquinarias);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Error al obtener maquinarias dadas de baja" });
   }
 };
 

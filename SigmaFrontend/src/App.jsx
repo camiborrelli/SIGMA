@@ -5,7 +5,6 @@ import Registro from "./Componentes/Usuario/Registro";
 import ListadoGeneral from "./Componentes/Maquinaria/ListadoGeneral";
 import Dashboard from "./Componentes/Dashboard/Dashboard";
 import Tabla from "./Componentes/Tabla";
-import RegistrarMaquinaria from "./Componentes/Maquinaria/RegistrarMaquinaria";
 import { Routes, Route } from "react-router-dom";
 
 function App() {
@@ -31,10 +30,6 @@ function App() {
           <Route path="/maquinaria" element={<ListadoGeneral />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/tabla" element={<Tabla />} />
-          <Route
-            path="/registrarMaquinaria"
-            element={<RegistrarMaquinaria />}
-          />
         </Routes>
       </div>
     </>

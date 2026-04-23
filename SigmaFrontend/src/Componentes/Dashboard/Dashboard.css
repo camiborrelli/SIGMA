@@ -10,10 +10,10 @@
   background: #f4f6f8;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;       
+  align-items: flex-start;
   width: 100%;
-  max-width: 1100px;             
-  margin: 0 auto;                
+  max-width: 1100px;
+  margin: 0 auto;
   padding-bottom: 20px;
 }
 
@@ -137,4 +137,64 @@
   font-size: 20px;
   color: #000000;
   font-weight: bold;
+}
+
+/* New summary grid + card styles matching mockup */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto 20px auto;
+}
+
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 22px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 10px 25px rgba(16, 24, 40, 0.06);
+}
+
+.summary-card__icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.summary-card__number {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.summary-card__label {
+  margin: 0;
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.summary-card--asignadas .summary-card__icon {
+  background: rgba(239, 68, 68, 0.12);
+}
+.summary-card--disponibles .summary-card__icon {
+  background: rgba(16, 185, 129, 0.12);
+}
+.summary-card--total .summary-card__icon {
+  background: rgba(59, 130, 246, 0.12);
+}
+.summary-card--mantenimiento .summary-card__icon {
+  background: rgba(245, 158, 11, 0.12);
+}
+.summary-card--debaja .summary-card__icon {
+  background: rgba(107, 114, 128, 0.08);
 }
