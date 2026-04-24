@@ -86,8 +86,26 @@ const Dashboard = () => {
   }, []);
 
   return (
+
+    <div>
+      
+      <div className="topbar">
+        <div className="topbar-left">
+          <h2>Sistema de gestión</h2>
+        </div>
+
+        <div className="topbar-right">
+          <span className="usuario-nombre">
+            {usuario?.nombre + " " + usuario?.apellido || "Usuario"}
+          </span>
+          <button className="btn-logout" onClick={logout}>
+            Cerrar sesión
+          </button>
+        </div>
+      </div>
+
     <div className="container">
-      <div className="container-inicio">
+      <div className="container-inicio-dashboard">
         <div className="inicio-texto">
           <h1 className="titulo-principal">Gestion de equipos</h1>
           <p>Administra maquinas y herramientas de la empresa Transamerican</p>
@@ -163,13 +181,20 @@ const Dashboard = () => {
       </div>
 
       {rol === "Admin" && (
-        <div className="card dashboard-card">
-          <h1 className="titulo-principal">Gestión de usuarios</h1>
-          <ListadoUsuarios />
-        </div>
-      )}
+  <>
+    <div className="container-inicio-dashboard">
+      <div className="inicio-texto">
+        <h1 className="titulo-principal">Gestión de usuarios</h1>
+        <p>Administra los funcionarios del sistema</p>
+      </div>
+    </div>
 
-      <button onClick={logout}>Cerrar sesion</button>
+    <div className="card dashboard-card">
+      <ListadoUsuarios />
+    </div>
+  </>
+)}
+    </div>
     </div>
   );
 };

@@ -4,11 +4,12 @@ import {
   getObraPorIdController,
   getObrasController,
 } from "../controllers/obra.controller.js";
+import { verificarToken } from "../middlewares/auth.js";
 
 const router = express.Router();
 
-router.get("/:id", getObraPorIdController);
-router.get("/", getObrasController);
-router.post("/", registrarObraController);
+router.get("/:id", verificarToken, getObraPorIdController);
+router.get("/", verificarToken, getObrasController);
+router.post("/", verificarToken, registrarObraController);
 
 export default router;

@@ -14,25 +14,25 @@ const RegistrarMaquinaria = () => {
   const [obras, setObras] = useState([]);
 
   const listaObras = async () => {
-    const token = localStorage.getItem("token");
-    try {
-      const res = await fetch("http://localhost:5001/obras", {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      });
-      if (!res.ok) {
-        const r = await res.json().catch(() => ({}));
-        alert(r.error || "Error al obtener obras");
-      } else {
-        const data = await res.json();
-        setObras(data || []);
-      }
-    } catch (err) {
-      alert("Error de conexión");
-      return [];
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch("http://localhost:5001/obras", {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      setObras([]);
+      return;
     }
-  };
+    setObras(Array.isArray(data) ? data : []);
+  } catch (err) {
+    setObras([]);
+  }
+};
 
   useEffect(() => {
     listaObras();
