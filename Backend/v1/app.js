@@ -20,7 +20,7 @@ app.use(express.json());
 //Rutas
 app.use("/maquinaria", maquinariaRoutes);
 app.use("/usuarios", usuarioRoutes);
-app.use("/obra", obraRoutes);
+app.use("/obras", obraRoutes);
 
 //Puerto
 app.listen(process.env.PORT || 5001, () => {

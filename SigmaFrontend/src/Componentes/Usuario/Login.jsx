@@ -28,14 +28,25 @@ const Login = () => {
   }, [isAuthenticated, navigate]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const user = localStorage.getItem("usuario");
+  const token = localStorage.getItem("token");
+  const user = localStorage.getItem("usuario");
 
-    if (token && user) {
-      setIsAuthenticated(true);
-      setUsuario(JSON.parse(user));
+  if (token && user) {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+
+      //validar expiración
+      if (payload.exp * 1000 > Date.now()) {
+        setIsAuthenticated(true);
+        setUsuario(JSON.parse(user));
+      } else {
+        localStorage.clear();
+      }
+    } catch (e) {
+      localStorage.clear();
     }
-  }, []);
+  }
+}, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -98,7 +109,7 @@ const Login = () => {
   return (
     <div className="container">
       <div className="card">
-        <h2>Acceso al Sistema</h2>
+        <h2>Acceso al sistema</h2>
         <p className="subtitle">Inicia sesión para continuar</p>
 
         <div className="roles">

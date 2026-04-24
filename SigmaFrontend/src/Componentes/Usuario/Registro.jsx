@@ -59,7 +59,7 @@ const Registro = ({ setIsLogin }) => {
   return (
     <div className="container">
       <div className="card">
-        <h2>Registro de Usuario</h2>
+        <h2>Registro de usuario</h2>
         <p className="subtitle">Crea tu cuenta</p>
 
         {mensaje && <p className="error">{mensaje}</p>}

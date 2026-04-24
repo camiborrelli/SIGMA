@@ -62,3 +62,10 @@
   color: red;
   margin-top: 10px;
 }
+
+.section-header {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  margin-bottom: 16px;
+}
