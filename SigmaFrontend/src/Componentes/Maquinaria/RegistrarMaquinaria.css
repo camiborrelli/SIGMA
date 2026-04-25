@@ -167,3 +167,58 @@
   max-width: 1000px;
   border-radius: 12px;
 }
+
+@media (max-width: 768px) {
+
+  .registrar-maquinaria {
+    max-width: 100%;
+    padding: 16px;
+    border-radius: 10px;
+  }
+
+  .registrar-maquinaria h2 {
+    font-size: 20px;
+  }
+
+  .registrar-maquinaria input,
+  .registrar-maquinaria select {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .div {
+    flex-direction: column;
+  }
+
+  .div .form-group {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .buttons {
+    flex-direction: column;
+  }
+
+  .buttons button {
+    width: 100%;
+  }
+
+  .modal-overlay {
+    padding: 12px;
+  }
+
+  .modal-card {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 1024px) {
+
+  .registrar-maquinaria {
+    max-width: 90%;
+  }
+
+  .modal-card {
+    max-width: 90%;
+  }
+}

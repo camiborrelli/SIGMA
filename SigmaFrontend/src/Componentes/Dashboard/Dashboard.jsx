@@ -6,6 +6,7 @@ import EquiposAsignados from "../Maquinaria/EquiposAsignados";
 import { useNavigate } from "react-router-dom";
 import EquiposMantenimiento from "../Maquinaria/EquiposMantenimiento";
 import EquiposDadosDeBaja from "../Maquinaria/EquiposDadosDeBaja";
+import logo from "../../assets/LogoSinFondo.png";
 
 const Dashboard = () => {
   const Navigate = useNavigate();
@@ -91,12 +92,14 @@ const Dashboard = () => {
       
       <div className="topbar">
         <div className="topbar-left">
-          <h2>Sistema de gestión</h2>
+          <div className="logo-container">
+            <img src={logo} alt="Logo empresa" className="logo-img" />
+          </div>
         </div>
 
         <div className="topbar-right">
           <span className="usuario-nombre">
-            {usuario?.nombre + " " + usuario?.apellido || "Usuario"}
+            {usuario ? `${usuario.nombre} ${usuario.apellido}` : "Usuario"}
           </span>
           <button className="btn-logout" onClick={logout}>
             Cerrar sesión
@@ -176,8 +179,11 @@ const Dashboard = () => {
         <EquiposDadosDeBaja />
       </div>
 
-      <div className="card dashboard-card">
-        <ListadoGeneral />
+
+      <div className="dashboard-card">
+        <div className="maquinaria-container">
+          <ListadoGeneral />
+        </div>
       </div>
 
       {rol === "Admin" && (

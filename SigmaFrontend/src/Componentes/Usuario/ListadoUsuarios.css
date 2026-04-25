@@ -69,3 +69,153 @@
   margin: 0 auto;
   margin-bottom: 16px;
 }
+
+.usuarios-mobile {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+
+  .sigma-table {
+    display: none;
+  }
+
+  .usuarios-mobile {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    width: 100%;
+  }
+
+  .usuario-card {
+    background: #ffffff;
+    padding: 14px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px solid #f1f5f9;
+  }
+
+  .usuario-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .usuario-nombre-card {
+    font-weight: 600;
+    font-size: 14px;
+    color: #0f172a;
+  }
+
+  .usuario-rol {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.15);
+    color: #1d4ed8;   
+    font-weight: 600;
+    border: 1px solid rgba(37, 99, 235, 0.35);
+  }
+
+  .usuario-info {
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  .usuario-info strong {
+    color: #334155;
+    font-weight: 500;
+  }
+
+  .usuario-card .btn-cambiar-rol {
+    margin-top: 6px;
+    width: 100%;
+    border-radius: 10px;
+    font-size: 13px;
+    padding: 8px;
+    background: #c62828;
+    transition: all 0.2s ease;
+  }
+
+  .usuario-card .btn-cambiar-rol:hover {
+    background: #a61c1c;
+    transform: translateY(-1px);
+  }
+
+}
+
+@media (max-width: 768px) {
+  .sigma-table {
+    display: none;
+  }
+
+  .usuarios-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .usuario-card {
+    background: #ffffff;
+    padding: 16px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.20);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px solid #f1f5f9;
+  }
+
+  .usuario-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .usuario-nombre-card {
+    font-weight: 600;
+    font-size: 15px;
+    color: #0f172a;
+  }
+
+  .usuario-rol {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.15);
+    color: #1d4ed8; 
+    font-weight: 600;
+    border: 1px solid rgba(37, 99, 235, 0.35);
+  }
+
+  .usuario-info {
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  .usuario-info strong {
+    color: #334155;
+    font-weight: 500;
+  }
+
+  .usuario-card .btn-cambiar-rol {
+    margin-top: 6px;
+    width: fit-content;       
+    min-width: 140px; 
+    border-radius: 10px;
+    font-size: 13px;
+    padding: 8px;
+    background: #c62828;
+    transition: all 0.2s ease;
+    align-self: center;       
+    text-align: center;
+  }
+
+  .usuario-card .btn-cambiar-rol:hover {
+    background: #a61c1c;
+    transform: translateY(-1px);
+  }
+}

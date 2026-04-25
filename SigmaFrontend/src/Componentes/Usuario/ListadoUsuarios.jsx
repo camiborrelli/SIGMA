@@ -98,7 +98,38 @@ const ListadoUsuarios = () => {
       {error && <p className="error">{error}</p>}
 
       {!loading && !error && (
-        <Tabla columns={columns} data={usuarios} />
+        <>
+    <div className="tabla-desktop">
+      <Tabla columns={columns} data={usuarios} />
+    </div>
+
+    <div className="usuarios-mobile">
+      {usuarios.map((u) => (
+        <div key={u.id} className="usuario-card">
+          
+          <div className="usuario-card-header">
+            <span className="usuario-nombre-card">{u.nombre} {u.apellido}</span>
+
+            <span className={`usuario-rol ${u.rol.toLowerCase()}`}>
+              {u.rol}
+            </span>
+          </div>
+
+          <div className="usuario-info">
+            <p><strong>Email:</strong> {u.email}</p>
+          </div>
+
+          <button
+            className="btn-cambiar-rol"
+            onClick={() => cambiarRol(u.id)}
+          >
+            Hacer admin
+          </button>
+
+        </div>
+      ))}
+    </div>
+  </>
       )}
     </div>
   );
