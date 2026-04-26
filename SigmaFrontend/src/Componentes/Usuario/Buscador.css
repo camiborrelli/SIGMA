@@ -1,0 +1,46 @@
+.buscador-container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 16px;
+}
+
+.buscador-input {
+  width: 100%;
+  padding: 10px 38px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.buscador-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.buscador-icono {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #64748b;
+}
+
+.buscador-clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.buscador-clear:hover {
+  color: #dc2626;
+}

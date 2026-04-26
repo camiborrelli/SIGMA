@@ -84,7 +84,10 @@ const ListadoGeneral = () => {
   return (
     <div>
       <h2>Listado de Maquinaria</h2>
-      <Tabla columns={columns} data={maquinaria} />
+      <div className="maquinaria-table">
+        <Tabla columns={columns} data={maquinaria} />
+      </div>
+
     </div>
   );
 };

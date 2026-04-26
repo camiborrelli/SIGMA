@@ -3,6 +3,8 @@
   width: 100%;
   border-collapse: collapse;
   font-family: Inter, Arial, sans-serif;
+  min-width: 100%;
+  background: white;
 }
 
 .sigma-th {
@@ -13,6 +15,8 @@
   font-weight: 600;
   font-size: 14px;
   border-bottom: 1px solid #e6e9ee;
+
+  white-space: nowrap;
 }
 
 .sigma-td {
@@ -21,6 +25,8 @@
   vertical-align: middle;
   color: #4b4b4b;
   font-size: 14px;
+
+  white-space: nowrap;
 }
 
 .sigma-tr.alt {
@@ -80,16 +86,10 @@
 .icon {
   font-size: 16px;
 }
+
 table {
   width: 100%;
   border-collapse: collapse;
-}
-
-th,
-td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
 }
 
 th {
@@ -102,4 +102,13 @@ th {
   flex-direction: column;
   gap: 20px;
   padding: 20px;
+
+  overflow-x: auto;
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.maquinaria-container::-webkit-scrollbar {
+  display: none;
 }

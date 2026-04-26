@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Tabla from "../Tabla";
 import "./ListadoUsuarios.css";
+import Buscador from "./Buscador";
 
 const ListadoUsuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
+  const [busqueda, setBusqueda] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -36,6 +38,11 @@ const ListadoUsuarios = () => {
 
     fetchUsuarios();
   }, []);
+
+  const usuariosFiltrados = usuarios.filter((u) => {
+    const texto = `${u.nombre} ${u.apellido} ${u.email}`.toLowerCase();
+    return texto.includes(busqueda.toLowerCase());
+  });
 
   //Cambiar rol a Admin
   const cambiarRol = async (id) => {
@@ -94,11 +101,50 @@ const ListadoUsuarios = () => {
     <div className="usuarios-container">
       <h2 className="titulo">Listado de funcionarios</h2>
 
+      <Buscador
+        value={busqueda}
+        onChange={setBusqueda}
+        placeholder="Buscar funcionario..."
+      />
+
       {loading && <p>Cargando...</p>}
       {error && <p className="error">{error}</p>}
 
       {!loading && !error && (
-        <Tabla columns={columns} data={usuarios} />
+        <>
+          <div className="tabla-desktop">
+            <Tabla columns={columns} data={usuariosFiltrados} />
+          </div>
+
+          <div className="usuarios-mobile">
+            {usuariosFiltrados.map((u) => (
+              <div key={u._id} className="usuario-card">
+                
+                <div className="usuario-card-header">
+                  <span className="usuario-nombre-card">
+                    {u.nombre} {u.apellido}
+                  </span>
+
+                  <span className={`usuario-rol ${u.rol.toLowerCase()}`}>
+                    {u.rol}
+                  </span>
+                </div>
+
+                <div className="usuario-info">
+                  <p><strong>Email:</strong> {u.email}</p>
+                </div>
+
+                <button
+                  className="btn-cambiar-rol"
+                  onClick={() => cambiarRol(u._id)}
+                >
+                  Hacer admin
+                </button>
+
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

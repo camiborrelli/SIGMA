@@ -7,6 +7,7 @@
   padding: 40px 24px;
   height: auto;
   min-height: 100vh;
+  gap: 20px;
 }
 
 .topbar {
@@ -17,14 +18,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 40px;
+  padding: 10px 40px;
+  height: 70px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.topbar-left h2 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-img {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
 }
 
 .topbar-right {
@@ -225,3 +233,94 @@
 .summary-card--debaja .summary-card__icon {
   background: rgba(107, 114, 128, 0.08);
 }
+
+@media (max-width: 768px) {
+
+  .container {
+    padding: 20px 12px;
+  }
+
+  .topbar {
+    padding: 12px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .topbar-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .container-inicio-dashboard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .inicio-texto {
+    width: 100%;
+  }
+
+  .inicio-acciones {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .titulo-principal {
+    font-size: 24px;
+  }
+
+  .dashboard-card {
+    padding: 16px;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-card {
+    padding: 14px;
+  }
+
+  .div {
+    flex-direction: column;
+  }
+
+  .buttons {
+    flex-direction: column;
+  }
+
+  .registrar-maquinaria {
+    padding: 16px;
+  }
+
+  .modal-card {
+    max-width: 100%;
+  }
+
+  .logo-img {
+    height: 30px;
+  }
+}
+
+@media (max-width: 1024px) {
+
+  .container {
+    padding: 30px 20px;
+  }
+
+  .inicio-texto {
+    width: 70%;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .topbar {
+    padding: 12px 20px;
+  }
+}
+
