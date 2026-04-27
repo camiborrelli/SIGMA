@@ -41,7 +41,9 @@ export const getMaquinariasServices = async () => {
 };
 
 export const getMaquinariasMantenimientoServices = async () => {
-  return await Maquinaria.find({ estado: "En mantenimiento" }).populate("ubicacion");
+  return await Maquinaria.find({ estado: "En mantenimiento" }).populate(
+    "ubicacion",
+  );
 };
 
 export const getMaquinariasAsignadasServices = async () => {
@@ -49,11 +51,17 @@ export const getMaquinariasAsignadasServices = async () => {
 };
 
 export const getMaquinariasDadasDeBajaServices = async () => {
-  return await Maquinaria.find({ estado: "Dada de Baja" }).populate("ubicacion");
+  return await Maquinaria.find({ estado: "Dada de Baja" }).populate(
+    "ubicacion",
+  );
 };
 
 export const eliminarMaquinariaServices = async (id) => {
   return await Maquinaria.findByIdAndDelete(id);
+};
+
+export const getMaquinariaByIdService = async (id) => {
+  return await Maquinaria.findById(id).populate("ubicacion");
 };
 
 export const countMaquinariasServices = async (estado) => {
@@ -92,4 +100,41 @@ export const countMaquinariasSummary = async () => {
   agg.forEach((g) => (counts[g._id] = g.count));
   counts.total = await Maquinaria.countDocuments({});
   return counts;
+};
+
+export const asignarMaquinariaMantenimientoServices = async (id, obraId) => {
+  const maquinaria = await Maquinaria.findById(id);
+  if (!maquinaria) {
+    throw new Error("Maquinaria no encontrada");
+  }
+  maquinaria.estado = "En mantenimiento";
+  await maquinaria.save();
+  return maquinaria;
+};
+
+export const getGarantiaMaquinariaServices = async (id) => {
+  const maquinaria = await Maquinaria.findById(id);
+  if (!maquinaria) {
+    throw new Error("Maquinaria no encontrada");
+  }
+  if (!maquinaria.fechaCompra) {
+    throw new Error("Fecha de compra no disponible");
+  }
+  const fechaCompra = new Date(maquinaria.fechaCompra);
+  const fechaFinGarantia = new Date(fechaCompra);
+  fechaFinGarantia.setFullYear(fechaFinGarantia.getFullYear() + 1); // garantía de 1 año
+  const ahora = new Date();
+  const enGarantia = ahora <= fechaFinGarantia;
+  const diasRestantes = Math.ceil(
+    (fechaFinGarantia - ahora) / (1000 * 60 * 60 * 24),
+  );
+
+  return {
+    _id: maquinaria._id,
+    maquinariaNombre: maquinaria.nombre,
+    fechaCompra: fechaCompra.toISOString(),
+    fechaFinGarantia: fechaFinGarantia.toISOString(),
+    enGarantia,
+    diasRestantes: diasRestantes >= 0 ? diasRestantes : 0,
+  };
 };

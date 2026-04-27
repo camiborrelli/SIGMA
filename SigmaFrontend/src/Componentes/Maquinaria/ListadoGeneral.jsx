@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Tabla from "../Tabla";
+import Garantia from "./Garantia";
 
 const ListadoGeneral = () => {
   const [maquinaria, setMaquinaria] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMaquinaria = async () => {
@@ -70,10 +73,14 @@ const ListadoGeneral = () => {
           <button className="action-btn icon-edit" title="Editar">
             <span className="icon">✏️</span>
           </button>
-          <button className="action-btn icon-key" title="Asignar">
+          <button
+            className="action-btn icon-key"
+            title="Asignar a mantenimiento"
+            onClick={() => navigate(`/garantia/${row._id}`)}
+          >
             <span className="icon">🔑</span>
           </button>
-          <button className="action-btn icon-delete" title="Eliminar">
+          <button className="action-btn icon-delete" title="Dar de baja">
             <span className="icon">🗑️</span>
           </button>
         </div>
@@ -87,7 +94,6 @@ const ListadoGeneral = () => {
       <div className="maquinaria-table">
         <Tabla columns={columns} data={maquinaria} />
       </div>
-
     </div>
   );
 };

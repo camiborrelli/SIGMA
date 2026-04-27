@@ -8,6 +8,9 @@ import {
   getMaquinariasMantenimientoServices,
   getMaquinariasAsignadasServices,
   getMaquinariasDadasDeBajaServices,
+  asignarMaquinariaMantenimientoServices,
+  getGarantiaMaquinariaServices,
+  getMaquinariaByIdService,
 } from "../services/maquinaria.services.js";
 
 export const registrarMaquinariaController = async (req, res) => {
@@ -115,5 +118,58 @@ export const countMaquinariasController = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al contar maquinarias" });
+  }
+};
+
+export const asignarMaquinaAmantenimientoController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const maquinaria = await asignarMaquinariaMantenimientoServices(id);
+    return res.status(200).json(maquinaria);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "Error al asignar maquinaria a mantenimiento" });
+  }
+};
+
+export const getGarantiaMaquinaController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(
+      `GET /maquinaria/garantia/${id} requested by ${req.user?.id || "unknown"}`,
+    );
+    const garantia = await getGarantiaMaquinariaServices(id);
+    console.log(`Garantia for ${id}:`, garantia);
+    return res.status(200).json(garantia);
+  } catch (error) {
+    console.error("Error in getGarantiaMaquinaController:", error);
+    const msg = error.message || "Error al obtener garantía de maquinaria";
+    if (msg.includes("no encontrada")) {
+      return res.status(404).json({ error: msg });
+    }
+    if (
+      msg.includes("Fecha de compra no disponible") ||
+      msg.includes("compra")
+    ) {
+      return res.status(400).json({ error: msg });
+    }
+    return res.status(500).json({ error: msg });
+  }
+};
+
+export const getMaquinariaByIdController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const maquinaria = await getMaquinariaByIdService(id);
+    if (!maquinaria)
+      return res.status(404).json({ error: "Maquinaria no encontrada" });
+    return res.status(200).json(maquinaria);
+  } catch (error) {
+    console.error("Error in getMaquinariaByIdController:", error);
+    return res
+      .status(500)
+      .json({ error: error.message || "Error al obtener maquinaria" });
   }
 };

@@ -1,0 +1,414 @@
+/* ─── Wrapper ─────────────────────────────────────────────── */
+.garantia-wrapper {
+  background: #f4f4f4;
+  min-height: 100vh;
+  padding-bottom: 90px; /* space for sticky footer */
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ─── Meta & Title ────────────────────────────────────────── */
+.garantia-meta {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+  padding: 14px 16px 0;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.garantia-titulo {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: #111827;
+  padding: 6px 16px 16px;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+/* ─── Scrollable body ─────────────────────────────────────── */
+.garantia-body {
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.garantia-loading,
+.garantia-empty {
+  padding: 20px 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.garantia-error {
+  color: #b91c1c;
+  font-size: 14px;
+  padding: 12px 0;
+}
+
+/* ─── Machine card ────────────────────────────────────────── */
+.maquina-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.maquina-nombre {
+  font-size: 18px;
+  font-weight: 900;
+  color: #111827;
+  letter-spacing: 0.02em;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+}
+
+.maquina-tipo {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.maquina-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.badge-activa {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badge-otro {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* ─── Vida útil ───────────────────────────────────────────── */
+.vida-util-section {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px 16px 14px;
+}
+
+.vida-util-numero {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.porcentaje-grande {
+  font-size: 52px;
+  font-weight: 900;
+  color: #111827;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.vida-util-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+.progress-bar {
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 10px;
+  background: #b91c1c;
+  border-radius: 99px;
+  transition: width 0.6s ease;
+}
+
+/* ─── Garantía activa banner ──────────────────────────────── */
+.garantia-activa-banner {
+  background: #b91c1c;
+  border-radius: 10px;
+  padding: 20px 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.garantia-activa-check {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.garantia-activa-titulo {
+  font-size: 16px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0 0 6px;
+}
+
+.garantia-activa-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.88);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ─── Fechas ──────────────────────────────────────────────── */
+.fechas-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fecha-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.fecha-icono {
+  width: 36px;
+  height: 36px;
+  background: #fef2f2;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.fecha-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #9ca3af;
+  text-transform: uppercase;
+  margin: 0 0 3px;
+}
+
+.fecha-valor {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+/* ─── Componentes cubiertos ───────────────────────────────── */
+.componentes-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.componentes-titulo {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: #111827;
+  text-transform: uppercase;
+  margin: 4px 0 2px;
+}
+
+.componente-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.componente-icono-wrap {
+  width: 36px;
+  height: 36px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.componente-nombre {
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin: 0 0 5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.earth-engine {
+  font-family: "Courier New", monospace;
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: #111827;
+}
+
+.comp-subtitulo {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #9ca3af;
+  text-transform: uppercase;
+}
+
+.componente-desc {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.55;
+}
+
+/* ─── Póliza card ─────────────────────────────────────────── */
+.poliza-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.poliza-icono-wrap {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.poliza-nombre {
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 3px;
+}
+
+.poliza-meta {
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 0 0 10px;
+}
+
+.poliza-btn {
+  display: inline-block;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  border: 1.5px solid #e5e7eb;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.poliza-btn:hover {
+  background: #e5e7eb;
+}
+
+/* ─── Sticky bottom actions ───────────────────────────────── */
+.garantia-acciones {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  padding: 12px 16px;
+  display: flex;
+  gap: 10px;
+  z-index: 100;
+}
+
+.btn-asign {
+  flex: 1;
+  background: #b91c1c;
+  color: #fff;
+  border: none;
+  padding: 14px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.btn-asign:hover {
+  background: #991b1b;
+}
+
+.btn-cancel {
+  background: #f3f4f6;
+  color: #374151;
+  border: none;
+  padding: 14px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.btn-cancel:hover {
+  background: #e5e7eb;
+}
+
+/* ─── Responsive ──────────────────────────────────────────── */
+@media (min-width: 600px) {
+  .garantia-wrapper {
+    max-width: 420px;
+    margin: 0 auto;
+  }
+  .garantia-acciones {
+    max-width: 420px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}

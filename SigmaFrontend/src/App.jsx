@@ -6,6 +6,8 @@ import ListadoGeneral from "./Componentes/Maquinaria/ListadoGeneral";
 import Dashboard from "./Componentes/Dashboard/Dashboard";
 import RegistrarMaquinaria from "./Componentes/Maquinaria/RegistrarMaquinaria";
 import Tabla from "./Componentes/Tabla";
+import Garantia from "./Componentes/Maquinaria/Garantia";
+import AsignarMantenimiento from "./Componentes/Maquinaria/AsignaraMantenimiento";
 import { Routes, Route } from "react-router-dom";
 
 function App() {
@@ -33,6 +35,11 @@ function App() {
           <Route
             path="/registrarMaquinaria"
             element={<RegistrarMaquinaria />}
+          />
+          <Route path="/garantia/:id" element={<Garantia />} />
+          <Route
+            path="/asignarMantenimiento/:id"
+            element={<AsignarMantenimiento />}
           />
           <Route path="/tabla" element={<Tabla />} />
         </Routes>
