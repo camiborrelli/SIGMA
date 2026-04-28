@@ -11,6 +11,7 @@ import {
   asignarMaquinariaMantenimientoServices,
   getGarantiaMaquinariaServices,
   getMaquinariaByIdService,
+  getEquiposPorTipoServices,
 } from "../services/maquinaria.services.js";
 
 export const registrarMaquinariaController = async (req, res) => {
@@ -56,7 +57,10 @@ export const getMaquinariasActivasController = async (req, res) => {
 
 export const getMaquinariasController = async (req, res) => {
   try {
-    const maquinarias = await getMaquinariasServices();
+    const tipo = req.query?.tipo;
+    const filter = {};
+    if (tipo) filter.tipo = tipo;
+    const maquinarias = await getMaquinariasServices(filter);
     res.status(200).json(maquinarias);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener maquinarias" });
@@ -91,6 +95,24 @@ export const getMaquinariasDadasDeBajaController = async (req, res) => {
     res
       .status(500)
       .json({ error: "Error al obtener maquinarias dadas de baja" });
+  }
+};
+
+export const getHerramientasController = async (req, res) => {
+  try {
+    const maquinarias = await getEquiposPorTipoServices("Herramienta");
+    res.status(200).json(maquinarias);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener herramientas" });
+  }
+};
+
+export const getSoloMaquinariasController = async (req, res) => {
+  try {
+    const maquinarias = await getEquiposPorTipoServices("Maquina");
+    res.status(200).json(maquinarias);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener solo maquinarias" });
   }
 };
 
@@ -174,5 +196,19 @@ export const getMaquinariaByIdController = async (req, res) => {
     return res
       .status(500)
       .json({ error: error.message || "Error al obtener maquinaria" });
+  }
+};
+
+export const getEquiposPorTipoController = async (req, res) => {
+  try {
+    const { tipo } = req.params;
+    const maquinarias = await getMaquinariasServices();
+    const filtradas = maquinarias.filter(
+      (m) => m.tipo.toLowerCase() === tipo.toLowerCase(),
+    );
+    res.status(200).json(filtradas);
+  } catch (error) {
+    console.error("Error en getEquiposPorTipoController:", error);
+    res.status(500).json({ error: "Error al obtener equipos por tipo" });
   }
 };

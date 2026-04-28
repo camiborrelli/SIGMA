@@ -36,8 +36,8 @@ export const getMaquinariasActivasServices = async () => {
   return await Maquinaria.find({ estado: "Disponible" }).populate("ubicacion");
 };
 
-export const getMaquinariasServices = async () => {
-  return await Maquinaria.find().populate("ubicacion");
+export const getMaquinariasServices = async (filter = {}) => {
+  return await Maquinaria.find(filter).populate("ubicacion");
 };
 
 export const getMaquinariasMantenimientoServices = async () => {
@@ -137,4 +137,9 @@ export const getGarantiaMaquinariaServices = async (id) => {
     enGarantia,
     diasRestantes: diasRestantes >= 0 ? diasRestantes : 0,
   };
+};
+
+export const getEquiposPorTipoServices = async (tipo) => {
+  if (!tipo) return [];
+  return await Maquinaria.find({ tipo }).populate("ubicacion");
 };

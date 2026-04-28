@@ -1,0 +1,24 @@
+.filtros {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.filtros select {
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background: white;
+  color: black;
+}
+
+.dashboard-card {
+  background: white;
+  padding: 24px;
+  width: 100%;
+  max-width: 1400px;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.09);
+  text-align: left;
+  margin-bottom: 20px;
+}

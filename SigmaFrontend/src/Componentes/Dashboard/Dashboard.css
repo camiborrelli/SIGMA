@@ -235,7 +235,6 @@
 }
 
 @media (max-width: 768px) {
-
   .container {
     padding: 20px 12px;
   }
@@ -306,7 +305,6 @@
 }
 
 @media (max-width: 1024px) {
-
   .container {
     padding: 30px 20px;
   }
@@ -323,4 +321,3 @@
     padding: 12px 20px;
   }
 }
-

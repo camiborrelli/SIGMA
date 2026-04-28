@@ -87,9 +87,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-
     <div>
-      
       <div className="topbar">
         <div className="topbar-left">
           <div className="logo-container">
@@ -107,100 +105,102 @@ const Dashboard = () => {
         </div>
       </div>
 
-    <div className="container">
-      <div className="container-inicio-dashboard">
-        <div className="inicio-texto">
-          <h1 className="titulo-principal">Gestion de equipos</h1>
-          <p>Administra maquinas y herramientas de la empresa Transamerican</p>
-        </div>
-        {rol === "Admin" && (
-          <div className="inicio-acciones">
-            <button className="btn btn-acciones">Registro de acciones</button>
-            <button className="btn btn-register" onClick={registrarMaquinaria}>
-              + Nuevo Equipo
-            </button>
+      <div className="container">
+        <div className="container-inicio-dashboard">
+          <div className="inicio-texto">
+            <h1 className="titulo-principal">Gestion de equipos</h1>
+            <p>
+              Administra maquinas y herramientas de la empresa Transamerican
+            </p>
           </div>
-        )}
-      </div>
-
-      <div className="summary-grid">
-        <div className="summary-card summary-card--total">
-          <div className="summary-card__icon">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M3 7a1 1 0 011-1h16a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V7z"
-                stroke="#2563eb"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <div>
-            <p className="summary-card__number">{totalEquipos}</p>
-            <h4 className="summary-card__label">Total Equipos</h4>
-          </div>
+          {rol === "Admin" && (
+            <div className="inicio-acciones">
+              <button className="btn btn-acciones">Registro de acciones</button>
+              <button
+                className="btn btn-register"
+                onClick={registrarMaquinaria}
+              >
+                + Nuevo Equipo
+              </button>
+            </div>
+          )}
         </div>
 
-        <div className="summary-card summary-card--disponibles">
-          <div className="summary-card__icon">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M20 6L9 17l-5-5"
-                stroke="#10b981"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+        <div className="summary-grid">
+          <div className="summary-card summary-card--total">
+            <div className="summary-card__icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M3 7a1 1 0 011-1h16a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V7z"
+                  stroke="#2563eb"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <div>
+              <p className="summary-card__number">{totalEquipos}</p>
+              <h4 className="summary-card__label">Total Equipos</h4>
+            </div>
           </div>
-          <div>
-            <p className="summary-card__number">{equiposDisponibles}</p>
-            <h4 className="summary-card__label">Disponibles</h4>
+
+          <div className="summary-card summary-card--disponibles">
+            <div className="summary-card__icon">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M20 6L9 17l-5-5"
+                  stroke="#10b981"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <div>
+              <p className="summary-card__number">{equiposDisponibles}</p>
+              <h4 className="summary-card__label">Disponibles</h4>
+            </div>
           </div>
+
+          <EquiposAsignados />
+
+          <EquiposMantenimiento />
+
+          <EquiposDadosDeBaja />
         </div>
 
-        <EquiposAsignados />
-
-        <EquiposMantenimiento />
-
-        <EquiposDadosDeBaja />
-      </div>
-
-
-      <div className="dashboard-card">
-        <div className="maquinaria-container">
+        <div>
           <ListadoGeneral />
         </div>
-      </div>
 
-      {rol === "Admin" && (
-  <>
-    <div className="container-inicio-dashboard">
-      <div className="inicio-texto">
-        <h1 className="titulo-principal">Gestión de usuarios</h1>
-        <p>Administra los funcionarios del sistema</p>
-      </div>
-    </div>
+        {rol === "Admin" && (
+          <>
+            <div className="container-inicio-dashboard">
+              <div className="inicio-texto">
+                <h1 className="titulo-principal">Gestión de usuarios</h1>
+                <p>Administra los funcionarios del sistema</p>
+              </div>
+            </div>
 
-    <div className="card dashboard-card">
-      <ListadoUsuarios />
-    </div>
-  </>
-)}
-    </div>
+            <div className="card dashboard-card">
+              <ListadoUsuarios />
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };
