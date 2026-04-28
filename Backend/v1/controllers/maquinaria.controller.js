@@ -47,7 +47,10 @@ export const getMaquinariasActivasController = async (req, res) => {
     const maquinarias = await getMaquinariasActivasServices();
     res.status(200).json(maquinarias);
   } catch (error) {
-    res.status(500).json({ error: "Error al obtener maquinarias activas" });
+    console.error("Error en getMaquinariasActivasController:", error);
+    res
+      .status(500)
+      .json({ error: error.message || "Error al obtener maquinarias activas" });
   }
 };
 

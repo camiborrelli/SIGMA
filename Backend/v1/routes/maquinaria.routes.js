@@ -27,6 +27,8 @@ router.post(
   registrarMaquinariaController,
 );
 router.get("/activas", verificarToken, getMaquinariasActivasController);
+// Alias route expected by frontend: /maquinaria/disponibles
+router.get("/disponibles", verificarToken, getMaquinariasActivasController);
 router.get(
   "/mantenimiento",
   verificarToken,

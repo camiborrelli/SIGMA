@@ -5,36 +5,146 @@ import Garantia from "./Garantia";
 
 const ListadoGeneral = () => {
   const [maquinaria, setMaquinaria] = useState([]);
+  const [selectedEstado, setSelectedEstado] = useState("");
+  const [selectedTipo, setSelectedTipo] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchMaquinaria = async () => {
-      setLoading(true);
-      const token = localStorage.getItem("token");
-      try {
-        const res = await fetch("http://localhost:5001/maquinaria", {
-          headers: {
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-        });
+  const fetchMaquinaria = async () => {
+    setLoading(true);
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    try {
+      const res = await fetch("http://localhost:5001/maquinaria", { headers });
 
-        if (!res.ok) {
-          const r = await res.json().catch(() => ({}));
-          setError(r.error || "Error al obtener la maquinaria");
-          setMaquinaria([]);
-        } else {
-          const data = await res.json();
-          setMaquinaria(data || []);
-        }
-      } catch (err) {
-        setError("Error de conexión");
-      } finally {
-        setLoading(false);
+      if (!res.ok) {
+        const r = await res.json().catch(() => ({}));
+        setError(r.error || "Error al obtener la maquinaria");
+        setMaquinaria([]);
+      } else {
+        const data = await res.json();
+        setMaquinaria(data || []);
       }
-    };
+    } catch (err) {
+      setError("Error de conexión");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const maquinasDadosDeBaja = async () => {
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    try {
+      const res = await fetch("http://localhost:5001/maquinaria/bajas", {
+        headers,
+      });
+      if (!res.ok) {
+        const r = await res.json().catch(() => ({}));
+        alert(r.error || "Error al obtener maquinaria");
+        return [];
+      }
+      const data = await res.json();
+      setMaquinaria(data || []);
+      return data || [];
+    } catch (err) {
+      alert("Error de conexión");
+      return [];
+    }
+  };
+
+  const maquinasAsignadas = async () => {
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    try {
+      const res = await fetch("http://localhost:5001/maquinaria/asignadas", {
+        headers,
+      });
+      if (!res.ok) {
+        const r = await res.json().catch(() => ({}));
+        alert(r.error || "Error al obtener maquinaria asignada");
+        return [];
+      }
+      const data = await res.json();
+      setMaquinaria(data || []);
+      return data || [];
+    } catch (err) {
+      alert("Error de conexión");
+      return [];
+    }
+  };
+
+  const maquinasDisponibles = async () => {
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    try {
+      const res = await fetch("http://localhost:5001/maquinaria/disponibles", {
+        headers,
+      });
+      if (!res.ok) {
+        const r = await res.json().catch(() => ({}));
+        alert(r.error || "Error al obtener maquinaria disponible");
+        return [];
+      }
+      const data = await res.json();
+      setMaquinaria(data || []);
+      return data || [];
+    } catch (err) {
+      alert("Error de conexión");
+      return [];
+    }
+  };
+
+  const maquinasEnMantenimiento = async () => {
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    try {
+      const res = await fetch(
+        "http://localhost:5001/maquinaria/mantenimiento",
+        { headers },
+      );
+      if (!res.ok) {
+        const r = await res.json().catch(() => ({}));
+        alert(r.error || "Error al obtener maquinaria en mantenimiento");
+        return [];
+      }
+      const data = await res.json();
+      setMaquinaria(data || []);
+      return data || [];
+    } catch (err) {
+      alert("Error de conexión");
+      return [];
+    }
+  };
+
+  const handleEstadoChange = async (e) => {
+    const val = e.target.value;
+    setSelectedEstado(val);
+    if (!val) return fetchMaquinaria();
+    switch (val) {
+      case "Disponibles":
+        await maquinasDisponibles();
+        break;
+      case "Asignadas":
+        await maquinasAsignadas();
+        break;
+      case "Mantenimiento":
+        await maquinasEnMantenimiento();
+        break;
+      case "Baja":
+        await maquinasDadosDeBaja();
+        break;
+      default:
+        await fetchMaquinaria();
+    }
+  };
+
+  const handleTipoChange = (e) => {
+    setSelectedTipo(e.target.value);
+  };
+
+  useEffect(() => {
     fetchMaquinaria();
   }, []);
 
@@ -91,8 +201,30 @@ const ListadoGeneral = () => {
   return (
     <div>
       <h2>Listado de Maquinaria</h2>
+      <div>
+        <p>Filtrar:</p>
+        <select value={selectedEstado} onChange={handleEstadoChange}>
+          <option value="">Todas las maquinarias</option>
+          <option value="Disponibles">Disponibles</option>
+          <option value="Asignadas">Asignadas</option>
+          <option value="Mantenimiento">En mantenimiento</option>
+          <option value="Baja">Dadas de baja</option>
+        </select>
+        <select value={selectedTipo} onChange={handleTipoChange}>
+          <option value="">Todas los tipos</option>
+          <option value="Maquina">Maquina</option>
+          <option value="Herramienta">Herramienta</option>
+        </select>
+      </div>
       <div className="maquinaria-table">
-        <Tabla columns={columns} data={maquinaria} />
+        <Tabla
+          columns={columns}
+          data={
+            selectedTipo
+              ? maquinaria.filter((m) => m.tipo === selectedTipo)
+              : maquinaria
+          }
+        />
       </div>
     </div>
   );
