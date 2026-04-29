@@ -9,6 +9,8 @@ const Garantia = ({ id: propId }) => {
   const id = propId || params.id;
   const [garantia, setGarantia] = useState(null);
   const [maquinariaNombre, setMaquinariaNombre] = useState("");
+  const [maquinaId, setMaquinaId] = useState(null);
+  const [cantReparaciones, setCantReparaciones] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -48,6 +50,7 @@ const Garantia = ({ id: propId }) => {
         if (mounted) {
           setGarantia(data);
           setMaquinariaNombre(data.maquinariaNombre || data.nombre || "");
+          setMaquinaId(data._id);
         }
       } catch (err) {
         if (mounted) setError("Error de conexión");
@@ -55,7 +58,33 @@ const Garantia = ({ id: propId }) => {
         if (mounted) setLoading(false);
       }
     };
+
+    const cantReparaciones = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await fetch(
+          `http://localhost:5001/maquinaria/${id}/reparaciones`,
+          {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          },
+        );
+        if (!res.ok) {
+          const r = await res.json().catch(() => ({}));
+          if (mounted)
+            setError(r.error || "Error al obtener cantidad de reparaciones");
+          return;
+        }
+        const data = await res.json();
+        if (mounted) {
+          setCantReparaciones(data.cantReparaciones);
+        }
+      } catch (err) {
+        if (mounted) setError("Error de conexión");
+      }
+    };
+
     obtenerGarantia();
+    cantReparaciones();
     return () => {
       mounted = false;
     };
@@ -261,6 +290,7 @@ const Garantia = ({ id: propId }) => {
                   </p>
                 </div>
               </div>
+              <p>{cantReparaciones ?? 0} reparaciones realizadas</p>
             </div>
           </>
         )}

@@ -11,6 +11,7 @@ import {
   asignarMaquinaAmantenimientoController,
   getGarantiaMaquinaController,
   getMaquinariaByIdController,
+  getCantReparacionesController,
 } from "../controllers/maquinaria.controller.js";
 import { validateBody } from "../middlewares/validation.middleware.js";
 import { registrarMaquinariaSchema } from "../validators/maquinaria.validators.js";
@@ -47,6 +48,7 @@ router.post(
 );
 router.get("/garantia/:id", verificarToken, getGarantiaMaquinaController);
 router.get("/:id", verificarToken, getMaquinariaByIdController);
+router.get("/:id/reparaciones", verificarToken, getCantReparacionesController);
 router.delete("/:id", verificarToken, soloAdmin, eliminarMaquinariaController);
 
 export default router;

@@ -173,3 +173,22 @@ export const getMaquinariaByIdController = async (req, res) => {
       .json({ error: error.message || "Error al obtener maquinaria" });
   }
 };
+
+export const getCantReparacionesController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const maquinaria = await getMaquinariaByIdService(id);
+    if (!maquinaria)
+      return res.status(404).json({ error: "Maquinaria no encontrada" });
+    return res
+      .status(200)
+      .json({ cantReparaciones: maquinaria.cantReparaciones });
+  } catch (error) {
+    console.error("Error in getCantReparacionesController:", error);
+    return res
+      .status(500)
+      .json({
+        error: error.message || "Error al obtener cantidad de reparaciones",
+      });
+  }
+};
