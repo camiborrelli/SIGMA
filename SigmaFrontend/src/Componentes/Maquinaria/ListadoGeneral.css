@@ -32,103 +32,169 @@
   margin: 0 auto 20px auto;
 }
 
-@media (max-width: 600px) {
-  .dashboard-card {
-    padding: 15px;
-  }
-  .filtros {
-    flex-direction: column;
-    gap: 12px;
-    max-width: 100%;
-  }
-  .filtros select,
-  .search-input {
-    width: 100%;
-  }
-}
+@media (max-width: 1024px) {
 
-/* Mobile / tablet: show cards instead of table */
-@media (max-width: 1000px) {
   .maquinaria-table {
     display: none;
   }
 
   .mobile-cards {
     display: grid;
-    gap: 12px;
-    margin-top: 12px;
-    justify-content: center;
-    grid-template-columns: 1fr; /* default single column */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    width: 100%;
   }
 
   .maquinaria-card {
-    border: 1px solid #e6e9ee;
-    padding: 12px;
-    border-radius: 8px;
-    background: #fff;
-    box-shadow: 0 4px 12px rgba(16, 24, 40, 0.04);
-    width: 100%;
-    max-width: 420px;
-    margin: 0 auto;
+    background: #ffffff;
+    padding: 16px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
 
-  .maquinaria-card h3 {
-    margin: 0 0 8px 0;
-    font-size: 16px;
+  .maquinaria-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
+
+  .maquinaria-nombre {
+    font-weight: 600;
+    font-size: 14px;
+    color: #0f172a;
+  }
+
+  /* 🔥 FIX mantenimiento */
+.estado-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 12px;
+  white-space: normal;
+  word-break: break-word;
+  text-align: center;
+  min-width: 110px;
+}
+
+  .estado-disponible {
+    background: rgba(22, 163, 74, 0.2);
+    color: #16a34a;
+  }
+
+  .estado-asignado {
+    background: rgba(220, 38, 38, 0.2);
+    color: #dc2626;
+  }
+.estado-mantenimiento {
+  color: hsl(20, 10%, 94%);
+}
 
   .maquinaria-card p {
-    margin: 6px 0;
-    font-size: 14px;
+    font-size: 13px;
+    color: #64748b;
+    margin: 4px 0;
+  }
+
+  .maquinaria-card p strong {
+    color: #334155;
+  }
+
+  .maquinaria-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .maquinaria-actions button {
+    background: #f1f5f9;
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
   }
 }
 
-/* Desktop: hide mobile cards */
-@media (min-width: 1001px) {
+@media (max-width: 768px) {
+
+  .mobile-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .maquinaria-card {
+    padding: 16px;
+  }
+
+  .maquinaria-actions {
+    justify-content: center;
+  }
+}
+
+@media (min-width: 1025px) {
   .mobile-cards {
     display: none;
   }
 }
 
-/* Medium screens: 2 columns */
-@media (min-width: 481px) and (max-width: 900px) {
-  .mobile-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .maquinaria-card {
-    max-width: 520px;
-  }
-}
-
-/* Larger small screens: 3 columns */
-@media (min-width: 901px) and (max-width: 1000px) {
-  .mobile-cards {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .maquinaria-card {
-    max-width: 360px;
-  }
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+.paginacion {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1200;
+  gap: 14px;
+  margin-top: 20px;
 }
 
-.modal-card {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  width: 400px;
-  max-width: 95%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-  margin: 0 auto;
+.paginacion button {
+  background: #c62828;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.paginacion button:disabled {
+  background: #ccc;
+}
+
+.paginacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.paginacion button {
+  background: #c62828;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.paginacion button:hover:not(:disabled) {
+  background: #a61c1c;
+  transform: translateY(-1px);
+}
+
+.paginacion button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.paginacion span {
+  font-size: 14px;
+  color: #475569;
+  font-weight: 500;
 }
