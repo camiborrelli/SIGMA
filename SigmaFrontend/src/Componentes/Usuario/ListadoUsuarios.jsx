@@ -9,6 +9,9 @@ const ListadoUsuarios = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const [paginaActual, setPaginaActual] = useState(1);
+  const USUARIOS_POR_PAGINA = 5;
+
   useEffect(() => {
     const fetchUsuarios = async () => {
       setLoading(true);
@@ -43,6 +46,18 @@ const ListadoUsuarios = () => {
     const texto = `${u.nombre} ${u.apellido} ${u.email}`.toLowerCase();
     return texto.includes(busqueda.toLowerCase());
   });
+
+  const totalPaginas = Math.ceil(
+    usuariosFiltrados.length / USUARIOS_POR_PAGINA
+  );
+
+  const indiceInicio = (paginaActual - 1) * USUARIOS_POR_PAGINA;
+  const indiceFin = indiceInicio + USUARIOS_POR_PAGINA;
+
+  const usuariosPaginados = usuariosFiltrados.slice(
+    indiceInicio,
+    indiceFin
+  );
 
   //Cambiar rol a Admin
   const cambiarRol = async (id) => {
@@ -103,7 +118,10 @@ const ListadoUsuarios = () => {
 
       <Buscador
         value={busqueda}
-        onChange={setBusqueda}
+        onChange={(val) => {
+          setBusqueda(val);
+          setPaginaActual(1); //reset página al buscar
+        }}
         placeholder="Buscar funcionario..."
       />
 
@@ -117,9 +135,8 @@ const ListadoUsuarios = () => {
           </div>
 
           <div className="usuarios-mobile">
-            {usuariosFiltrados.map((u) => (
+            {usuariosPaginados.map((u) => (
               <div key={u._id} className="usuario-card">
-                
                 <div className="usuario-card-header">
                   <span className="usuario-nombre-card">
                     {u.nombre} {u.apellido}
@@ -140,10 +157,31 @@ const ListadoUsuarios = () => {
                 >
                   Hacer admin
                 </button>
-
               </div>
             ))}
           </div>
+
+          {totalPaginas > 1 && (
+            <div className="paginacion">
+              <button
+                disabled={paginaActual === 1}
+                onClick={() => setPaginaActual(paginaActual - 1)}
+              >
+                ⬅
+              </button>
+
+              <span>
+                Página {paginaActual} de {totalPaginas}
+              </span>
+
+              <button
+                disabled={paginaActual === totalPaginas}
+                onClick={() => setPaginaActual(paginaActual + 1)}
+              >
+                ➡
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>
