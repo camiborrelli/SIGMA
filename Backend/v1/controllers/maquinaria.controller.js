@@ -199,16 +199,19 @@ export const getMaquinariaByIdController = async (req, res) => {
   }
 };
 
-export const getEquiposPorTipoController = async (req, res) => {
+export const getCantReparacionesController = async (req, res) => {
   try {
-    const { tipo } = req.params;
-    const maquinarias = await getMaquinariasServices();
-    const filtradas = maquinarias.filter(
-      (m) => m.tipo.toLowerCase() === tipo.toLowerCase(),
-    );
-    res.status(200).json(filtradas);
+    const { id } = req.params;
+    const maquinaria = await getMaquinariaByIdService(id);
+    if (!maquinaria)
+      return res.status(404).json({ error: "Maquinaria no encontrada" });
+    return res
+      .status(200)
+      .json({ cantReparaciones: maquinaria.cantReparaciones });
   } catch (error) {
-    console.error("Error en getEquiposPorTipoController:", error);
-    res.status(500).json({ error: "Error al obtener equipos por tipo" });
+    console.error("Error in getCantReparacionesController:", error);
+    return res.status(500).json({
+      error: error.message || "Error al obtener cantidad de reparaciones",
+    });
   }
 };

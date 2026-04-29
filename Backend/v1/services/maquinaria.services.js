@@ -108,6 +108,7 @@ export const asignarMaquinariaMantenimientoServices = async (id, obraId) => {
     throw new Error("Maquinaria no encontrada");
   }
   maquinaria.estado = "En mantenimiento";
+  maquinaria.cantReparaciones += 1;
   await maquinaria.save();
   return maquinaria;
 };

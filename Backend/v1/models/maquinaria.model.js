@@ -21,6 +21,7 @@ export const MaquinariaSchema = new Schema({
     ref: "Obra",
     default: null,
   },
+  cantReparaciones: { type: Number, default: 0 },
 });
 
 export default mongoose.model("Maquinaria", MaquinariaSchema);

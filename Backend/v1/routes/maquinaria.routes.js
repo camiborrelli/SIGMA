@@ -53,6 +53,7 @@ router.post(
 );
 router.get("/garantia/:id", verificarToken, getGarantiaMaquinaController);
 router.get("/:id", verificarToken, getMaquinariaByIdController);
+router.get("/:id/reparaciones", verificarToken, getCantReparacionesController);
 router.delete("/:id", verificarToken, soloAdmin, eliminarMaquinariaController);
 
 export default router;
