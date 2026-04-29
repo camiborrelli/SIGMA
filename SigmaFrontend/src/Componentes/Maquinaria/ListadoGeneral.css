@@ -2,10 +2,15 @@
   display: flex;
   gap: 20px;
   margin-bottom: 20px;
+  justify-content: center; /* centra horizontalmente */
+  flex-wrap: wrap;
+  max-width: 600px;
+  margin: 0 auto 20px auto;
 }
 
-.filtros select {
-  padding: 8px;
+.filtros select,
+.search-input {
+  padding: 8px 10px;
   border-radius: 10px;
   border: 1px solid #ccc;
   background: white;
@@ -13,11 +18,6 @@
 }
 
 .search-input {
-  padding: 8px 10px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  background: white;
-  color: black;
   min-width: 260px;
 }
 
@@ -29,7 +29,7 @@
   border-radius: 8px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.09);
   text-align: left;
-  margin-bottom: 20px;
+  margin: 0 auto 20px auto;
 }
 
 @media (max-width: 600px) {
@@ -39,6 +39,11 @@
   .filtros {
     flex-direction: column;
     gap: 12px;
+    max-width: 100%;
+  }
+  .filtros select,
+  .search-input {
+    width: 100%;
   }
 }
 
@@ -53,8 +58,7 @@
     gap: 12px;
     margin-top: 12px;
     justify-content: center;
-    /* default single column for small phones */
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* default single column */
   }
 
   .maquinaria-card {
@@ -65,6 +69,7 @@
     box-shadow: 0 4px 12px rgba(16, 24, 40, 0.04);
     width: 100%;
     max-width: 420px;
+    margin: 0 auto;
   }
 
   .maquinaria-card h3 {
@@ -125,5 +130,5 @@
   width: 400px;
   max-width: 95%;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-  justify-content: center;
+  margin: 0 auto;
 }
