@@ -3,14 +3,17 @@ import { useNavigate } from "react-router-dom";
 import Tabla from "../Tabla";
 import Garantia from "./Garantia";
 import "./ListadoGeneral.css";
+import Buscador from "../Usuario/Buscador";
 
 const ListadoGeneral = () => {
   const [maquinaria, setMaquinaria] = useState([]);
   const [selectedEstado, setSelectedEstado] = useState("");
   const [selectedTipo, setSelectedTipo] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [equiposMostrados, setEquiposMostrados] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [busqueda, setBusqueda] = useState("");
   const navigate = useNavigate();
 
   const fetchMaquinaria = async () => {
@@ -28,7 +31,22 @@ const ListadoGeneral = () => {
       } else {
         const data = await res.json();
         setMaquinaria(data || []);
-        setEquiposMostrados(data || []);
+        // apply client-side search/tipo filter to initial data
+        const initial = data || [];
+        const filtered = initial.filter((m) => {
+          if (selectedTipo && m.tipo !== selectedTipo) return false;
+          if (!searchTerm) return true;
+          const s = searchTerm.toLowerCase();
+          const inNombre = (m.nombre || "").toLowerCase().includes(s);
+          const inModelo = (m.modelo || "").toLowerCase().includes(s);
+          const obra =
+            m.ubicacion && typeof m.ubicacion === "object"
+              ? m.ubicacion.nombre || ""
+              : m.ubicacion || "";
+          const inObra = (obra || "").toLowerCase().includes(s);
+          return inNombre || inModelo || inObra;
+        });
+        setEquiposMostrados(filtered);
       }
     } catch (err) {
       setError("Error de conexión");
@@ -36,6 +54,35 @@ const ListadoGeneral = () => {
       setLoading(false);
     }
   };
+
+  // Apply client-side filters (tipo + search) to current maquinaria
+  const applyFilters = (
+    source = maquinaria,
+    tipo = selectedTipo,
+    term = searchTerm,
+  ) => {
+    const list = source || [];
+    const s = (term || "").toLowerCase();
+    const out = list.filter((m) => {
+      if (tipo && m.tipo !== tipo) return false;
+      if (!s) return true;
+      const inNombre = (m.nombre || "").toLowerCase().includes(s);
+      const inModelo = (m.modelo || "").toLowerCase().includes(s);
+      const obra =
+        m.ubicacion && typeof m.ubicacion === "object"
+          ? m.ubicacion.nombre || ""
+          : m.ubicacion || "";
+      const inObra = (obra || "").toLowerCase().includes(s);
+      const inTipo = (m.tipo || "").toLowerCase().includes(s);
+      return inNombre || inModelo || inObra || inTipo;
+    });
+    setEquiposMostrados(out);
+  };
+
+  // `busqueda` is legacy from the top Buscador; keep it in sync with `searchTerm`
+  useEffect(() => {
+    if (busqueda !== searchTerm) setBusqueda(searchTerm);
+  }, [searchTerm]);
 
   const maquinasDadosDeBaja = async () => {
     const token = localStorage.getItem("token");
@@ -191,11 +238,17 @@ const ListadoGeneral = () => {
       }
       const data = await res.json();
       setMaquinaria(data || []);
-      setEquiposMostrados(data || []);
+      // apply client-side search filter on the returned tipo data
+      applyFilters(data, val, searchTerm);
     } catch (err) {
       alert("Error de conexión");
     }
   };
+
+  useEffect(() => {
+    // when search term or selectedTipo changes, reapply filters to current maquinaria
+    applyFilters(maquinaria, selectedTipo, searchTerm);
+  }, [searchTerm, selectedTipo]);
 
   useEffect(() => {
     fetchMaquinaria();
@@ -255,6 +308,12 @@ const ListadoGeneral = () => {
     <div>
       {" "}
       <div className="dashboard-card">
+        {" "}
+        <Buscador
+          value={searchTerm}
+          onChange={setSearchTerm}
+          placeholder="Buscar equipo..."
+        />
         <div className="filtros">
           <p>Filtrar:</p>
 
@@ -277,14 +336,7 @@ const ListadoGeneral = () => {
         <div className="maquinaria-container">
           <h2>Listado de Maquinaria</h2>
           <div className="maquinaria-table">
-            <Tabla
-              columns={columns}
-              data={
-                selectedTipo
-                  ? maquinaria.filter((m) => m.tipo === selectedTipo)
-                  : maquinaria
-              }
-            />
+            <Tabla columns={columns} data={equiposMostrados} />
           </div>
         </div>
       </div>
