@@ -36,16 +36,19 @@
   width: 100%;
   padding: 12px;
   margin-top: 20px;
-  background: #c62828;
+  background: #e63535;
   color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: bold;
 }
 
-.registrar-maquinaria button:hover {
-  background: #a61c1c;
-  transform: translateY(-1px);
+.registrar-maquinaria .btn-cancelar {
+  background: #b7b8b9; /* gray-100 */
+  color: #111827; /* gray-900 for good contrast */
+  border: 1px solid #d1d5db; /* gray-300 */
+  box-shadow: none;
 }
 
 .obra-select {
@@ -130,23 +133,6 @@
   flex-direction: row;
 }
 
-.btn-cancelar {
-  background: #f3f4f6; /* gray-100 */
-  color: #111827; /* gray-900 for good contrast */
-  border: 1px solid #d1d5db; /* gray-300 */
-  box-shadow: none;
-}
-
-.btn-cancelar:hover {
-  background: #e5e7eb; /* gray-200 */
-}
-
-.btn-registrar {
-  background: #c62828;
-  color: #fff;
-  border: none;
-}
-
 /* Modal overlay to appear above everything */
 .modal-overlay {
   position: fixed;
@@ -156,9 +142,10 @@
   bottom: 0;
   background: rgba(0, 0, 0, 0.45);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 24px;
+  padding: 12px 8px;
+  overflow-y: auto;
   z-index: 10000;
 }
 
@@ -166,45 +153,62 @@
   width: 100%;
   max-width: 1000px;
   border-radius: 12px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
-
   .registrar-maquinaria {
     max-width: 100%;
-    padding: 16px;
+    padding: 8px;
+    height: auto;
     border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(90vh - 40px);
+    overflow: auto;
   }
 
   .registrar-maquinaria h2 {
-    font-size: 20px;
+    font-size: 18px;
+    margin-bottom: 12px;
   }
 
   .registrar-maquinaria input,
   .registrar-maquinaria select {
-    padding: 12px;
+    padding: 10px;
     font-size: 14px;
   }
 
   .div {
     flex-direction: column;
+    gap: 6px;
   }
 
   .div .form-group {
     margin-right: 0;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
 
   .buttons {
     flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
   }
 
   .buttons button {
     width: 100%;
+    padding: 10px;
+  }
+
+  /* ensure the actions area doesn't get hidden under viewport edges */
+  .buttons {
+    margin-bottom: 12px;
   }
 
   .modal-overlay {
-    padding: 12px;
+    padding: 8px;
   }
 
   .modal-card {
@@ -213,7 +217,6 @@
 }
 
 @media (max-width: 1024px) {
-
   .registrar-maquinaria {
     max-width: 90%;
   }

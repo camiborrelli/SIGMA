@@ -114,7 +114,7 @@ const Garantia = ({ id: propId }) => {
   return (
     <div className="garantia-wrapper">
       {/* Top meta */}
-      <p className="garantia-meta">ASSET SERIAL: CAT320D-2024-3</p>
+      {/* <p className="garantia-meta">ASSET SERIAL: CAT320D-2024-3</p> */}
 
       {/* Page title */}
       <h1 className="garantia-titulo">DETALLE DE GARANTÍA</h1>
@@ -147,29 +147,18 @@ const Garantia = ({ id: propId }) => {
               )}
             </div>
 
-            {/* Vida útil */}
-            {garantia.esGarantia ? (
-              <div className="vida-util-section">
-                <div className="vida-util-numero">
-                  <span className="porcentaje-grande">
-                    {porcentajeVidaUtil}%
-                  </span>
-                  <span className="vida-util-label">VIDA ÚTIL RESTANTE</span>
-                </div>
-                <div className="progress-bar">
-                  <div
-                    className="progress-fill"
-                    style={{ width: `${porcentajeVidaUtil}%` }}
-                  />
-                </div>
+            {/* Vida útil: mostrar siempre si hay datos de garantía */}
+            <div className="vida-util-section">
+              <div className="vida-util-numero">
+                <span className="porcentaje-grande">{porcentajeVidaUtil}%</span>
+                <p className="vida-util-label">VIDA ÚTIL RESTANTE</p>
               </div>
-            ) : null}
-
-            <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{ width: `${porcentajeVidaUtil}%` }}
-              />
+              <div className="progress-bar">
+                <div
+                  className="progress-fill"
+                  style={{ width: `${porcentajeVidaUtil}%` }}
+                />
+              </div>
             </div>
 
             {/* Garantía activa banner */}
@@ -193,9 +182,7 @@ const Garantia = ({ id: propId }) => {
                 <div className="garantia-expirada-content">
                   <h4>GARANTÍA EXPIRADA</h4>
                   <p>La garantía de este activo ha vencido.</p>
-                  <p style={{ marginTop: 8, color: "#6b7280" }}>
-                    Venció: {formatDate(garantia.fechaFinGarantia)}
-                  </p>
+                  <p>Venció: {formatDate(garantia.fechaFinGarantia)}</p>
                 </div>
               </div>
             )}

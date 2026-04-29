@@ -338,6 +338,60 @@ const ListadoGeneral = () => {
           <div className="maquinaria-table">
             <Tabla columns={columns} data={equiposMostrados} />
           </div>
+          <div className="mobile-cards">
+            {equiposMostrados.map((m) => (
+              <div key={m._id} className="maquinaria-card">
+                <h3>{m.nombre}</h3>
+                <p>
+                  <strong>Tipo:</strong> {m.tipo}
+                </p>
+                <p>
+                  <strong>Modelo:</strong> {m.modelo || "N/A"}
+                </p>
+                <p>
+                  <strong>Stock:</strong> {m.stock || 0}
+                </p>
+                <p>
+                  <strong>Estado:</strong>{" "}
+                  <span
+                    className={`estado-badge ${
+                      m.estado === "Disponible"
+                        ? "estado-disponible"
+                        : m.estado === "Asignada"
+                          ? "estado-asignado"
+                          : "estado-mantenimiento"
+                    }`}
+                  >
+                    {m.estado || "Disponible"}
+                  </span>
+                </p>
+                <p>
+                  <strong>Obra Asignada:</strong>{" "}
+                  {m.ubicacion && typeof m.ubicacion === "object"
+                    ? m.ubicacion.nombre
+                    : m.ubicacion || "Sin asignar"}
+                </p>
+                <div className="actions">
+                  <button className="action-btn icon-edit" title="Editar">
+                    <span className="icon">✏️</span>
+                  </button>
+                  <button
+                    className="action-btn icon-key"
+                    title="Asignar a mantenimiento"
+                    onClick={() => navigate(`/garantia/${m._id}`)}
+                  >
+                    <span className="icon">🔑</span>
+                  </button>
+                  <button
+                    className="action-btn icon-delete"
+                    title="Dar de baja"
+                  >
+                    <span className="icon">🗑️</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

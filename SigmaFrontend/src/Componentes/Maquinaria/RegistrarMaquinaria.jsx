@@ -14,25 +14,25 @@ const RegistrarMaquinaria = () => {
   const [obras, setObras] = useState([]);
 
   const listaObras = async () => {
-  const token = localStorage.getItem("token");
-  try {
-    const res = await fetch("http://localhost:5001/obras", {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : "",
-      },
-    });
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch("http://localhost:5001/obras", {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      });
 
-    const data = await res.json().catch(() => ({}));
+      const data = await res.json().catch(() => ({}));
 
-    if (!res.ok) {
+      if (!res.ok) {
+        setObras([]);
+        return;
+      }
+      setObras(Array.isArray(data) ? data : []);
+    } catch (err) {
       setObras([]);
-      return;
     }
-    setObras(Array.isArray(data) ? data : []);
-  } catch (err) {
-    setObras([]);
-  }
-};
+  };
 
   useEffect(() => {
     listaObras();
@@ -121,7 +121,7 @@ const RegistrarMaquinaria = () => {
                 </select>
               </div>
 
-              <div className="form-group">
+              {/* <div className="form-group">
                 <label>Estado:</label>
                 <select
                   value={estado}
@@ -132,7 +132,7 @@ const RegistrarMaquinaria = () => {
                   <option value="Asignada">Asignada</option>
                   <option value="Mantenimiento">Mantenimiento</option>
                 </select>
-              </div>
+              </div> */}
             </div>
 
             <div className="div">
@@ -175,9 +175,12 @@ const RegistrarMaquinaria = () => {
               </div>
             </div>
             <div className="buttons">
+              <button type="submit" className="btn btn-registrar">
+                Registrar Maquinaria
+              </button>{" "}
               <button
                 type="button"
-                className="btn-cancelar"
+                className="btn btn-cancelar"
                 onClick={() => {
                   setNombre("");
                   setTipo("");
@@ -190,9 +193,6 @@ const RegistrarMaquinaria = () => {
                 }}
               >
                 Cancelar
-              </button>
-              <button type="submit" className="btn-registrar">
-                Registrar Maquinaria
               </button>
             </div>
           </form>

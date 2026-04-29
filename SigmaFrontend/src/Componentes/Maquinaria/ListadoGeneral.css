@@ -42,6 +42,69 @@
   }
 }
 
+/* Mobile / tablet: show cards instead of table */
+@media (max-width: 1000px) {
+  .maquinaria-table {
+    display: none;
+  }
+
+  .mobile-cards {
+    display: grid;
+    gap: 12px;
+    margin-top: 12px;
+    justify-content: center;
+    /* default single column for small phones */
+    grid-template-columns: 1fr;
+  }
+
+  .maquinaria-card {
+    border: 1px solid #e6e9ee;
+    padding: 12px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(16, 24, 40, 0.04);
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .maquinaria-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+  }
+
+  .maquinaria-card p {
+    margin: 6px 0;
+    font-size: 14px;
+  }
+}
+
+/* Desktop: hide mobile cards */
+@media (min-width: 1001px) {
+  .mobile-cards {
+    display: none;
+  }
+}
+
+/* Medium screens: 2 columns */
+@media (min-width: 481px) and (max-width: 900px) {
+  .mobile-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .maquinaria-card {
+    max-width: 520px;
+  }
+}
+
+/* Larger small screens: 3 columns */
+@media (min-width: 901px) and (max-width: 1000px) {
+  .mobile-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .maquinaria-card {
+    max-width: 360px;
+  }
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -53,4 +116,14 @@
   justify-content: center;
   align-items: center;
   z-index: 1200;
+}
+
+.modal-card {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 95%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  justify-content: center;
 }
