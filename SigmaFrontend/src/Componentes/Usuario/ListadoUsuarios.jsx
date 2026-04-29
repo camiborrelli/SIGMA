@@ -10,7 +10,31 @@ const ListadoUsuarios = () => {
   const [loading, setLoading] = useState(true);
 
   const [paginaActual, setPaginaActual] = useState(1);
-  const USUARIOS_POR_PAGINA = 5;
+
+  const [usuariosPorPagina, setUsuariosPorPagina] = useState(6);
+
+  useEffect(() => {
+    const actualizarCantidad = () => {
+      const width = window.innerWidth;
+
+      if (width <= 768) {
+        setUsuariosPorPagina(4); //mobile
+      } else if (width <= 1024) {
+        setUsuariosPorPagina(5); //tablet
+      } else {
+        setUsuariosPorPagina(6); //desktop
+      }
+    };
+
+    actualizarCantidad();
+    window.addEventListener("resize", actualizarCantidad);
+
+    return () => window.removeEventListener("resize", actualizarCantidad);
+  }, []);
+
+  useEffect(() => {
+    setPaginaActual(1);
+  }, [usuariosPorPagina]);
 
   useEffect(() => {
     const fetchUsuarios = async () => {
@@ -42,17 +66,21 @@ const ListadoUsuarios = () => {
     fetchUsuarios();
   }, []);
 
-  const usuariosFiltrados = usuarios.filter((u) => {
-    const texto = `${u.nombre} ${u.apellido} ${u.email}`.toLowerCase();
-    return texto.includes(busqueda.toLowerCase());
-  });
+  const usuariosFiltrados = usuarios
+    .filter((u) => {
+      const texto = `${u.nombre} ${u.apellido} ${u.email}`.toLowerCase();
+      return texto.includes(busqueda.toLowerCase());
+    })
+    .sort((a, b) =>
+      a.apellido.toLowerCase().localeCompare(b.apellido.toLowerCase())
+    );
 
   const totalPaginas = Math.ceil(
-    usuariosFiltrados.length / USUARIOS_POR_PAGINA
+    usuariosFiltrados.length / usuariosPorPagina
   );
 
-  const indiceInicio = (paginaActual - 1) * USUARIOS_POR_PAGINA;
-  const indiceFin = indiceInicio + USUARIOS_POR_PAGINA;
+  const indiceInicio = (paginaActual - 1) * usuariosPorPagina;
+  const indiceFin = indiceInicio + usuariosPorPagina;
 
   const usuariosPaginados = usuariosFiltrados.slice(
     indiceInicio,
@@ -120,7 +148,7 @@ const ListadoUsuarios = () => {
         value={busqueda}
         onChange={(val) => {
           setBusqueda(val);
-          setPaginaActual(1); //reset página al buscar
+          setPaginaActual(1);
         }}
         placeholder="Buscar funcionario..."
       />
@@ -131,7 +159,7 @@ const ListadoUsuarios = () => {
       {!loading && !error && (
         <>
           <div className="tabla-desktop">
-            <Tabla columns={columns} data={usuariosFiltrados} />
+            <Tabla columns={columns} data={usuariosPaginados} />
           </div>
 
           <div className="usuarios-mobile">

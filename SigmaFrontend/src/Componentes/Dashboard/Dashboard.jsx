@@ -195,7 +195,7 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div className="card dashboard-card">
+            <div className="dashboard-card">
               <ListadoUsuarios />
             </div>
           </>
