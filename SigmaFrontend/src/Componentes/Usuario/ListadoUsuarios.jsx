@@ -9,7 +9,6 @@ const ListadoUsuarios = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // ✅ PAGINADO
   const [paginaActual, setPaginaActual] = useState(1);
   const USUARIOS_POR_PAGINA = 5;
 
@@ -43,13 +42,11 @@ const ListadoUsuarios = () => {
     fetchUsuarios();
   }, []);
 
-  // 🔍 FILTRO
   const usuariosFiltrados = usuarios.filter((u) => {
     const texto = `${u.nombre} ${u.apellido} ${u.email}`.toLowerCase();
     return texto.includes(busqueda.toLowerCase());
   });
 
-  // ✅ PAGINADO LOGICA
   const totalPaginas = Math.ceil(
     usuariosFiltrados.length / USUARIOS_POR_PAGINA
   );
@@ -123,7 +120,7 @@ const ListadoUsuarios = () => {
         value={busqueda}
         onChange={(val) => {
           setBusqueda(val);
-          setPaginaActual(1); // 👈 reset página al buscar
+          setPaginaActual(1); //reset página al buscar
         }}
         placeholder="Buscar funcionario..."
       />
@@ -133,12 +130,10 @@ const ListadoUsuarios = () => {
 
       {!loading && !error && (
         <>
-          {/* DESKTOP */}
           <div className="tabla-desktop">
             <Tabla columns={columns} data={usuariosFiltrados} />
           </div>
 
-          {/* MOBILE / TABLET */}
           <div className="usuarios-mobile">
             {usuariosPaginados.map((u) => (
               <div key={u._id} className="usuario-card">
@@ -166,7 +161,6 @@ const ListadoUsuarios = () => {
             ))}
           </div>
 
-          {/* ✅ PAGINACIÓN */}
           {totalPaginas > 1 && (
             <div className="paginacion">
               <button
