@@ -199,7 +199,7 @@ export const getMaquinariaByIdController = async (req, res) => {
   }
 };
 
-export const getCantReparacionesController = async (req, res) => {
+export const getCantidadReparacionesController = async (req, res) => {
   try {
     const { id } = req.params;
     const maquinaria = await getMaquinariaByIdService(id);
@@ -209,7 +209,7 @@ export const getCantReparacionesController = async (req, res) => {
       .status(200)
       .json({ cantReparaciones: maquinaria.cantReparaciones });
   } catch (error) {
-    console.error("Error in getCantReparacionesController:", error);
+    console.error("Error in getCantidadReparacionesController:", error);
     return res.status(500).json({
       error: error.message || "Error al obtener cantidad de reparaciones",
     });
