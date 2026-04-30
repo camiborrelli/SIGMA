@@ -10,10 +10,10 @@ import {
   getMaquinariasDadasDeBajaController,
   asignarMaquinaAmantenimientoController,
   getGarantiaMaquinaController,
+  getCantReparacionesController,
   getMaquinariaByIdController,
   getSoloMaquinariasController,
   getHerramientasController,
-  getCantidadReparacionesController,
 } from "../controllers/maquinaria.controller.js";
 
 import { validateBody } from "../middlewares/validation.middleware.js";
@@ -54,12 +54,8 @@ router.post(
   asignarMaquinaAmantenimientoController,
 );
 router.get("/garantia/:id", verificarToken, getGarantiaMaquinaController);
+router.get("/:id/reparaciones", verificarToken, getCantReparacionesController);
 router.get("/:id", verificarToken, getMaquinariaByIdController);
-router.get(
-  "/:id/reparaciones",
-  verificarToken,
-  getCantidadReparacionesController,
-);
 router.delete("/:id", verificarToken, soloAdmin, eliminarMaquinariaController);
 
 export default router;
