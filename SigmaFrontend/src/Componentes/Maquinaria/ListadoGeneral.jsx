@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Tabla from "../Tabla";
-import Garantia from "./Garantia";
-import "./ListadoGeneral.css";
+import "../Maquinaria/ListadoGeneral.css";
 import Buscador from "../Usuario/Buscador";
 
 const ListadoGeneral = () => {
@@ -13,7 +12,6 @@ const ListadoGeneral = () => {
   const [equiposMostrados, setEquiposMostrados] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const [busqueda, setBusqueda] = useState("");
   const navigate = useNavigate();
 
   const [paginaActual, setPaginaActual] = useState(1);
@@ -23,35 +21,21 @@ const ListadoGeneral = () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
     try {
       const res = await fetch("http://localhost:5001/maquinaria", { headers });
 
       if (!res.ok) {
-        const r = await res.json().catch(() => ({}));
-        setError(r.error || "Error al obtener la maquinaria");
+        setError("Error al obtener la maquinaria");
         setMaquinaria([]);
         setEquiposMostrados([]);
       } else {
         const data = await res.json();
-        setMaquinaria(data || []);
-        // apply client-side search/tipo filter to initial data
-        const initial = data || [];
-        const filtered = initial.filter((m) => {
-          if (selectedTipo && m.tipo !== selectedTipo) return false;
-          if (!searchTerm) return true;
-          const s = searchTerm.toLowerCase();
-          const inNombre = (m.nombre || "").toLowerCase().includes(s);
-          const inModelo = (m.modelo || "").toLowerCase().includes(s);
-          const obra =
-            m.ubicacion && typeof m.ubicacion === "object"
-              ? m.ubicacion.nombre || ""
-              : m.ubicacion || "";
-          const inObra = (obra || "").toLowerCase().includes(s);
-          return inNombre || inModelo || inObra;
-        });
-        setEquiposMostrados(filtered);
+        const lista = Array.isArray(data) ? data : [];
+        setMaquinaria(lista);
+        setEquiposMostrados(lista);
       }
-    } catch (err) {
+    } catch {
       setError("Error de conexión");
     } finally {
       setLoading(false);
@@ -59,11 +43,13 @@ const ListadoGeneral = () => {
   };
 
   const applyFilters = (
-  source = maquinaria,
-  tipo = selectedTipo,
-  term = searchTerm,
-  estado = selectedEstado
+    source = maquinaria,
+    tipo = selectedTipo,
+    term = searchTerm,
+    estado = selectedEstado
   ) => {
+    if (!Array.isArray(source)) return;
+
     const s = (term || "").toLowerCase();
 
     const out = source.filter((m) => {
@@ -71,145 +57,53 @@ const ListadoGeneral = () => {
       if (estado && m.estado !== estado) return false;
 
       if (!s) return true;
-      const inNombre = (m.nombre || "").toLowerCase().includes(s);
-      const inModelo = (m.modelo || "").toLowerCase().includes(s);
+
       const obra =
-        m.ubicacion && typeof m.ubicacion === "object"
-          ? m.ubicacion.nombre || ""
+        typeof m.ubicacion === "object"
+          ? m.ubicacion?.nombre || ""
           : m.ubicacion || "";
-      const inObra = (obra || "").toLowerCase().includes(s);
-      const inTipo = (m.tipo || "").toLowerCase().includes(s);
-      return inNombre || inModelo || inObra || inTipo;
+
+      return (
+        m.nombre?.toLowerCase().includes(s) ||
+        m.modelo?.toLowerCase().includes(s) ||
+        obra.toLowerCase().includes(s) ||
+        m.tipo?.toLowerCase().includes(s)
+      );
     });
+
     setEquiposMostrados(out);
   };
 
-  // `busqueda` is legacy from the top Buscador; keep it in sync with `searchTerm`
   useEffect(() => {
-    if (busqueda !== searchTerm) setBusqueda(searchTerm);
-  }, [searchTerm]);
-
-  const maquinasDadosDeBaja = async () => {
-    const token = localStorage.getItem("token");
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    try {
-      const res = await fetch("http://localhost:5001/maquinaria/bajas", {
-        headers,
-      });
-      if (!res.ok) {
-        const r = await res.json().catch(() => ({}));
-        alert(r.error || "Error al obtener maquinaria");
-        return [];
-      }
-      const data = await res.json();
-      setMaquinaria(data || []);
-      setEquiposMostrados(data || []);
-      return data || [];
-    } catch (err) {
-      alert("Error de conexión");
-      return [];
-    }
-  };
-
-  const maquinasAsignadas = async () => {
-    const token = localStorage.getItem("token");
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    try {
-      const res = await fetch("http://localhost:5001/maquinaria/asignadas", {
-        headers,
-      });
-      if (!res.ok) {
-        const r = await res.json().catch(() => ({}));
-        alert(r.error || "Error al obtener maquinaria asignada");
-        return [];
-      }
-      const data = await res.json();
-      setMaquinaria(data || []);
-      setEquiposMostrados(data || []);
-      return data || [];
-    } catch (err) {
-      alert("Error de conexión");
-      return [];
-    }
-  };
-
-  const maquinasDisponibles = async () => {
-    const token = localStorage.getItem("token");
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    try {
-      const res = await fetch("http://localhost:5001/maquinaria/disponibles", {
-        headers,
-      });
-      if (!res.ok) {
-        const r = await res.json().catch(() => ({}));
-        alert(r.error || "Error al obtener maquinaria disponible");
-        return [];
-      }
-      const data = await res.json();
-      setMaquinaria(data || []);
-      setEquiposMostrados(data || []);
-
-      return data || [];
-    } catch (err) {
-      alert("Error de conexión");
-      return [];
-    }
-  };
-
-  const maquinasEnMantenimiento = async () => {
-    const token = localStorage.getItem("token");
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    try {
-      const res = await fetch(
-        "http://localhost:5001/maquinaria/mantenimiento",
-        { headers },
-      );
-      if (!res.ok) {
-        const r = await res.json().catch(() => ({}));
-        alert(r.error || "Error al obtener maquinaria en mantenimiento");
-        return [];
-      }
-      const data = await res.json();
-      setMaquinaria(data || []);
-      setEquiposMostrados(data || []);
-      return data || [];
-    } catch (err) {
-      alert("Error de conexión");
-      return [];
-    }
-  };
-
-  const maquinasPorTipo = async (tipo) => {
-    const token = localStorage.getItem("token");
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    try {
-      const res = await fetch(
-        `http://localhost:5001/maquinaria/tipo/${tipo.toLowerCase()}`,
-        { headers },
-      );
-      if (!res.ok) {
-        const r = await res.json().catch(() => ({}));
-        alert(r.error || `Error al obtener maquinaria tipo ${tipo}`);
-        return [];
-      }
-      const data = await res.json();
-      setMaquinaria(data || []);
-      setEquiposMostrados(data || []);
-
-      return data || [];
-    } catch (err) {
-      alert("Error de conexión");
-      return [];
-    }
-  };
-
-  useEffect(() => {
-  applyFilters(maquinaria, selectedTipo, searchTerm, selectedEstado);
-}, [maquinaria, searchTerm, selectedTipo, selectedEstado]);
+    applyFilters(maquinaria, selectedTipo, searchTerm, selectedEstado);
+  }, [maquinaria, searchTerm, selectedTipo, selectedEstado]);
 
   useEffect(() => {
     fetchMaquinaria();
   }, []);
+
+  useEffect(() => {
+      const actualizarCantidad = () => {
+        const width = window.innerWidth;
+  
+        if (width <= 768) {
+          setItemsPorPagina(5); //mobile
+        } else if (width <= 1024) {
+          setItemsPorPagina(6); //tablet
+        } else {
+          setItemsPorPagina(7); //desktop
+        }
+      };
+  
+      actualizarCantidad();
+      window.addEventListener("resize", actualizarCantidad);
+  
+      return () => window.removeEventListener("resize", actualizarCantidad);
+    }, []);
+
+  useEffect(() => {
+    setPaginaActual(1);
+  }, [equiposMostrados]);
 
   const indexUltimo = paginaActual * itemsPorPagina;
   const indexPrimero = indexUltimo - itemsPorPagina;
@@ -217,7 +111,7 @@ const ListadoGeneral = () => {
   const totalPaginas = Math.ceil(equiposMostrados.length / itemsPorPagina);
 
   const handleEstadoChange = (e) => {
-  setSelectedEstado(e.target.value);
+    setSelectedEstado(e.target.value);
   };
 
   const handleTipoChange = (e) => {
@@ -237,8 +131,8 @@ const ListadoGeneral = () => {
           val === "Disponible"
             ? "estado-disponible"
             : val === "Asignada"
-              ? "estado-asignado"
-              : "estado-mantenimiento";
+            ? "estado-asignado"
+            : "estado-mantenimiento";
         return <span className={`estado-badge ${cls}`}>{val}</span>;
       },
     },
@@ -246,29 +140,24 @@ const ListadoGeneral = () => {
       header: "Obra Asignada",
       accessor: (row) => {
         const name =
-          row.ubicacion && typeof row.ubicacion === "object"
-            ? row.ubicacion.nombre
+          typeof row.ubicacion === "object"
+            ? row.ubicacion?.nombre
             : row.ubicacion || "Sin asignar";
-        return <div className="obra-text">{name || "Sin asignar"}</div>;
+        return <div className="obra-text">{name}</div>;
       },
     },
     {
       header: "Acciones",
       accessor: (row) => (
         <div className="actions">
-          <button className="action-btn icon-edit" title="Editar">
-            <span className="icon">✏️</span>
-          </button>
+          <button className="action-btn icon-edit">✏️</button>
           <button
             className="action-btn icon-key"
-            title="Asignar a mantenimiento"
             onClick={() => navigate(`/garantia/${row._id}`)}
           >
-            <span className="icon">🔑</span>
+            🔑
           </button>
-          <button className="action-btn icon-delete" title="Dar de baja">
-            <span className="icon">🗑️</span>
-          </button>
+          <button className="action-btn icon-delete">🗑️</button>
         </div>
       ),
     },
@@ -276,9 +165,7 @@ const ListadoGeneral = () => {
 
   return (
     <div>
-      {" "}
       <div className="dashboard-card">
-
         <div className="top-controls">
           <Buscador
             value={searchTerm}
@@ -290,7 +177,7 @@ const ListadoGeneral = () => {
             <p>Filtrar:</p>
 
             <select value={selectedEstado} onChange={handleEstadoChange}>
-              <option value="">Todas</option>
+              <option value="">Estados</option>
               <option value="Disponible">Disponibles</option>
               <option value="Asignada">Asignadas</option>
               <option value="En mantenimiento">En mantenimiento</option>
@@ -306,66 +193,79 @@ const ListadoGeneral = () => {
           </div>
         </div>
       </div>
+
       <div className="dashboard-card">
         <div className="maquinaria-container">
           <h2>Listado de Maquinaria</h2>
+
           <div className="maquinaria-table">
-            <Tabla columns={columns} data={equiposMostrados} />
+            <Tabla columns={columns} data={equiposPaginados} />
           </div>
+
           <div className="mobile-cards">
-            {equiposMostrados.map((m) => (
+            {equiposPaginados.map((m) => (
               <div key={m._id} className="maquinaria-card">
                 <h3>{m.nombre}</h3>
-                <p>
-                  <strong>Tipo:</strong> {m.tipo}
-                </p>
-                <p>
-                  <strong>Modelo:</strong> {m.modelo || "N/A"}
-                </p>
-                <p>
-                  <strong>Stock:</strong> {m.stock || 0}
-                </p>
+                <p><strong>Tipo:</strong> {m.tipo}</p>
+                <p><strong>Modelo:</strong> {m.modelo || "N/A"}</p>
+                <p><strong>Stock:</strong> {m.stock || 0}</p>
+
                 <p>
                   <strong>Estado:</strong>{" "}
-                  <span
-                    className={`estado-badge ${
-                      m.estado === "Disponible"
-                        ? "estado-disponible"
-                        : m.estado === "Asignada"
-                          ? "estado-asignado"
-                          : "estado-mantenimiento"
-                    }`}
-                  >
+                  <span className={`estado-badge ${
+                    m.estado === "Disponible"
+                      ? "estado-disponible"
+                      : m.estado === "Asignada"
+                      ? "estado-asignado"
+                      : "estado-mantenimiento"
+                  }`}>
                     {m.estado || "Disponible"}
                   </span>
                 </p>
+
                 <p>
-                  <strong>Obra Asignada:</strong>{" "}
-                  {m.ubicacion && typeof m.ubicacion === "object"
-                    ? m.ubicacion.nombre
+                  <strong>Obra:</strong>{" "}
+                  {typeof m.ubicacion === "object"
+                    ? m.ubicacion?.nombre
                     : m.ubicacion || "Sin asignar"}
                 </p>
+
                 <div className="actions">
-                  <button className="action-btn icon-edit" title="Editar">
-                    <span className="icon">✏️</span>
-                  </button>
+                  <button className="action-btn icon-edit">✏️</button>
                   <button
                     className="action-btn icon-key"
-                    title="Asignar a mantenimiento"
                     onClick={() => navigate(`/garantia/${m._id}`)}
                   >
-                    <span className="icon">🔑</span>
+                    🔑
                   </button>
-                  <button
-                    className="action-btn icon-delete"
-                    title="Dar de baja"
-                  >
-                    <span className="icon">🗑️</span>
-                  </button>
+                  <button className="action-btn icon-delete">🗑️</button>
                 </div>
               </div>
             ))}
           </div>
+
+          {totalPaginas > 1 && (
+            <div className="paginacion">
+              <button
+                disabled={paginaActual === 1}
+                onClick={() => setPaginaActual(paginaActual - 1)}
+              >
+                ⬅
+              </button>
+
+              <span>
+                Página {paginaActual} de {totalPaginas}
+              </span>
+
+              <button
+                disabled={paginaActual === totalPaginas}
+                onClick={() => setPaginaActual(paginaActual + 1)}
+              >
+                ➡
+              </button>
+            </div>
+          )}
+
         </div>
       </div>
     </div>
