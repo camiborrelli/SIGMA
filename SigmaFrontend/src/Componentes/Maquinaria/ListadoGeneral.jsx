@@ -16,6 +16,9 @@ const ListadoGeneral = () => {
   const [busqueda, setBusqueda] = useState("");
   const navigate = useNavigate();
 
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [itemsPorPagina, setItemsPorPagina] = useState(7);
+
   const fetchMaquinaria = async () => {
     setLoading(true);
     const token = localStorage.getItem("token");
@@ -55,16 +58,18 @@ const ListadoGeneral = () => {
     }
   };
 
-  // Apply client-side filters (tipo + search) to current maquinaria
   const applyFilters = (
-    source = maquinaria,
-    tipo = selectedTipo,
-    term = searchTerm,
+  source = maquinaria,
+  tipo = selectedTipo,
+  term = searchTerm,
+  estado = selectedEstado
   ) => {
-    const list = source || [];
     const s = (term || "").toLowerCase();
-    const out = list.filter((m) => {
+
+    const out = source.filter((m) => {
       if (tipo && m.tipo !== tipo) return false;
+      if (estado && m.estado !== estado) return false;
+
       if (!s) return true;
       const inNombre = (m.nombre || "").toLowerCase().includes(s);
       const inModelo = (m.modelo || "").toLowerCase().includes(s);
@@ -246,13 +251,25 @@ const ListadoGeneral = () => {
   };
 
   useEffect(() => {
-    // when search term or selectedTipo changes, reapply filters to current maquinaria
-    applyFilters(maquinaria, selectedTipo, searchTerm);
-  }, [searchTerm, selectedTipo]);
+  applyFilters(maquinaria, selectedTipo, searchTerm, selectedEstado);
+}, [maquinaria, searchTerm, selectedTipo, selectedEstado]);
 
   useEffect(() => {
     fetchMaquinaria();
   }, []);
+
+  const indexUltimo = paginaActual * itemsPorPagina;
+  const indexPrimero = indexUltimo - itemsPorPagina;
+  const equiposPaginados = equiposMostrados.slice(indexPrimero, indexUltimo);
+  const totalPaginas = Math.ceil(equiposMostrados.length / itemsPorPagina);
+
+  const handleEstadoChange = (e) => {
+  setSelectedEstado(e.target.value);
+  };
+
+  const handleTipoChange = (e) => {
+    setSelectedTipo(e.target.value);
+  };
 
   const columns = [
     { header: "Nombre", accessor: "nombre" },
@@ -308,28 +325,32 @@ const ListadoGeneral = () => {
     <div>
       {" "}
       <div className="dashboard-card">
-        {" "}
-        <Buscador
-          value={searchTerm}
-          onChange={setSearchTerm}
-          placeholder="Buscar equipo..."
-        />
-        <div className="filtros">
-          <p>Filtrar:</p>
 
-          <select value={selectedEstado} onChange={handleEstadoChange}>
-            <option value="">Todas las maquinarias</option>
-            <option value="Disponibles">Disponibles</option>
-            <option value="Asignadas">Asignadas</option>
-            <option value="Mantenimiento">En mantenimiento</option>
-            <option value="Baja">Dadas de baja</option>
-          </select>
-          <select value={selectedTipo} onChange={handleTipoChange}>
-            <option value="">Todas los tipos</option>
-            <option value="Maquina">Maquina</option>
-            <option value="Herramienta">Herramienta</option>
-          </select>
-          <p>Mostrando {equiposMostrados.length} resultados</p>
+        <div className="top-controls">
+          <Buscador
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Buscar equipo..."
+          />
+
+          <div className="filtros">
+            <p>Filtrar:</p>
+
+            <select value={selectedEstado} onChange={handleEstadoChange}>
+              <option value="">Todas</option>
+              <option value="Disponible">Disponibles</option>
+              <option value="Asignada">Asignadas</option>
+              <option value="En mantenimiento">En mantenimiento</option>
+            </select>
+
+            <select value={selectedTipo} onChange={handleTipoChange}>
+              <option value="">Tipos</option>
+              <option value="Maquina">Maquina</option>
+              <option value="Herramienta">Herramienta</option>
+            </select>
+
+            <p>Mostrando {equiposMostrados.length}</p>
+          </div>
         </div>
       </div>
       <div className="dashboard-card">
