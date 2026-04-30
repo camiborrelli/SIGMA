@@ -203,53 +203,6 @@ const ListadoGeneral = () => {
     }
   };
 
-  const handleEstadoChange = async (e) => {
-    const val = e.target.value;
-    setSelectedEstado(val);
-    if (!val) return fetchMaquinaria();
-    switch (val) {
-      case "Disponibles":
-        await maquinasDisponibles();
-        break;
-      case "Asignadas":
-        await maquinasAsignadas();
-        break;
-      case "Mantenimiento":
-        await maquinasEnMantenimiento();
-        break;
-      case "Baja":
-        await maquinasDadosDeBaja();
-        break;
-      default:
-        await fetchMaquinaria();
-    }
-  };
-
-  const handleTipoChange = async (e) => {
-    const val = e.target.value;
-    setSelectedTipo(val);
-    if (!val) return fetchMaquinaria();
-    // call backend type route
-    const token = localStorage.getItem("token");
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    try {
-      const res = await fetch(`http://localhost:5001/maquinaria/tipo/${val}`, {
-        headers,
-      });
-      if (!res.ok) {
-        const r = await res.json().catch(() => ({}));
-        alert(r.error || "Error al obtener maquinarias por tipo");
-        return;
-      }
-      const data = await res.json();
-      setMaquinaria(data || []);
-      // apply client-side search filter on the returned tipo data
-      applyFilters(data, val, searchTerm);
-    } catch (err) {
-      alert("Error de conexión");
-    }
-  };
-
   useEffect(() => {
   applyFilters(maquinaria, selectedTipo, searchTerm, selectedEstado);
 }, [maquinaria, searchTerm, selectedTipo, selectedEstado]);
