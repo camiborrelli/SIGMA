@@ -12,6 +12,7 @@ import {
   getGarantiaMaquinariaServices,
   getMaquinariaByIdService,
   getEquiposPorTipoServices,
+  bajaMaquinariaService,
 } from "../services/maquinaria.services.js";
 
 export const registrarMaquinariaController = async (req, res) => {
@@ -213,5 +214,25 @@ export const getCantReparacionesController = async (req, res) => {
     return res.status(500).json({
       error: error.message || "Error al obtener cantidad de reparaciones",
     });
+  }
+};
+
+export const bajaMaquinariaController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const maquinaria = await bajaMaquinariaService(id);
+    if (!maquinaria)
+      return res.status(404).json({ error: "Maquinaria no encontrada" });
+    return res.status(200).json({ message: "Maquinaria dada de baja" });
+  } catch (error) {
+    if (error.name === "InvalidId" || error.name === "CastError") {
+      return res.status(400).json({ error: error.message || "ID inválido" });
+    }
+    if (error.message && error.message.includes("no encontrada")) {
+      return res.status(404).json({ error: error.message });
+    }
+    return res
+      .status(500)
+      .json({ error: error.message || "Error al dar de baja maquinaria" });
   }
 };

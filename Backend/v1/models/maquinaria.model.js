@@ -3,7 +3,6 @@ import Obra from "./obra.model.js";
 
 export const MaquinariaSchema = new Schema({
   nombre: { type: String, required: true, unique: true },
-  tipo: { type: String, enum: ["Maquina", "Herramienta"] },
   modelo: String,
   tipo: {
     type: String,
@@ -11,7 +10,7 @@ export const MaquinariaSchema = new Schema({
   },
   estado: {
     type: String,
-    enum: ["Disponible", "En mantenimiento", "Dada de baja", "Asignada"],
+    enum: ["Disponible", "En mantenimiento", "Dada de Baja", "Asignada"],
     default: "Disponible",
   },
   stock: Number,

@@ -46,7 +46,7 @@ const ListadoGeneral = () => {
     source = maquinaria,
     tipo = selectedTipo,
     term = searchTerm,
-    estado = selectedEstado
+    estado = selectedEstado,
   ) => {
     if (!Array.isArray(source)) return;
 
@@ -83,23 +83,23 @@ const ListadoGeneral = () => {
   }, []);
 
   useEffect(() => {
-      const actualizarCantidad = () => {
-        const width = window.innerWidth;
-  
-        if (width <= 768) {
-          setItemsPorPagina(5); //mobile
-        } else if (width <= 1024) {
-          setItemsPorPagina(6); //tablet
-        } else {
-          setItemsPorPagina(7); //desktop
-        }
-      };
-  
-      actualizarCantidad();
-      window.addEventListener("resize", actualizarCantidad);
-  
-      return () => window.removeEventListener("resize", actualizarCantidad);
-    }, []);
+    const actualizarCantidad = () => {
+      const width = window.innerWidth;
+
+      if (width <= 768) {
+        setItemsPorPagina(5); //mobile
+      } else if (width <= 1024) {
+        setItemsPorPagina(6); //tablet
+      } else {
+        setItemsPorPagina(7); //desktop
+      }
+    };
+
+    actualizarCantidad();
+    window.addEventListener("resize", actualizarCantidad);
+
+    return () => window.removeEventListener("resize", actualizarCantidad);
+  }, []);
 
   useEffect(() => {
     setPaginaActual(1);
@@ -131,8 +131,9 @@ const ListadoGeneral = () => {
           val === "Disponible"
             ? "estado-disponible"
             : val === "Asignada"
-            ? "estado-asignado"
-            : "estado-mantenimiento";
+              ? "estado-asignado"
+              : "estado-mantenimiento";
+
         return <span className={`estado-badge ${cls}`}>{val}</span>;
       },
     },
@@ -157,11 +158,38 @@ const ListadoGeneral = () => {
           >
             🔑
           </button>
-          <button className="action-btn icon-delete">🗑️</button>
+          <button
+            className="action-btn icon-delete"
+            onClick={() => {
+              if (window.confirm("¿Confirmar dar de baja?")) darDeBaja(row._id);
+            }}
+          >
+            🗑️
+          </button>
         </div>
       ),
     },
   ];
+
+  const darDeBaja = async (id) => {
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    try {
+      const res = await fetch(`http://localhost:5001/maquinaria/baja/${id}`, {
+        method: "POST",
+        headers,
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        setError(body?.error || "Error al dar de baja");
+        return;
+      }
+      await fetchMaquinaria();
+    } catch (error) {
+      console.error("Error al dar de baja:", error);
+      setError("Error al dar de baja");
+    }
+  };
 
   return (
     <div>
@@ -181,6 +209,7 @@ const ListadoGeneral = () => {
               <option value="Disponible">Disponibles</option>
               <option value="Asignada">Asignadas</option>
               <option value="En mantenimiento">En mantenimiento</option>
+              <option value="Dadas de baja">Dadas de baja</option>
             </select>
 
             <select value={selectedTipo} onChange={handleTipoChange}>
@@ -206,19 +235,31 @@ const ListadoGeneral = () => {
             {equiposPaginados.map((m) => (
               <div key={m._id} className="maquinaria-card">
                 <h3>{m.nombre}</h3>
-                <p><strong>Tipo:</strong> {m.tipo}</p>
-                <p><strong>Modelo:</strong> {m.modelo || "N/A"}</p>
-                <p><strong>Stock:</strong> {m.stock || 0}</p>
+                <p>
+                  <strong>Tipo:</strong> {m.tipo}
+                </p>
+                <p>
+                  <strong>Modelo:</strong> {m.modelo || "N/A"}
+                </p>
+                <p>
+                  <strong>Stock:</strong> {m.stock || 0}
+                </p>
 
                 <p>
                   <strong>Estado:</strong>{" "}
-                  <span className={`estado-badge ${
-                    m.estado === "Disponible"
-                      ? "estado-disponible"
-                      : m.estado === "Asignada"
-                      ? "estado-asignado"
-                      : "estado-mantenimiento"
-                  }`}>
+                  <span
+                    className={`estado-badge ${
+                      m.estado === "Disponible"
+                        ? "estado-disponible"
+                        : m.estado === "Asignada"
+                          ? "estado-asignado"
+                          : m.estado === "En mantenimiento"
+                            ? "estado-mantenimiento"
+                            : m.estado === "Dada de Baja"
+                              ? "estado-baja"
+                              : ""
+                    }`}
+                  >
                     {m.estado || "Disponible"}
                   </span>
                 </p>
@@ -238,7 +279,15 @@ const ListadoGeneral = () => {
                   >
                     🔑
                   </button>
-                  <button className="action-btn icon-delete">🗑️</button>
+                  <button
+                    className="action-btn icon-delete"
+                    onClick={() => {
+                      if (window.confirm("¿Confirmar dar de baja?"))
+                        darDeBaja(m._id);
+                    }}
+                  >
+                    🗑️
+                  </button>
                 </div>
               </div>
             ))}
@@ -265,7 +314,6 @@ const ListadoGeneral = () => {
               </button>
             </div>
           )}
-
         </div>
       </div>
     </div>

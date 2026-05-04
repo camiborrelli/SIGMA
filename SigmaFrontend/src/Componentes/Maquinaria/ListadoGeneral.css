@@ -33,7 +33,6 @@
 }
 
 @media (max-width: 1024px) {
-
   .maquinaria-table {
     display: none;
   }
@@ -68,17 +67,17 @@
   }
 
   /* 🔥 FIX mantenimiento */
-.estado-badge {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 12px;
-  white-space: normal;
-  word-break: break-word;
-  text-align: center;
-  min-width: 110px;
-}
+  .estado-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 12px;
+    white-space: normal;
+    word-break: break-word;
+    text-align: center;
+    min-width: 110px;
+  }
 
   .estado-disponible {
     background: rgba(22, 163, 74, 0.2);
@@ -89,9 +88,14 @@
     background: rgba(220, 38, 38, 0.2);
     color: #dc2626;
   }
-.estado-mantenimiento {
-  color: hsl(20, 10%, 94%);
-}
+  .estado-mantenimiento {
+    color: hsl(20, 10%, 94%);
+  }
+
+  .estado-baja {
+    background: rgba(107, 114, 128, 0.2);
+    color: #6b7280;
+  }
 
   .maquinaria-card p {
     font-size: 13px;
@@ -120,7 +124,6 @@
 }
 
 @media (max-width: 768px) {
-
   .mobile-cards {
     display: flex;
     flex-direction: column;

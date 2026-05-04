@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Maquinaria from "../models/maquinaria.model.js";
 
 export const registrarMaquinariaServices = async ({
@@ -143,4 +144,20 @@ export const getGarantiaMaquinariaServices = async (id) => {
 export const getEquiposPorTipoServices = async (tipo) => {
   if (!tipo) return [];
   return await Maquinaria.find({ tipo }).populate("ubicacion");
+};
+
+export const bajaMaquinariaService = async (id) => {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    const err = new Error("ID inválido");
+    err.name = "InvalidId";
+    throw err;
+  }
+
+  const maquinaria = await Maquinaria.findById(id);
+  if (!maquinaria) {
+    throw new Error("Maquinaria no encontrada");
+  }
+  maquinaria.estado = "Dada de Baja";
+  await maquinaria.save();
+  return maquinaria;
 };
