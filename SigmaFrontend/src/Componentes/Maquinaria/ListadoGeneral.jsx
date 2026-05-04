@@ -132,7 +132,11 @@ const ListadoGeneral = () => {
             ? "estado-disponible"
             : val === "Asignada"
               ? "estado-asignado"
-              : "estado-mantenimiento";
+              : val === "En mantenimiento"
+                ? "estado-mantenimiento"
+                : val === "Dada de Baja"
+                  ? "estado-baja"
+                  : "";
 
         return <span className={`estado-badge ${cls}`}>{val}</span>;
       },
@@ -209,7 +213,7 @@ const ListadoGeneral = () => {
               <option value="Disponible">Disponibles</option>
               <option value="Asignada">Asignadas</option>
               <option value="En mantenimiento">En mantenimiento</option>
-              <option value="Dadas de baja">Dadas de baja</option>
+              <option value="Dada de Baja">Dada de Baja</option>
             </select>
 
             <select value={selectedTipo} onChange={handleTipoChange}>
