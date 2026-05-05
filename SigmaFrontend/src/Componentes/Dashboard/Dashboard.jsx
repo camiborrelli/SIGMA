@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import EquiposMantenimiento from "../Maquinaria/EquiposMantenimiento";
 import EquiposDadosDeBaja from "../Maquinaria/EquiposDadosDeBaja";
 import logo from "../../assets/LogoSinFondo.png";
+import RegistroObra from "../Obra/RegistroObra";
 
 const Dashboard = () => {
   const Navigate = useNavigate();
@@ -18,6 +19,10 @@ const Dashboard = () => {
 
   const registrarMaquinaria = () => {
     Navigate("/registrarMaquinaria");
+  };
+
+  const registrarObra = () => {
+    Navigate("/registrarObra");
   };
 
   let usuario = null;
@@ -121,6 +126,9 @@ const Dashboard = () => {
                 onClick={registrarMaquinaria}
               >
                 + Nuevo Equipo
+              </button>
+              <button className="btn btn-register" onClick={registrarObra}>
+                + Nueva Obra
               </button>
             </div>
           )}

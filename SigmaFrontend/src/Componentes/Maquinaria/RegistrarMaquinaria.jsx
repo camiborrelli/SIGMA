@@ -10,6 +10,7 @@ const RegistrarMaquinaria = () => {
   const [stock, setStock] = useState(0);
   const [fechaCompra, setFechaCompra] = useState("");
   const [obraId, setObraId] = useState("");
+  const [errors, setErrors] = useState({});
 
   const [obras, setObras] = useState([]);
 

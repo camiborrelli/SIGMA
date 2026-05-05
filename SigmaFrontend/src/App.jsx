@@ -9,6 +9,7 @@ import Tabla from "./Componentes/Tabla";
 import Garantia from "./Componentes/Maquinaria/Garantia";
 import AsignarMantenimiento from "./Componentes/Maquinaria/AsignaraMantenimiento";
 import { Routes, Route } from "react-router-dom";
+import RegistroObra from "./Componentes/Obra/RegistroObra";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -41,6 +42,7 @@ function App() {
             path="/asignarMantenimiento/:id"
             element={<AsignarMantenimiento />}
           />
+          <Route path="/registrarObra" element={<RegistroObra />} />
           <Route path="/tabla" element={<Tabla />} />
         </Routes>
       </div>

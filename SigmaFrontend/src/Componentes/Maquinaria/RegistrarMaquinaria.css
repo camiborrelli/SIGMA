@@ -31,6 +31,13 @@
   color: #333;
 }
 
+.registrar-maquinaria input:focus,
+.registrar-maquinaria select:focus {
+  border-color: #e63535;
+  box-shadow: 0 0 0 3px rgba(230, 53, 53, 0.2);
+  outline: none;
+}
+
 .registrar-maquinaria button {
   display: block;
   width: 100%;
@@ -53,7 +60,7 @@
 
 .obra-select {
   width: 100%;
-  padding: 10px;
+  /* padding: 10px; */
   margin-top: 5px;
   border-radius: 8px;
   border: 1px solid #ccc;
