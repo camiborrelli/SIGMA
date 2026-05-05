@@ -1,6 +1,7 @@
 .obra-content {
   max-width: 600px;
   margin: 0 auto;
+  margin-top: 50px;
   padding: 24px;
   background: #fff;
   border-radius: 12px;
@@ -65,7 +66,11 @@
 }
 
 .registrar-obra button .cancel {
-  background: #6b7280; /* gris oscuro */
+  background: #6b7280;
+}
+
+.registrar-obra button .cancel:hover {
+  background: #4b5563;
 }
 
 .registrar-obra button:hover {
@@ -80,6 +85,33 @@
 /* Responsividad */
 @media (max-width: 480px) {
   .obra-content {
+    .registrar-obra .btn-cancelar {
+      background: #6b7280; /* gray */
+      color: #ffffff;
+      border: 1px solid #4b5563;
+      box-shadow: none;
+      transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
+    }
+
+    .registrar-obra .btn-cancelar:hover {
+      background: #4b5563; /* darker gray */
+      border-color: #374151;
+    }
+
+    /* support buttons that use a .cancel class inside the component */
+    .registrar-obra .cancel,
+    .registrar-obra button.cancel {
+      background: #6b7280;
+      color: #ffffff;
+      border: 1px solid #4b5563;
+    }
+
+    .registrar-obra .cancel:hover,
+    .registrar-obra button.cancel:hover {
+      background: #4b5563;
+    }
     padding: 16px;
   }
   .obra-content h2 {

@@ -80,8 +80,6 @@ const RegistrarMaquinaria = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-card">
         <div className="registrar-maquinaria">
           <h2>Registrar Nueva Maquinaria</h2>
           <form onSubmit={handleSubmit}>
@@ -198,8 +196,7 @@ const RegistrarMaquinaria = () => {
             </div>
           </form>
         </div>
-      </div>
-    </div>
+  
   );
 };
 
