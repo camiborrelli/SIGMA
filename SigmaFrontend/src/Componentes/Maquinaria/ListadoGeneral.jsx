@@ -147,7 +147,7 @@ const ListadoGeneral = () => {
         const name =
           typeof row.ubicacion === "object"
             ? row.ubicacion?.nombre
-            : row.ubicacion || "Sin asignar";
+            : "Sin asignar";
         return <div className="obra-text">{name}</div>;
       },
     },
@@ -162,14 +162,14 @@ const ListadoGeneral = () => {
           >
             🔑
           </button>
-          <button
-            className="action-btn icon-delete"
-            onClick={() => {
-              if (window.confirm("¿Confirmar dar de baja?")) darDeBaja(row._id);
-            }}
-          >
-            🗑️
-          </button>
+                  <button
+                    className="action-btn icon-delete"
+                    onClick={() => {
+                      if (window.confirm("¿Confirmar dar de baja?")) darDeBaja(row._id);
+                    }}
+                  >
+                    <span className="icon">🚫</span>
+                  </button>
         </div>
       ),
     },
@@ -272,7 +272,7 @@ const ListadoGeneral = () => {
                   <strong>Obra:</strong>{" "}
                   {typeof m.ubicacion === "object"
                     ? m.ubicacion?.nombre
-                    : m.ubicacion || "Sin asignar"}
+                    : "Sin asignar"}
                 </p>
 
                 <div className="actions">
@@ -290,7 +290,7 @@ const ListadoGeneral = () => {
                         darDeBaja(m._id);
                     }}
                   >
-                    🗑️
+                    <span className="icon">🚫</span>
                   </button>
                 </div>
               </div>
