@@ -145,9 +145,9 @@ const ListadoGeneral = () => {
       header: "Obra Asignada",
       accessor: (row) => {
         const name =
-          typeof row.ubicacion === "object"
-            ? row.ubicacion?.nombre
-            : "Sin asignar";
+          row.ubicacion && typeof row.ubicacion === "object"
+            ? row.ubicacion?.nombre || "Sin asignar"
+            : row.ubicacion || "Sin asignar";
         return <div className="obra-text">{name}</div>;
       },
     },
@@ -162,14 +162,14 @@ const ListadoGeneral = () => {
           >
             🔑
           </button>
-                  <button
-                    className="action-btn icon-delete"
-                    onClick={() => {
-                      if (window.confirm("¿Confirmar dar de baja?")) darDeBaja(row._id);
-                    }}
-                  >
-                    <span className="icon">🚫</span>
-                  </button>
+          <button
+            className="action-btn icon-delete"
+            onClick={() => {
+              if (window.confirm("¿Confirmar dar de baja?")) darDeBaja(row._id);
+            }}
+          >
+            <span className="icon">🚫</span>
+          </button>
         </div>
       ),
     },
