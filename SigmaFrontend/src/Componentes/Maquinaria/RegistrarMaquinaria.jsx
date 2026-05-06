@@ -11,6 +11,7 @@ const RegistrarMaquinaria = () => {
   const [fechaCompra, setFechaCompra] = useState("");
   const [obraId, setObraId] = useState("");
   const [errors, setErrors] = useState({});
+  const [mensaje, setMensaje] = useState("");
 
   const [obras, setObras] = useState([]);
 
@@ -41,6 +42,9 @@ const RegistrarMaquinaria = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrors({});
+    setMensaje("");
+
     const token = localStorage.getItem("token");
     try {
       const res = await fetch("http://localhost:5001/maquinaria", {
@@ -59,9 +63,14 @@ const RegistrarMaquinaria = () => {
           obraId,
         }),
       });
+      const r = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const r = await res.json().catch(() => ({}));
-        alert(r.error || "Error al registrar maquinaria");
+        if (r.errors && typeof r.errors === "object") {
+          setErrors(r.errors);
+        }
+        return setMensaje(
+          r.error || r.message || "Error al registrar maquinaria",
+        );
       } else {
         alert("Maquinaria registrada correctamente");
         setNombre("");
@@ -80,47 +89,59 @@ const RegistrarMaquinaria = () => {
   const navigate = useNavigate();
 
   return (
-        <div className="registrar-maquinaria">
-          <h2>Registrar Nueva Maquinaria</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="div">
-              <div className="form-group">
-                <label>Nombre:</label>
-                <input
-                  type="text"
-                  value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
-                  erromessage="El nombre es requerido"
-                />
-              </div>
-              <div className="form-group">
-                <label>Modelo:</label>
-                <input
-                  type="text"
-                  value={modelo}
-                  onChange={(e) => setModelo(e.target.value)}
-                  erromessage="El modelo es requerido"
-                />
-              </div>
-            </div>
+    <div className="registrar-maquinaria">
+      <h2>Registrar Nueva Maquinaria</h2>
+      <form onSubmit={handleSubmit}>
+        {Object.keys(errors).length > 0 && (
+          <p className="error">Por favor completa todos los campos</p>
+        )}
+        <div className="div">
+          <div className="form-group">
+            <label>Nombre:</label>
+            <input
+              type="text"
+              value={nombre}
+              onChange={(e) => {
+                setNombre(e.target.value);
+                setErrors({});
+              }}
+              className={errors.nombre ? "input-error" : ""}
+            />
+          </div>
+          <div className="form-group">
+            <label>Modelo:</label>
+            <input
+              type="text"
+              value={modelo}
+              onChange={(e) => {
+                setModelo(e.target.value);
+                setErrors({});
+              }}
+              className={errors.modelo ? "input-error" : ""}
+            />
+          </div>
+        </div>
 
-            <div className="div">
-              <div className="form-group">
-                <label>Tipo:</label>
-                <select
-                  name="tipo"
-                  id="tipo"
-                  value={tipo}
-                  onChange={(e) => setTipo(e.target.value)}
-                  erromessage="El tipo es requerido"
-                >
-                  <option value="">Seleccionar Tipo</option>
-                  <option value="Maquina">Maquina</option>
-                  <option value="Herramienta">Herramienta</option>
-                </select>
-              </div>
+        <div className="div">
+          <div className="form-group">
+            <label>Tipo:</label>
+            <select
+              name="tipo"
+              id="tipo"
+              value={tipo}
+              onChange={(e) => {
+                setTipo(e.target.value);
+                setErrors({});
+              }}
+              className={errors.tipo ? "input-error" : ""}
+            >
+              <option value="">Seleccionar Tipo</option>
+              <option value="Maquina">Maquina</option>
+              <option value="Herramienta">Herramienta</option>
+            </select>
+          </div>
 
-              {/* <div className="form-group">
+          {/* <div className="form-group">
                 <label>Estado:</label>
                 <select
                   value={estado}
@@ -132,71 +153,80 @@ const RegistrarMaquinaria = () => {
                   <option value="Mantenimiento">Mantenimiento</option>
                 </select>
               </div> */}
-            </div>
-
-            <div className="div">
-              <div className="form-group">
-                <label>Stock:</label>
-                <input
-                  type="number"
-                  value={stock}
-                  onChange={(e) => setStock(parseInt(e.target.value))}
-                  erromessage="El stock es requerido y debe ser un número"
-                />
-              </div>
-              <div className="form-group">
-                <label>Fecha de Compra:</label>
-                <input
-                  type="date"
-                  value={fechaCompra}
-                  onChange={(e) => setFechaCompra(e.target.value)}
-                  erromessage="La fecha de compra es requerida"
-                />
-              </div>
-              <div className="form-group">
-                <label>Obra:</label>
-                <select
-                  name="obras"
-                  id=""
-                  value={obraId}
-                  onChange={(e) => setObraId(e.target.value)}
-                >
-                  <option value="">Seleccionar Obra</option>
-                  {obras.map((obra, idx) => (
-                    <option
-                      key={obra._id || obra.id || idx}
-                      value={obra._id || obra.id || ""}
-                    >
-                      {obra.nombre}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="buttons">
-              <button type="submit" className="btn btn-registrar">
-                Registrar Maquinaria
-              </button>{" "}
-              <button
-                type="button"
-                className="btn btn-cancelar"
-                onClick={() => {
-                  setNombre("");
-                  setTipo("");
-                  setModelo("");
-                  setEstado("Disponible");
-                  setStock(0);
-                  setFechaCompra("");
-                  setObraId("");
-                  navigate("/dashboard");
-                }}
-              >
-                Cancelar
-              </button>
-            </div>
-          </form>
         </div>
-  
+
+        <div className="div">
+          <div className="form-group">
+            <label>Stock:</label>
+            <input
+              type="number"
+              value={stock}
+              onChange={(e) => {
+                setStock(parseInt(e.target.value));
+                setErrors({});
+              }}
+              className={errors.stock ? "input-error" : ""}
+            />
+          </div>
+          <div className="form-group">
+            <label>Fecha de Compra:</label>
+            <input
+              type="date"
+              value={fechaCompra}
+              onChange={(e) => {
+                setFechaCompra(e.target.value);
+                setErrors({});
+              }}
+              className={errors.fechaCompra ? "input-error" : ""}
+            />
+          </div>
+          <div className="form-group">
+            <label>Obra:</label>
+            <select
+              name="obras"
+              id=""
+              value={obraId}
+              onChange={(e) => {
+                setObraId(e.target.value);
+                setErrors({});
+              }}
+              className={errors.obraId ? "input-error" : ""}
+            >
+              <option value="">Seleccionar Obra</option>
+              {obras.map((obra, idx) => (
+                <option
+                  key={obra._id || obra.id || idx}
+                  value={obra._id || obra.id || ""}
+                >
+                  {obra.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div className="buttons">
+          <button type="submit" className="btn btn-registrar">
+            Registrar Maquinaria
+          </button>{" "}
+          <button
+            type="button"
+            className="btn btn-cancelar"
+            onClick={() => {
+              setNombre("");
+              setTipo("");
+              setModelo("");
+              setEstado("Disponible");
+              setStock(0);
+              setFechaCompra("");
+              setObraId("");
+              navigate("/dashboard");
+            }}
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 

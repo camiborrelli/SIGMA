@@ -51,6 +51,17 @@
   resize: vertical;
 }
 
+.error {
+  color: #b91c1c;
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.input-error {
+  border-color: #b91c1c !important;
+  box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.08) !important;
+}
+
 .registrar-obra button {
   background: #b91c1c;
   color: white;
