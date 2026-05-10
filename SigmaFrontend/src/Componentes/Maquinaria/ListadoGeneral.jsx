@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Tabla from "../Tabla";
 import "../Maquinaria/ListadoGeneral.css";
 import Buscador from "../Usuario/Buscador";
+import "../Maquinaria/BajaEquipo";
 
 const ListadoGeneral = () => {
   const [maquinaria, setMaquinaria] = useState([]);
@@ -16,6 +17,7 @@ const ListadoGeneral = () => {
 
   const [paginaActual, setPaginaActual] = useState(1);
   const [itemsPorPagina, setItemsPorPagina] = useState(7);
+  const [confirmBaja, setConfirmBaja] = useState(null);
 
   const fetchMaquinaria = async () => {
     setLoading(true);
@@ -101,6 +103,44 @@ const ListadoGeneral = () => {
     return () => window.removeEventListener("resize", actualizarCantidad);
   }, []);
 
+  const darDeBaja = async (id) => {
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    const equipo = maquinaria.find((m) => m._id === id);
+    if (equipo?.estado === "Dada de Baja") {
+      return (
+        <div className="baja-container">
+          <h2>El equipo {equipo.nombre} ya se encuentra dado de baja.</h2>
+          <div className="actions">
+            <button
+              className="btn-cancelar"
+              onClick={() => navigate("/listadoGeneral")}
+            >
+              Volver
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    try {
+      const res = await fetch(`http://localhost:5001/maquinaria/baja/${id}`, {
+        method: "POST",
+        headers,
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        setError(body?.error || "Error al dar de baja");
+        return;
+      }
+      await fetchMaquinaria();
+    } catch (error) {
+      console.error("Error al dar de baja:", error);
+      setError("Error al dar de baja");
+    }
+  };
+
   useEffect(() => {
     setPaginaActual(1);
   }, [equiposMostrados]);
@@ -165,7 +205,11 @@ const ListadoGeneral = () => {
           <button
             className="action-btn icon-delete"
             onClick={() => {
-              if (window.confirm("¿Confirmar dar de baja?")) darDeBaja(row._id);
+              if (row.estado === "Dada de Baja") {
+                setConfirmBaja({ already: true, nombre: row.nombre });
+              } else {
+                setConfirmBaja({ id: row._id, nombre: row.nombre });
+              }
             }}
           >
             🗑️
@@ -174,26 +218,6 @@ const ListadoGeneral = () => {
       ),
     },
   ];
-
-  const darDeBaja = async (id) => {
-    const token = localStorage.getItem("token");
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    try {
-      const res = await fetch(`http://localhost:5001/maquinaria/baja/${id}`, {
-        method: "POST",
-        headers,
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        setError(body?.error || "Error al dar de baja");
-        return;
-      }
-      await fetchMaquinaria();
-    } catch (error) {
-      console.error("Error al dar de baja:", error);
-      setError("Error al dar de baja");
-    }
-  };
 
   return (
     <div>
@@ -226,6 +250,51 @@ const ListadoGeneral = () => {
           </div>
         </div>
       </div>
+
+      {confirmBaja && (
+        <div className="confirm-banner">
+          {confirmBaja.already ? (
+            <>
+              <p className="p1">
+                El equipo <strong>{confirmBaja.nombre}</strong> ya está dado de
+                baja.
+              </p>
+              <div className="confirm-actions">
+                <button
+                  className="btn-cancel"
+                  onClick={() => setConfirmBaja(null)}
+                >
+                  Cerrar
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="p2">
+                ¿Confirmar dar de baja el equipo{" "}
+                <strong>{confirmBaja.nombre}</strong>?
+              </p>
+              <div className="confirm-actions">
+                <button
+                  className="btn-confirm"
+                  onClick={async () => {
+                    await darDeBaja(confirmBaja.id);
+                    setConfirmBaja(null);
+                  }}
+                >
+                  Confirmar
+                </button>
+                <button
+                  className="btn-cancel"
+                  onClick={() => setConfirmBaja(null)}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
 
       <div className="dashboard-card">
         <div className="maquinaria-container">
@@ -285,10 +354,9 @@ const ListadoGeneral = () => {
                   </button>
                   <button
                     className="action-btn icon-delete"
-                    onClick={() => {
-                      if (window.confirm("¿Confirmar dar de baja?"))
-                        darDeBaja(m._id);
-                    }}
+                    onClick={() =>
+                      setConfirmBaja({ id: m._id, nombre: m.nombre })
+                    }
                   >
                     🗑️
                   </button>

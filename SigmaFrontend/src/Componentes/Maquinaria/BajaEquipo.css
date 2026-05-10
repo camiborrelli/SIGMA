@@ -1,0 +1,46 @@
+.baja-container {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 24px;
+  background: #f1f5f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.baja-container h2 {
+  text-align: center;
+  color: #b91c1c;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.baja-container p {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.baja-container button {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: #e63535;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.baja-container .btn-cancelar {
+  background: #b7b8b9; /* gray-100 */
+  color: #111827; /* gray-900 for good contrast */
+  border: 1px solid #d1d5db; /* gray-300 */
+  box-shadow: none;
+}
