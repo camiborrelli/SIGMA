@@ -9,6 +9,7 @@ import Tabla from "./Componentes/Tabla";
 import Garantia from "./Componentes/Maquinaria/Garantia";
 import AsignarMantenimiento from "./Componentes/Maquinaria/AsignaraMantenimiento";
 import { Routes, Route } from "react-router-dom";
+import RegistroObra from "./Componentes/Obra/RegistroObra";
 import BajaEquipo from "./Componentes/Maquinaria/BajaEquipo";
 
 function App() {
@@ -42,8 +43,9 @@ function App() {
             path="/asignarMantenimiento/:id"
             element={<AsignarMantenimiento />}
           />
-          <Route path="/bajaEquipo" element={<Garantia />} />
+          <Route path="/registrarObra" element={<RegistroObra />} />
           <Route path="/tabla" element={<Tabla />} />
+          <Route path="/bajaEquipo" element={<BajaEquipo />} />
         </Routes>
       </div>
     </>

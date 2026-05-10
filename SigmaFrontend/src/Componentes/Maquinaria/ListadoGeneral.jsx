@@ -185,8 +185,8 @@ const ListadoGeneral = () => {
       header: "Obra Asignada",
       accessor: (row) => {
         const name =
-          typeof row.ubicacion === "object"
-            ? row.ubicacion?.nombre
+          row.ubicacion && typeof row.ubicacion === "object"
+            ? row.ubicacion?.nombre || "Sin asignar"
             : row.ubicacion || "Sin asignar";
         return <div className="obra-text">{name}</div>;
       },
@@ -212,7 +212,7 @@ const ListadoGeneral = () => {
               }
             }}
           >
-            🗑️
+            <span className="icon">🚫</span>
           </button>
         </div>
       ),
@@ -341,7 +341,7 @@ const ListadoGeneral = () => {
                   <strong>Obra:</strong>{" "}
                   {typeof m.ubicacion === "object"
                     ? m.ubicacion?.nombre
-                    : m.ubicacion || "Sin asignar"}
+                    : "Sin asignar"}
                 </p>
 
                 <div className="actions">
@@ -358,7 +358,7 @@ const ListadoGeneral = () => {
                       setConfirmBaja({ id: m._id, nombre: m.nombre })
                     }
                   >
-                    🗑️
+                    <span className="icon">🚫</span>
                   </button>
                 </div>
               </div>

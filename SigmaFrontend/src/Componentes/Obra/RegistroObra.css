@@ -1,0 +1,135 @@
+.obra-content {
+  max-width: 600px;
+  margin: 0 auto;
+  margin-top: 50px;
+  padding: 24px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  align-self: center;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial;
+}
+
+.obra-content h2 {
+  text-align: center;
+  color: #b91c1c; /* rojo intenso */
+  margin-bottom: 20px;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.registrar-obra {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.registrar-obra input,
+.registrar-obra textarea,
+.registrar-obra select {
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 15px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.registrar-obra input:focus,
+.registrar-obra textarea:focus,
+.registrar-obra select:focus {
+  border-color: #b91c1c;
+  box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.2);
+  outline: none;
+}
+
+.registrar-obra textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.error {
+  color: #b91c1c;
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.input-error {
+  border-color: #b91c1c !important;
+  box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.08) !important;
+}
+
+.registrar-obra button {
+  background: #b91c1c;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.registrar-obra button .cancel {
+  background: #6b7280;
+}
+
+.registrar-obra button .cancel:hover {
+  background: #4b5563;
+}
+
+.registrar-obra button:hover {
+  background: #991b1b;
+  transform: translateY(-2px);
+}
+
+.registrar-obra button:active {
+  transform: translateY(0);
+}
+
+/* Responsividad */
+@media (max-width: 480px) {
+  .obra-content {
+    .registrar-obra .btn-cancelar {
+      background: #6b7280; /* gray */
+      color: #ffffff;
+      border: 1px solid #4b5563;
+      box-shadow: none;
+      transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
+    }
+
+    .registrar-obra .btn-cancelar:hover {
+      background: #4b5563; /* darker gray */
+      border-color: #374151;
+    }
+
+    /* support buttons that use a .cancel class inside the component */
+    .registrar-obra .cancel,
+    .registrar-obra button.cancel {
+      background: #6b7280;
+      color: #ffffff;
+      border: 1px solid #4b5563;
+    }
+
+    .registrar-obra .cancel:hover,
+    .registrar-obra button.cancel:hover {
+      background: #4b5563;
+    }
+    padding: 16px;
+  }
+  .obra-content h2 {
+    font-size: 22px;
+  }
+  .registrar-obra button {
+    font-size: 15px;
+    padding: 10px;
+  }
+}

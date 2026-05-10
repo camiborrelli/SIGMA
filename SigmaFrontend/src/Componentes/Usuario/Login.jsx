@@ -6,6 +6,7 @@ const Login = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
+  const [erros, setErrors] = useState({});
 
   const [rolSeleccionado, setRolSeleccionado] = useState("Funcionario");
 
@@ -28,29 +29,30 @@ const Login = () => {
   }, [isAuthenticated, navigate]);
 
   useEffect(() => {
-  const token = localStorage.getItem("token");
-  const user = localStorage.getItem("usuario");
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("usuario");
 
-  if (token && user) {
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
+    if (token && user) {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
 
-      //validar expiración
-      if (payload.exp * 1000 > Date.now()) {
-        setIsAuthenticated(true);
-        setUsuario(JSON.parse(user));
-      } else {
+        //validar expiración
+        if (payload.exp * 1000 > Date.now()) {
+          setIsAuthenticated(true);
+          setUsuario(JSON.parse(user));
+        } else {
+          localStorage.clear();
+        }
+      } catch (e) {
         localStorage.clear();
       }
-    } catch (e) {
-      localStorage.clear();
     }
-  }
-}, []);
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setMensaje("");
+    setErrors({});
 
     const res = await fetch("http://localhost:5001/usuarios/login", {
       method: "POST",
@@ -130,13 +132,10 @@ const Login = () => {
           </button>
         </div>
 
-        {mensaje && <p className="error">{mensaje}</p>}
-
         <form onSubmit={handleLogin}>
           <label>Correo electrónico</label>
           <input
             type="email"
-            required
             value={loginData.email}
             onChange={(e) =>
               setLoginData({ ...loginData, email: e.target.value })
@@ -146,12 +145,13 @@ const Login = () => {
           <label>Contraseña</label>
           <input
             type="password"
-            required
             value={loginData.password}
             onChange={(e) =>
               setLoginData({ ...loginData, password: e.target.value })
             }
           />
+
+          {mensaje && <p className="error">{mensaje}</p>}
 
           <button className="btn btn-register">INICIAR SESIÓN</button>
         </form>

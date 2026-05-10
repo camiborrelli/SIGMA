@@ -12,6 +12,7 @@ const Registro = ({ setIsLogin }) => {
     confirmPassword: "",
   });
   const [mensaje, setMensaje] = useState("");
+  const [errors, setErrors] = useState({});
 
   const toggle = () => {
     navigate("/");
@@ -62,13 +63,10 @@ const Registro = ({ setIsLogin }) => {
         <h2>Registro de usuario</h2>
         <p className="subtitle">Crea tu cuenta</p>
 
-        {mensaje && <p className="error">{mensaje}</p>}
-
         <form onSubmit={handleRegister}>
           <label>Nombre</label>
           <input
             type="text"
-            required
             value={registerData.nombre}
             onChange={(e) =>
               setRegisterData({ ...registerData, nombre: e.target.value })
@@ -78,7 +76,6 @@ const Registro = ({ setIsLogin }) => {
           <label>Apellido</label>
           <input
             type="text"
-            required
             value={registerData.apellido}
             onChange={(e) =>
               setRegisterData({ ...registerData, apellido: e.target.value })
@@ -88,7 +85,6 @@ const Registro = ({ setIsLogin }) => {
           <label>Correo electrónico</label>
           <input
             type="email"
-            required
             value={registerData.email}
             onChange={(e) =>
               setRegisterData({ ...registerData, email: e.target.value })
@@ -98,7 +94,6 @@ const Registro = ({ setIsLogin }) => {
           <label>Contraseña</label>
           <input
             type="password"
-            required
             value={registerData.password}
             onChange={(e) =>
               setRegisterData({ ...registerData, password: e.target.value })
@@ -108,7 +103,6 @@ const Registro = ({ setIsLogin }) => {
           <label>Confirmar contraseña</label>
           <input
             type="password"
-            required
             value={registerData.confirmPassword}
             onChange={(e) =>
               setRegisterData({
@@ -117,7 +111,7 @@ const Registro = ({ setIsLogin }) => {
               })
             }
           />
-
+          {mensaje && <p className="error">{mensaje}</p>}
           <button className="btn">CREAR CUENTA</button>
         </form>
 

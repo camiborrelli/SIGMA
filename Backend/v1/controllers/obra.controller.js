@@ -7,16 +7,30 @@ import mongoose from "mongoose";
 
 export const registrarObraController = async (req, res) => {
   try {
-    console.log("POST /obras called with body:", req.body);
-    const { nombre, ubicacion, fechaInicio, fechaFin } = req.body;
+    const { nombre, ubicacion, fechaInicio, fechaFin, estado } = req.body;
     const nuevaObra = await registrarObraServices({
       nombre,
       ubicacion,
       fechaInicio,
       fechaFin,
+      estado,
     });
     res.status(201).json(nuevaObra);
   } catch (error) {
+    if (error.message === "La obra ya existe" || error.code === 11000) {
+      return res.status(409).json({ error: "La obra ya existe" });
+    }
+    // Mongoose validation errors -> return 400 with details
+    if (error.name === "ValidationError") {
+      const errors = {};
+      for (const [key, val] of Object.entries(error.errors || {})) {
+        errors[key] = val.message;
+      }
+      return res.status(400).json({
+        error: "Error de validación en los datos de la obra",
+        errors,
+      });
+    }
     res.status(500).json({ error: "Error al registrar obra" });
   }
 };
