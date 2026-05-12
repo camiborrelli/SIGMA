@@ -47,28 +47,43 @@ const RegistrarEquipo = () => {
   };
 
   return (
-    <div className="registrar-maquinaria">
+    <div className="registrar-form">
       <h2>Registrar Equipo</h2>
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Nombre</label>
-          <input value={nombre} onChange={(e) => setNombre(e.target.value)} />
+          <input
+            value={nombre}
+            placeholder="Nombre del equipo"
+            onChange={(e) => setNombre(e.target.value)}
+          />
         </div>
 
         <div className="form-group">
-          <label>Tipo</label>
-          <input value={tipo} onChange={(e) => setTipo(e.target.value)} />
+          <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
+            <option value="">Seleccionar el tipo</option>
+            <option value="computadora">Maquina</option>
+            <option value="impresora">Herramienta</option>
+          </select>
         </div>
 
         <div className="form-group">
-          <label>Modelo</label>
-          <input value={modelo} onChange={(e) => setModelo(e.target.value)} />
+          <input
+            value={modelo}
+            placeholder="Modelo del equipo"
+            onChange={(e) => setModelo(e.target.value)}
+          />
         </div>
 
         <div className="buttons">
-          <button type="submit">Registrar Equipo</button>
-          <button type="button" className="btn-cancelar" onClick={() => navigate("/dashboard")}>
+          <button type="submit" className="btn-primary">
+            Registrar Equipo
+          </button>
+          <button
+            type="button"
+            className="btn-cancel"
+            onClick={() => navigate("/dashboard")}
+          >
             Cancelar
           </button>
         </div>

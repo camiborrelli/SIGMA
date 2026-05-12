@@ -9,6 +9,7 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+  margin-top: 110px;
 }
 
 .registrar-form h2 {
@@ -19,7 +20,8 @@
   font-weight: 700;
 }
 
-.registrar-form label {
+.registrar-form label,
+.registrar-form input::placeholder {
   font-size: 14px;
   color: #333;
   margin-bottom: 4px;
