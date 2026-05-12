@@ -1,0 +1,153 @@
+/* =========================
+   TITULO
+========================= */
+.titulo {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* =========================
+   CONTENEDOR PRINCIPAL
+========================= */
+.equipos-container {
+  width: 100%;
+}
+
+/* =========================
+   TABLA
+========================= */
+.sigma-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  table-layout: fixed;
+  background: white;
+}
+
+.sigma-th {
+  background-color: #f4f6f8;
+  text-align: left;
+  padding: 12px;
+  font-size: 14px;
+  color: #333;
+  border-bottom: 1px solid #e6e9ee;
+  vertical-align: middle;
+}
+
+.sigma-tr {
+  background-color: #ffffff;
+}
+
+.sigma-tr.alt {
+  background-color: #f9fafb; /* gris alternado más suave */
+}
+
+.sigma-td {
+  padding: 12px;
+  font-size: 14px;
+  color: #333;
+  word-wrap: break-word;
+  vertical-align: middle; /* alinea todo verticalmente */
+}
+
+/* =========================
+   BOTON VER UNIDADES
+========================= */
+.btn-ver {
+  min-width: 100px;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 8px;
+  background-color: #c62828;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-ver:hover {
+  background-color: #a61c1c;
+  transform: translateY(-1px);
+}
+
+/* =========================
+   ESTADOS
+========================= */
+.estado-disponible {
+  background-color: rgba(22, 163, 74, 0.15);
+  color: #16a34a;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.estado-asignado {
+  background-color: rgba(220, 38, 38, 0.15);
+  color: #dc2626;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.estado-mantenimiento {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.estado-baja {
+  background-color: rgba(107, 114, 128, 0.15);
+  color: #6b7280;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+/* =========================
+   PAGINACION
+========================= */
+.paginacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.paginacion button {
+  background: #c62828;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.paginacion button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* =========================
+   ERROR
+========================= */
+.error {
+  color: red;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 1024px) {
+  .sigma-table {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .sigma-table {
+    display: none;
+  }
+}

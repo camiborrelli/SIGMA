@@ -322,3 +322,11 @@
     padding: 12px 20px;
   }
 }
+
+.summary-card--equipos .summary-card__icon {
+  background: rgba(99, 102, 241, 0.12);
+}
+
+.summary-card--equipos .summary-card__number {
+  color: #4f46e5;
+}

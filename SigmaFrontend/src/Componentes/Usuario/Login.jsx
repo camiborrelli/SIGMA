@@ -22,16 +22,11 @@ const Login = () => {
     navigate("/register");
   };
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/dashboard");
-    }
-  }, [isAuthenticated, navigate]);
+  const token = localStorage.getItem("token");
+  const user = localStorage.getItem("usuario");
+
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const user = localStorage.getItem("usuario");
-
     if (token && user) {
       try {
         const payload = JSON.parse(atob(token.split(".")[1]));
@@ -84,29 +79,6 @@ const Login = () => {
     setIsAuthenticated(false);
     setUsuario(null);
   };
-
-  // DASHBOARD
-  if (isAuthenticated) {
-    return (
-      <div className="container">
-        <div className="card">
-          <h2>Bienvenido {usuario?.nombre}</h2>
-          <p className="subtitle">Sistema SIGMA</p>
-
-          <p>
-            <strong>Email:</strong> {usuario?.email}
-          </p>
-          <p>
-            <strong>Rol:</strong> {usuario?.rol}
-          </p>
-
-          <button className="btn" onClick={logout}>
-            CERRAR SESIÓN
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="container">

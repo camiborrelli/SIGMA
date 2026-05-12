@@ -1,0 +1,203 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 2000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 800px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.modal-header h2 {
+  margin: 0;
+}
+
+.modal-header button {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.sigma-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.sigma-th {
+  background-color: #f4f6f8;
+  text-align: left;
+  padding: 12px;
+  font-size: 14px;
+  color: #333;
+  border-bottom: 1px solid #e6e9ee;
+  vertical-align: middle;
+}
+
+.sigma-tr {
+  background-color: #ffffff;
+}
+
+.sigma-tr.alt {
+  background-color: #f9fafb;
+}
+
+.sigma-td {
+  padding: 12px;
+  font-size: 14px;
+  color: #333;
+  word-wrap: break-word;
+  vertical-align: middle;
+}
+
+.sigma-td:not(:last-child) {
+  text-align: left;
+}
+
+.actions button {
+  background: none;      
+  border: none;        
+  cursor: pointer;
+  font-size: 18px;       
+  margin: 0 4px;
+  padding: 4px;
+  color: inherit;
+  transition: transform 0.2s ease;
+}
+
+.actions button:hover {
+  transform: scale(1.1);
+}
+
+.estado-disponible {
+  background-color: rgba(22, 163, 74, 0.15);
+  color: #16a34a;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.estado-asignado {
+  background-color: rgba(220, 38, 38, 0.15);
+  color: #dc2626;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.estado-mantenimiento {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.estado-baja {
+  background-color: rgba(107, 114, 128, 0.15);
+  color: #6b7280;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.paginacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.paginacion button {
+  background: #c62828;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.paginacion button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-cancel {
+  align-self: center;   
+  padding: 8px 16px;
+  background-color: #c62828;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 12px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-cancel:hover {
+  background-color: #a61c1c;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .sigma-table {
+    font-size: 12px;
+  }
+
+  .actions button {
+    font-size: 16px;
+    margin: 0 2px;
+    padding: 2px;
+  }
+
+  .btn-cancel {
+    width: 50%;
+  }
+}
+
+.modal-card select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff; 
+  color: #111827;
+  font-size: 14px;
+  outline: none;
+  appearance: none;
+}
+
+.modal-card select:focus {
+  border-color: #b91c1c;
+  box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.2);
+}

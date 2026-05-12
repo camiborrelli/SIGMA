@@ -8,6 +8,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1200;
 }
 
 .modal-card {
@@ -35,7 +36,7 @@
   right: 0;
   display: flex;
   gap: 12px;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding: 12px 8px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0), #fff 60%);
@@ -47,53 +48,63 @@
   margin: 8px 0 6px 0;
   color: #0f172a;
 }
+
 .maquina-sub {
   color: #6b7280;
   font-size: 14px;
   line-height: 1.4;
 }
 
-.modal-overlay {
-  z-index: 1200;
-}
-
 p {
   color: #6b6b74;
   font-size: 14px;
-  margin: 10px;
+  margin: 10px 0;
 }
 
 .acciones {
   display: flex;
   gap: 12px;
   width: 100%;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.btn-cancel,
+.btn-asign {
+  flex: 1;                
+  display: flex;           
+  justify-content: center;  
+  align-items: center;    
+  padding: 14px 18px;      
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  text-align: center;
+  transition: background 0.2s ease, transform 0.2s ease;
+  line-height: 1.2;
 }
 
 .btn-cancel {
   background-color: #f2f4f7;
   color: #111827;
   border: none;
-  padding: 14px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  flex: 1 1 40%;
+}
+
+.btn-cancel:hover {
+  background-color: #e6e9ee;
 }
 
 .btn-asign {
   background-color: #b91c1c;
   color: white;
   border: none;
-  padding: 14px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  flex: 1 1 60%;
-  font-weight: 700;
+  margin: 12px 0 0;
+  padding: 8px 16px;
 }
+
 .btn-asign:hover {
   background-color: #991515;
-}
-.btn-cancel:hover {
-  background-color: #e6e9ee;
 }
 
 @media (max-width: 768px) {
