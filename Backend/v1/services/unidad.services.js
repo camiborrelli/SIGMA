@@ -59,7 +59,7 @@ export const getGarantiaUnidad = async (id) => {
     enGarantia: ahora <= fechaFin,
     diasRestantes: Math.max(
       0,
-      Math.ceil((fechaFin - ahora) / (1000 * 60 * 60 * 24))
+      Math.ceil((fechaFin - ahora) / (1000 * 60 * 60 * 24)),
     ),
     estado: unidad.estado,
     cantReparaciones: unidad.cantReparaciones || 0,
@@ -73,21 +73,31 @@ export const getStatsUnidades = async () => {
         $group: {
           _id: null,
           total: { $sum: 1 },
-          asignadas: { $sum: { $cond: [{ $eq: ["$estado", "Asignada"] }, 1, 0] } },
-          mantenimiento: { $sum: { $cond: [{ $eq: ["$estado", "En mantenimiento"] }, 1, 0] } },
-          bajas: { $sum: { $cond: [{ $eq: ["$estado", "Dada de Baja"] }, 1, 0] } },
-          disponibles: { $sum: { $cond: [{ $eq: ["$estado", "Disponible"] }, 1, 0] } },
+          asignadas: {
+            $sum: { $cond: [{ $eq: ["$estado", "Asignada"] }, 1, 0] },
+          },
+          mantenimiento: {
+            $sum: { $cond: [{ $eq: ["$estado", "En mantenimiento"] }, 1, 0] },
+          },
+          bajas: {
+            $sum: { $cond: [{ $eq: ["$estado", "Dada de Baja"] }, 1, 0] },
+          },
+          disponibles: {
+            $sum: { $cond: [{ $eq: ["$estado", "Disponible"] }, 1, 0] },
+          },
         },
       },
     ]);
 
-    return result[0] || {
-      total: 0,
-      asignadas: 0,
-      mantenimiento: 0,
-      bajas: 0,
-      disponibles: 0,
-    };
+    return (
+      result[0] || {
+        total: 0,
+        asignadas: 0,
+        mantenimiento: 0,
+        bajas: 0,
+        disponibles: 0,
+      }
+    );
   } catch (err) {
     throw err;
   }
@@ -112,4 +122,25 @@ export const asignarUnidad = async (unidadId, ubicacionId) => {
 
   await unidad.save();
   return unidad;
+};
+
+export const agregarUnidadesAEquipo = async ({ equipoId, cantidad }) => {
+  const equipo = await Equipo.findById(equipoId);
+  if (!equipo) throw new Error("Equipo no encontrado");
+
+  // contar unidades existentes del equipo
+  const existentes = await Unidad.countDocuments({ equipo: equipoId });
+  const unidades = [];
+  const pref = equipo.nombre.substring(0, 6).toUpperCase();
+
+  for (let i = 1; i <= cantidad; i++) {
+    const n = existentes + i;
+    unidades.push({
+      equipo: equipoId,
+      identificador: `${pref}-${n}`,
+    });
+  }
+
+  const creadas = await Unidad.insertMany(unidades);
+  return creadas;
 };

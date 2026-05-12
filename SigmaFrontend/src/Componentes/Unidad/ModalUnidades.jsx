@@ -23,6 +23,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
 
   const fetchUnidades = async () => {
     const token = localStorage.getItem("token");
+    console.log("ModalUnidades: fetching unidades for equipo:", equipo);
     if (!equipo?._id) return;
 
     try {
@@ -32,7 +33,13 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           headers: {
             Authorization: token ? `Bearer ${token}` : "",
           },
-        }
+        },
+      );
+      console.log(
+        "GET /unidades/equipo/ URL:",
+        `http://localhost:5001/unidades/equipo/${equipo._id}`,
+        "status:",
+        res.status,
       );
 
       if (!res.ok) throw new Error("Error al obtener unidades");
@@ -45,12 +52,12 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     }
   };
 
-const handleUpdated = () => {
-  fetchUnidades();      
-  if (onUpdated) {      
-    onUpdated();        
-  }
-};
+  const handleUpdated = () => {
+    fetchUnidades();
+    if (onUpdated) {
+      onUpdated();
+    }
+  };
 
   useEffect(() => {
     if (equipo?._id) fetchUnidades();
@@ -124,7 +131,9 @@ const handleUpdated = () => {
           </button>
 
           <button
-            disabled={row.estado === "En mantenimiento" || row.estado === "Dada de Baja"}
+            disabled={
+              row.estado === "En mantenimiento" || row.estado === "Dada de Baja"
+            }
             onClick={() => {
               cerrarTodos();
               setUnidadMantenimiento(row);
@@ -156,13 +165,27 @@ const handleUpdated = () => {
 
         {totalPaginas > 1 && (
           <div className="paginacion">
-            <button disabled={paginaActual === 1} onClick={() => setPaginaActual(paginaActual - 1)}>⬅</button>
-            <span>Página {paginaActual} de {totalPaginas}</span>
-            <button disabled={paginaActual === totalPaginas} onClick={() => setPaginaActual(paginaActual + 1)}>➡</button>
+            <button
+              disabled={paginaActual === 1}
+              onClick={() => setPaginaActual(paginaActual - 1)}
+            >
+              ⬅
+            </button>
+            <span>
+              Página {paginaActual} de {totalPaginas}
+            </span>
+            <button
+              disabled={paginaActual === totalPaginas}
+              onClick={() => setPaginaActual(paginaActual + 1)}
+            >
+              ➡
+            </button>
           </div>
         )}
 
-        <button className="btn-cancel" onClick={onClose}>Cerrar</button>
+        <button className="btn-cancel" onClick={onClose}>
+          Cerrar
+        </button>
       </div>
 
       {unidadMantenimiento && (

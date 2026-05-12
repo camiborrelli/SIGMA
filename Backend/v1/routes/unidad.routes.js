@@ -17,7 +17,11 @@ const router = express.Router();
 router.get("/equipo/:equipoId", verificarToken, getUnidadesPorEquipoController);
 
 router.post("/baja/:id", verificarToken, bajaUnidadController);
-router.post("/mantenimiento/:id", verificarToken, enviarAMantenimientoController);
+router.post(
+  "/mantenimiento/:id",
+  verificarToken,
+  enviarAMantenimientoController,
+);
 router.post("/agregar/:equipoId", verificarToken, agregarUnidadController);
 
 // ✅ Ruta de asignar antes de las rutas genéricas
@@ -26,6 +30,10 @@ router.post("/asignar/:id", verificarToken, asignarUnidadController);
 // Otras rutas
 router.get("/garantia/:id", verificarToken, getGarantiaUnidadController);
 router.get("/stats", verificarToken, getStatsUnidadesController);
-router.get("/:id/reparaciones", verificarToken, getReparacionesUnidadController);
+router.get(
+  "/:id/reparaciones",
+  verificarToken,
+  getReparacionesUnidadController,
+);
 
 export default router;

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
+import { Toaster } from "react-hot-toast";
 
 // Auth
 import Login from "./Componentes/Usuario/Login";
@@ -31,6 +32,7 @@ function App() {
 
   return (
     <div className="bottom-nav">
+      <Toaster position="top-center" />
       <Routes>
         {/* Auth */}
         <Route path="/" element={<Login />} />

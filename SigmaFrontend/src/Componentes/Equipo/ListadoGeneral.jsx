@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Tabla from "../Tabla";
 import ModalUnidades from "../Unidad/ModalUnidades";
 import Buscador from "../Usuario/Buscador";
 import "./ListadoGeneral.css";
 
-const ListadoGeneral = ({ onUpdated }) => {
+const ListadoGeneral = ({ onUpdated, refreshKey }) => {
   const [equipos, setEquipos] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [loading, setLoading] = useState(true);
@@ -43,6 +44,11 @@ const ListadoGeneral = ({ onUpdated }) => {
     fetchEquipos();
   }, []);
 
+  useEffect(() => {
+    if (typeof refreshKey !== "undefined") fetchEquipos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshKey]);
+
   const equiposFiltrados = equipos.filter((e) => {
     const texto = `${e.nombre} ${e.modelo} ${e.tipo}`.toLowerCase();
     return texto.includes(busqueda.toLowerCase());
@@ -53,6 +59,12 @@ const ListadoGeneral = ({ onUpdated }) => {
   const indiceFin = indiceInicio + porPagina;
   const equiposPaginados = equiposFiltrados.slice(indiceInicio, indiceFin);
 
+  const navigate = useNavigate();
+
+  const registrarUnidad = (equipoId) => {
+    navigate("/registrarUnidad", { state: { equipoId } });
+  };
+
   const columns = [
     { header: "Nombre", accessor: "nombre" },
     { header: "Modelo", accessor: "modelo" },
@@ -60,14 +72,22 @@ const ListadoGeneral = ({ onUpdated }) => {
     {
       header: "Acciones",
       accessor: (row) => (
-        <button
-          className="btn-ver"
-          onClick={() => setEquipoSeleccionado(row)}
-        >
-          Ver unidades
-        </button>
+        <div className="acciones-fila">
+          <button
+            className="btn-ver"
+            onClick={() => setEquipoSeleccionado(row)}
+          >
+            Ver unidades
+          </button>
+          <button
+            className="btn-register-unidad"
+            onClick={() => registrarUnidad(row._id)}
+          >
+            Registrar unidad
+          </button>
+        </div>
       ),
-    }
+    },
   ];
 
   return (
@@ -106,12 +126,12 @@ const ListadoGeneral = ({ onUpdated }) => {
       )}
 
       {equipoSeleccionado && (
-  <ModalUnidades
-    equipo={equipoSeleccionado}
-    onClose={() => setEquipoSeleccionado(null)}
-    onUpdated={onUpdated} // ✅ Esto funcionará si ListadoGeneral recibe `onUpdated` como prop
-  />
-)}
+        <ModalUnidades
+          equipo={equipoSeleccionado}
+          onClose={() => setEquipoSeleccionado(null)}
+          onUpdated={onUpdated} // ✅ Esto funcionará si ListadoGeneral recibe `onUpdated` como prop
+        />
+      )}
     </div>
   );
 };

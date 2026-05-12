@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./RegistroObra.css";
+import toast from "react-hot-toast";
 
 const RegistroObra = () => {
   const navigate = useNavigate();
@@ -35,6 +36,11 @@ const RegistroObra = () => {
         }),
       });
       const result = await res.json();
+
+      if (!nombre || !ubicacion || !fechaInicio || !descripcion) {
+        toast.error("Por favor completa todos los campos obligatorios");
+        return;
+      }
       if (!res.ok) {
         setErrors(result.errors || {});
         setMensaje(
@@ -42,6 +48,7 @@ const RegistroObra = () => {
         );
         return;
       } else {
+        toast.success("Obra registrada correctamente");
         navigate("/dashboard");
       }
     } catch (error) {

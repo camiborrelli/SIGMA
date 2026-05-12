@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../Equipo/registrar-form.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const RegistrarUnidad = () => {
   const [equipoId, setEquipoId] = useState("");
@@ -11,8 +11,13 @@ const RegistrarUnidad = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
+    // if navigation provided an equipoId in state, preselect it
+    if (location && location.state && location.state.equipoId) {
+      setEquipoId(location.state.equipoId);
+    }
     const cargarEquipos = async () => {
       const token = localStorage.getItem("token");
 
@@ -64,7 +69,7 @@ const RegistrarUnidad = () => {
             identificador,
             fechaCompra,
           }),
-        }
+        },
       );
 
       const data = await res.json().catch(() => ({}));
@@ -90,7 +95,6 @@ const RegistrarUnidad = () => {
       <h2>Registrar Unidad</h2>
 
       <form onSubmit={handleSubmit}>
-
         <div className="form-group">
           <label>Equipo</label>
           <select
@@ -131,7 +135,11 @@ const RegistrarUnidad = () => {
             {loading ? "Creando..." : "Crear Unidad"}
           </button>
 
-          <button type="button" className="btn-cancel" onClick={() => navigate("/dashboard")}>
+          <button
+            type="button"
+            className="btn-cancel"
+            onClick={() => navigate("/dashboard")}
+          >
             Cancelar
           </button>
         </div>
