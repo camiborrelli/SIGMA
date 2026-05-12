@@ -45,7 +45,30 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
       if (!res.ok) throw new Error("Error al obtener unidades");
 
       const data = await res.json();
-      setUnidades(Array.isArray(data) ? data : []);
+      // ordenar unidades por el sufijo numérico del identificador si existe
+      const unidadesArray = Array.isArray(data) ? data : [];
+      const parseKey = (ident) => {
+        if (!ident) return { num: null, str: "" };
+        const s = String(ident).trim();
+        const m = s.match(/(\d+)$/);
+        return m ? { num: Number(m[1]), str: s } : { num: null, str: s };
+      };
+
+      unidadesArray.sort((a, b) => {
+        const ka = parseKey(a.identificador);
+        const kb = parseKey(b.identificador);
+
+        if (ka.num !== null && kb.num !== null) {
+          return ka.num - kb.num;
+        }
+
+        if (ka.num !== null) return -1;
+        if (kb.num !== null) return 1;
+
+        return ka.str.localeCompare(kb.str);
+      });
+
+      setUnidades(unidadesArray);
     } catch (err) {
       console.error(err);
       setUnidades([]);

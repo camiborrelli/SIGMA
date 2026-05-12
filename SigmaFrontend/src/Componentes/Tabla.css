@@ -1,118 +1,316 @@
-/* Table base */
+/* =========================
+   TABLE WRAPPER
+========================= */
+
+.tabla-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+/* Scrollbar moderna */
+.tabla-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.tabla-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.tabla-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* =========================
+   TABLE BASE
+========================= */
+
 .sigma-table {
   width: 100%;
-  border-collapse: collapse;
-  font-family: Inter, Arial, sans-serif;
-  min-width: 100%;
-  background: white;
+  min-width: 850px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  overflow: hidden;
+  font-family: Inter, sans-serif;
 }
+
+/* =========================
+   HEADERS
+========================= */
 
 .sigma-th {
+  background: #f8fafc;
+  color: #334155;
   text-align: left;
-  padding: 14px 16px;
-  background: #f5f7fa;
-  color: #333;
-  font-weight: 600;
+  padding: 16px;
   font-size: 14px;
-  border-bottom: 1px solid #e6e9ee;
-
+  font-weight: 700;
+  border-bottom: 1px solid #e2e8f0;
   white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
-.sigma-td {
-  padding: 16px;
-  border-bottom: 1px solid #f0f2f5;
-  vertical-align: middle;
-  color: #4b4b4b;
-  font-size: 14px;
+/* =========================
+   ROWS
+========================= */
 
-  white-space: nowrap;
+.sigma-tr {
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.sigma-tr:hover {
+  background: #f8fafc;
 }
 
 .sigma-tr.alt {
   background: #ffffff;
 }
 
-.estado-badge {
-  display: inline-block;
-  padding: 6px 10px;
-  border-radius: 12px;
-  color: white;
-  font-weight: 600;
-  font-size: 12px;
+/* =========================
+   CELLS
+========================= */
+
+.sigma-td {
+  padding: 16px;
+  font-size: 14px;
+  color: #475569;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+  white-space: nowrap;
 }
+
+/* =========================
+   BADGES
+========================= */
+
+.estado-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  min-width: 120px;
+}
+
 .estado-disponible {
   background: #16a34a;
 }
+
 .estado-asignado {
   background: #dc2626;
 }
+
 .estado-mantenimiento {
   background: #f59e0b;
 }
 
 .estado-baja {
-  background: #6b7280; /* gris oscuro */
+  background: #64748b;
 }
 
+/* =========================
+   OBRA
+========================= */
+
 .obra-text {
-  color: #6b6b74;
+  color: #64748b;
   font-size: 14px;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+/* =========================
+   ACTIONS
+========================= */
 
 .actions {
   display: flex;
-  gap: 8px;
   align-items: center;
+  gap: 8px;
 }
+
 .action-btn {
-  background: transparent;
   border: none;
+  background: #f8fafc;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
   cursor: pointer;
-  padding: 6px;
-  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .action-btn:hover {
-  background: #f2f4f7;
+  transform: translateY(-2px);
+  background: #eef2ff;
 }
 
 .icon-edit {
   color: #2563eb;
 }
+
 .icon-key {
   color: #f59e0b;
 }
+
 .icon-delete {
   color: #ef4444;
 }
 
-/* small icon visual */
-.icon {
-  font-size: 16px;
+/* =========================
+   EMPTY STATE
+========================= */
+
+.empty-table {
+  padding: 40px;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 1024px) {
+  .sigma-table {
+    min-width: 750px;
+  }
+
+  .sigma-th,
+  .sigma-td {
+    padding: 14px;
+    font-size: 13px;
+  }
+
+  .estado-badge {
+    min-width: 100px;
+    font-size: 11px;
+  }
 }
 
-th {
-  background-color: #f2f2f2;
-  color: #333;
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px) {
+  .tabla-wrapper {
+    border-radius: 14px;
+  }
+
+  .sigma-table {
+    min-width: 680px;
+  }
+
+  .sigma-th,
+  .sigma-td {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .actions {
+    gap: 6px;
+  }
+
+  .action-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+
+  .estado-badge {
+    min-width: 90px;
+    padding: 5px 10px;
+  }
+
+  .obra-text {
+    max-width: 150px;
+  }
 }
 
-.maquinaria-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 20px;
+/* =========================
+   SMALL MOBILE
+========================= */
 
-  overflow-x: auto;
+@media (max-width: 480px) {
+  .sigma-table {
+    min-width: 620px;
+  }
 
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  .sigma-th,
+  .sigma-td {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .action-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .estado-badge {
+    font-size: 10px;
+  }
 }
 
-.maquinaria-container::-webkit-scrollbar {
-  display: none;
+/* Extra small devices: stack rows into cards for maximum readability */
+@media (max-width: 420px) {
+  .sigma-table thead {
+    display: none;
+  }
+
+  .sigma-table,
+  .sigma-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .sigma-table tr {
+    display: block;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.06);
+  }
+
+  .sigma-td {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-bottom: 1px solid #f1f5f9;
+    white-space: normal;
+    font-size: 13px;
+  }
+
+  .sigma-td:before {
+    content: attr(data-label) ":";
+    font-weight: 600;
+    color: #64748b;
+    margin-right: 8px;
+    flex: 0 0 auto;
+  }
+
+  .sigma-td:last-child {
+    border-bottom: none;
+  }
+
+  .tabla-wrapper {
+    overflow-x: visible;
+    padding: 6px 0;
+  }
 }

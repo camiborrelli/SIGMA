@@ -5,6 +5,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 const RegistrarUnidad = () => {
   const [equipoId, setEquipoId] = useState("");
   const [identificador, setIdentificador] = useState("");
+  const [placeholderIdentificador, setPlaceholderIdentificador] = useState(
+    "Ej: EXC-001"
+  );
+  const [unidadesCount, setUnidadesCount] = useState(0);
   const [fechaCompra, setFechaCompra] = useState("");
   const [equipos, setEquipos] = useState([]);
   const [mensaje, setMensaje] = useState("");
@@ -42,6 +46,41 @@ const RegistrarUnidad = () => {
 
     cargarEquipos();
   }, []);
+
+  // cuando cambia el equipo seleccionado, obtener cantidad de unidades para sugerir identificador
+  useEffect(() => {
+    if (!equipoId) {
+      setPlaceholderIdentificador("Ej: EXC-001");
+      setUnidadesCount(0);
+      return;
+    }
+
+    const fetchUnidades = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await fetch(
+          `http://localhost:5001/unidades/equipo/${equipoId}`,
+          { headers: { Authorization: token ? `Bearer ${token}` : "" } }
+        );
+        const data = await res.json().catch(() => []);
+        const count = Array.isArray(data) ? data.length : 0;
+        setUnidadesCount(count);
+
+        // construir prefijo desde el nombre del equipo si está disponible
+        const equipoObj = equipos.find((eq) => String(eq._id) === String(equipoId));
+        const nombre = equipoObj && equipoObj.nombre ? equipoObj.nombre : "UN";
+        const pref = nombre.replace(/\s+/g, "").substring(0, 3).toUpperCase();
+        const nextNum = String(count + 1).padStart(3, "0");
+        setPlaceholderIdentificador(`${pref}-${nextNum}`);
+      } catch (err) {
+        setUnidadesCount(0);
+        setPlaceholderIdentificador("Ej: EXC-001");
+      }
+    };
+
+    fetchUnidades();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [equipoId, equipos]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -117,7 +156,7 @@ const RegistrarUnidad = () => {
             type="text"
             value={identificador}
             onChange={(e) => setIdentificador(e.target.value)}
-            placeholder="Ej: EXC-001"
+            placeholder={placeholderIdentificador}
           />
         </div>
 
