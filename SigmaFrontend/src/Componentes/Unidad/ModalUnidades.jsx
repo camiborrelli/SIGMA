@@ -11,6 +11,8 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const [unidadMantenimiento, setUnidadMantenimiento] = useState(null);
   const [unidadBaja, setUnidadBaja] = useState(null);
   const [unidadAsignar, setUnidadAsignar] = useState(null);
+  const [estadoFiltro, setEstadoFiltro] = useState("");
+  const [obraFiltro, setObraFiltro] = useState("");
 
   const [paginaActual, setPaginaActual] = useState(1);
   const [itemsPorPagina, setItemsPorPagina] = useState(5);
@@ -104,10 +106,44 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     return () => window.removeEventListener("resize", actualizarCantidad);
   }, []);
 
+  // preparar opciones de obras (normalizar objetos y strings)
+  const obrasMap = new Map();
+  unidades.forEach((u) => {
+    const o = u.ubicacion;
+    if (!o) return;
+    if (typeof o === "object") {
+      obrasMap.set(String(o._id), o.nombre || String(o._id));
+    } else {
+      obrasMap.set(String(o), String(o));
+    }
+  });
+
+  // filtrar unidades por estado y obra seleccionadas
+  const unidadesFiltradas = unidades.filter((u) => {
+    let okEstado = true;
+    if (estadoFiltro) {
+      okEstado =
+        String(u.estado || "").toLowerCase() ===
+        String(estadoFiltro || "").toLowerCase();
+    }
+
+    let okObra = true;
+    if (obraFiltro) {
+      if (u.ubicacion && typeof u.ubicacion === "object") {
+        okObra = String(u.ubicacion._id) === String(obraFiltro);
+      } else {
+        okObra = String(u.ubicacion) === String(obraFiltro);
+      }
+    }
+
+    return okEstado && okObra;
+  });
+
   const indexUltimo = paginaActual * itemsPorPagina;
   const indexPrimero = indexUltimo - itemsPorPagina;
-  const unidadesPaginadas = unidades.slice(indexPrimero, indexUltimo);
-  const totalPaginas = Math.ceil(unidades.length / itemsPorPagina);
+  const unidadesPaginadas = unidadesFiltradas.slice(indexPrimero, indexUltimo);
+  const totalPaginas =
+    Math.ceil(unidadesFiltradas.length / itemsPorPagina) || 1;
 
   const columns = [
     { header: "ID", accessor: "identificador" },
@@ -115,16 +151,20 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     {
       header: "Estado",
       accessor: (row) => {
+        const est = String(row.estado || "").toLowerCase();
         const cls =
-          row.estado === "Disponible"
+          est === "disponible"
             ? "estado-disponible"
-            : row.estado === "Asignada"
+            : est === "asignada"
             ? "estado-asignado"
-            : row.estado === "En mantenimiento"
+            : est === "en mantenimiento" || est === "mantenimiento"
             ? "estado-mantenimiento"
             : "estado-baja";
 
-        return <span className={`estado-badge ${cls}`}>{row.estado}</span>;
+        // mostrar el valor original si existe, o capitalizar el normalizado
+        const label =
+          row.estado || (est ? est.charAt(0).toUpperCase() + est.slice(1) : "");
+        return <span className={`estado-badge ${cls}`}>{label}</span>;
       },
     },
 
@@ -143,37 +183,46 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
       header: "Acciones",
       accessor: (row) => (
         <div className="actions">
-          <button
-            disabled={row.estado === "Dada de Baja"}
-            onClick={() => {
-              cerrarTodos();
-              setUnidadAsignar(row);
-            }}
-          >
-            📍
-          </button>
+          {(() => {
+            const est = String(row.estado || "").toLowerCase();
+            const isBaja = est === "dada de baja" || est === "baja";
+            const isMantenimiento =
+              est === "en mantenimiento" || est === "mantenimiento";
 
-          <button
-            disabled={
-              row.estado === "En mantenimiento" || row.estado === "Dada de Baja"
-            }
-            onClick={() => {
-              cerrarTodos();
-              setUnidadMantenimiento(row);
-            }}
-          >
-            🛠
-          </button>
+            return (
+              <>
+                <button
+                  disabled={isBaja}
+                  onClick={() => {
+                    cerrarTodos();
+                    setUnidadAsignar(row);
+                  }}
+                >
+                  📍
+                </button>
 
-          <button
-            disabled={row.estado === "Dada de Baja"}
-            onClick={() => {
-              cerrarTodos();
-              setUnidadBaja(row);
-            }}
-          >
-            🚫
-          </button>
+                <button
+                  disabled={isMantenimiento || isBaja}
+                  onClick={() => {
+                    cerrarTodos();
+                    setUnidadMantenimiento(row);
+                  }}
+                >
+                  🛠
+                </button>
+
+                <button
+                  disabled={isBaja}
+                  onClick={() => {
+                    cerrarTodos();
+                    setUnidadBaja(row);
+                  }}
+                >
+                  🚫
+                </button>
+              </>
+            );
+          })()}
         </div>
       ),
     },
@@ -183,6 +232,33 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     <div className="modal-overlay">
       <div className="modal-content">
         <h2>Unidades de {equipo.nombre}</h2>
+        <div className="filtros">
+          <select
+            name=""
+            id=""
+            value={estadoFiltro}
+            onChange={(e) => setEstadoFiltro(e.target.value)}
+          >
+            <option value="">Todos los estados</option>
+            <option value="Disponible">Disponible</option>
+            <option value="Asignada">Asignada</option>
+            <option value="En mantenimiento">En mantenimiento</option>
+            <option value="Dada de Baja">Dada de Baja</option>
+          </select>
+          <select
+            name=""
+            id=""
+            value={obraFiltro}
+            onChange={(e) => setObraFiltro(e.target.value)}
+          >
+            <option value="">Todas las obras</option>
+            {[...obrasMap.entries()].map(([id, name]) => (
+              <option key={id} value={id}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <Tabla columns={columns} data={unidadesPaginadas} />
 

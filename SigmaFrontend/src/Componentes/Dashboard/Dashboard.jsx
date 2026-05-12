@@ -43,6 +43,9 @@ const Dashboard = () => {
   const [statsEquipos, setStatsEquipos] = useState({
     total: 0,
   });
+  const [tipoFilter, setTipoFilter] = useState("");
+  const [estadoFilter, setEstadoFilter] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -78,59 +81,60 @@ const Dashboard = () => {
   }, []);
 
   const fetchStatsUnidades = async () => {
-  const token = localStorage.getItem("token");
-  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-  try {
-    const res = await fetch("http://localhost:5001/unidades/stats", { headers });
-    if (!res.ok) return;
-    const data = await res.json();
-
-    setStats({
-      total: data.total || 0,
-      disponibles: data.disponibles || 0,
-      asignadas: data.asignadas || 0,
-      mantenimiento: data.mantenimiento || 0,
-      bajas: data.bajas || 0,
-    });
-  } catch (err) {
-    console.error("Error al obtener stats de unidades:", err);
-  }
-};
-
-// Llamada inicial
-useEffect(() => {
-  fetchStatsUnidades();
-}, []);
-
-  useEffect(() => {
-  const token = localStorage.getItem("token");
-  const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
-  const fetchStatsEquipos = async () => {
     try {
-      const res = await fetch("http://localhost:5001/equipos/stats", {
+      const res = await fetch("http://localhost:5001/unidades/stats", {
         headers,
       });
-
+      if (!res.ok) return;
       const data = await res.json();
 
-      if (res.ok) {
-        setStatsEquipos({
-          total: data.total || 0,
-        });
-      }
+      setStats({
+        total: data.total || 0,
+        disponibles: data.disponibles || 0,
+        asignadas: data.asignadas || 0,
+        mantenimiento: data.mantenimiento || 0,
+        bajas: data.bajas || 0,
+      });
     } catch (err) {
-      console.error("Error equipos stats:", err);
+      console.error("Error al obtener stats de unidades:", err);
     }
   };
 
-  fetchStatsEquipos();
+  // Llamada inicial
+  useEffect(() => {
+    fetchStatsUnidades();
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    const fetchStatsEquipos = async () => {
+      try {
+        const res = await fetch("http://localhost:5001/equipos/stats", {
+          headers,
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          setStatsEquipos({
+            total: data.total || 0,
+          });
+        }
+      } catch (err) {
+        console.error("Error equipos stats:", err);
+      }
+    };
+
+    fetchStatsEquipos();
   }, []);
 
   return (
     <div>
-
       <div className="topbar">
         <div className="topbar-left">
           <div className="logo-container">
@@ -152,17 +156,16 @@ useEffect(() => {
         <div className="container-inicio-dashboard">
           <div className="inicio-texto">
             <h1 className="titulo-principal">Gestion de equipos</h1>
-            <p>Administra maquinas y herramientas de la empresa Transamerican</p>
+            <p>
+              Administra maquinas y herramientas de la empresa Transamerican
+            </p>
           </div>
 
           {rol === "Admin" && (
             <div className="inicio-acciones">
               <button className="btn btn-acciones">Registro de acciones</button>
 
-              <button
-                className="btn btn-register"
-                onClick={registrarEquipo}
-              >
+              <button className="btn btn-register" onClick={registrarEquipo}>
                 + Nuevo Equipo
               </button>
 
@@ -174,14 +177,9 @@ useEffect(() => {
         </div>
 
         <div className="summary-grid">
-
           <div className="summary-card summary-card--equipos">
-            <p className="summary-card__number">
-              {statsEquipos.total}
-            </p>
-            <h4 className="summary-card__label">
-              Total Equipos
-            </h4>
+            <p className="summary-card__number">{statsEquipos.total}</p>
+            <h4 className="summary-card__label">Total Equipos</h4>
           </div>
 
           <div className="summary-card summary-card--total">
@@ -208,11 +206,54 @@ useEffect(() => {
             <p className="summary-card__number">{stats.bajas}</p>
             <h4 className="summary-card__label">Dados de baja</h4>
           </div>
-
         </div>
 
         <div className="dashboard-card">
-          <ListadoGeneral onUpdated={fetchStatsUnidades} /> 
+          <div
+            className="filters-top"
+            style={{
+              padding: "18px",
+              background: "#fff",
+              borderRadius: 10,
+              marginBottom: 12,
+              display: "flex",
+              gap: 12,
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <input
+              placeholder="Buscar..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                padding: "8px 12px",
+                borderRadius: 8,
+                border: "1px solid #e5e7eb",
+                width: 260,
+                maxWidth: "42%",
+                minWidth: 180,
+                flex: "0 0 auto",
+              }}
+            />
+
+            <select
+              value={tipoFilter}
+              onChange={(e) => setTipoFilter(e.target.value)}
+              style={{ padding: "8px 10px", borderRadius: 8 }}
+            >
+              <option value="">Todos los tipos</option>
+              <option value="Maquina">Maquinas</option>
+              <option value="Herramienta">Herramientas</option>
+            </select>
+          </div>
+
+          <ListadoGeneral
+            onUpdated={fetchStatsUnidades}
+            tipoFilter={tipoFilter}
+            estadoFilter={estadoFilter}
+            busquedaProp={searchQuery}
+          />
         </div>
 
         {rol === "Admin" && (

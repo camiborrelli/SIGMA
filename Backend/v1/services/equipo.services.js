@@ -13,10 +13,17 @@ export const crearEquipoConUnidades = async ({
   const unidades = [];
   const cantidadFinal = cantidad || 1;
 
+  const pref = nombre
+    ? String(nombre)
+        .split(/\s+/)[0]
+        .replace(/[^A-Za-z0-9]/g, "")
+        .toUpperCase()
+    : `EQ${String(equipo._id).slice(-4)}`;
+
   for (let i = 1; i <= cantidadFinal; i++) {
     unidades.push({
       equipo: equipo._id,
-      identificador: `${nombre.substring(0, 6).toUpperCase()}-${i}`,
+      identificador: `${pref}-${i}`,
     });
   }
 
@@ -25,7 +32,7 @@ export const crearEquipoConUnidades = async ({
   return {
     equipo,
     unidadesCreadas, // 👈 IMPORTANTE
-    cantidadGenerada: unidadesCreadas.length
+    cantidadGenerada: unidadesCreadas.length,
   };
 };
 
@@ -101,4 +108,40 @@ export const getStatsEquipos = async () => {
   return {
     total,
   };
+};
+
+export const editarEquipo = async (id, { nombre, modelo, tipo }) => {
+  const equipo = await Equipo.findById(id);
+  if (!equipo) throw new Error("Equipo no encontrado");
+  const nombreAntiguo = equipo.nombre;
+
+  equipo.nombre = nombre;
+  equipo.modelo = modelo;
+  equipo.tipo = tipo;
+
+  const equipoGuardado = await equipo.save();
+
+  try {
+    // Reindexar unidades en orden de creación usando la primera palabra sanificada en MAYÚSCULAS
+    const nuevoPref = equipoGuardado.nombre
+      ? String(equipoGuardado.nombre)
+          .split(/\s+/)[0]
+          .replace(/[^A-Za-z0-9]/g, "")
+          .toUpperCase()
+      : `EQ${String(equipoGuardado._id).slice(-4)}`;
+
+    const unidadesOrdenadas = await Unidad.find({ equipo: equipo._id }).sort({
+      _id: 1,
+    });
+    for (let i = 0; i < unidadesOrdenadas.length; i++) {
+      const unidad = unidadesOrdenadas[i];
+      unidad.identificador = `${nuevoPref}-${i + 1}`;
+      await unidad.save();
+    }
+  } catch (err) {
+    // si falla actualizar identificadores, loguear y seguir
+    console.error("Error actualizando identificadores de unidades:", err);
+  }
+
+  return equipoGuardado;
 };

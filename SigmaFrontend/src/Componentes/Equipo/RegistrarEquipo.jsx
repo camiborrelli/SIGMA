@@ -58,8 +58,10 @@ const RegistrarEquipo = () => {
       // show created unit identifiers when backend returns them
       if (data.unidadesCreadas && Array.isArray(data.unidadesCreadas)) {
         const ids = data.unidadesCreadas.map((u) => u.identificador).join(", ");
+        navigate("/dashboard");
         return toast.success(`Equipo registrado. Unidades: ${ids}`);
       } else {
+        navigate("/dashboard");
         return toast.success("Equipo registrado correctamente");
       }
 

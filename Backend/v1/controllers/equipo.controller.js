@@ -2,6 +2,7 @@ import {
   crearEquipoConUnidades,
   getEquiposConStock,
   getStatsEquipos,
+  editarEquipo,
 } from "../services/equipo.services.js";
 
 export const crearEquipoController = async (req, res) => {
@@ -39,5 +40,17 @@ export const getStatsEquiposController = async (req, res) => {
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: "Error al obtener stats de equipos" });
+  }
+};
+
+export const editarEquipoController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre, modelo, tipo } = req.body;
+    const equipo = await editarEquipo(id, { nombre, modelo, tipo });
+    res.status(200).json(equipo);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al editar equipo" });
   }
 };

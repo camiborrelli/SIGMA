@@ -5,9 +5,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 const RegistrarUnidad = () => {
   const [equipoId, setEquipoId] = useState("");
   const [identificador, setIdentificador] = useState("");
-  const [placeholderIdentificador, setPlaceholderIdentificador] = useState(
-    "Ej: EXC-001"
-  );
+  const [placeholderIdentificador, setPlaceholderIdentificador] =
+    useState("Ej: EXC-001");
   const [unidadesCount, setUnidadesCount] = useState(0);
   const [fechaCompra, setFechaCompra] = useState("");
   const [equipos, setEquipos] = useState([]);
@@ -60,18 +59,22 @@ const RegistrarUnidad = () => {
       try {
         const res = await fetch(
           `http://localhost:5001/unidades/equipo/${equipoId}`,
-          { headers: { Authorization: token ? `Bearer ${token}` : "" } }
+          { headers: { Authorization: token ? `Bearer ${token}` : "" } },
         );
         const data = await res.json().catch(() => []);
         const count = Array.isArray(data) ? data.length : 0;
         setUnidadesCount(count);
 
         // construir prefijo desde el nombre del equipo si está disponible
-        const equipoObj = equipos.find((eq) => String(eq._id) === String(equipoId));
-        const nombre = equipoObj && equipoObj.nombre ? equipoObj.nombre : "UN";
-        const pref = nombre.replace(/\s+/g, "").substring(0, 3).toUpperCase();
-        const nextNum = String(count + 1).padStart(3, "0");
-        setPlaceholderIdentificador(`${pref}-${nextNum}`);
+        const equipoObj = equipos.find(
+          (eq) => String(eq._id) === String(equipoId),
+        );
+        const nombre =
+          equipoObj && equipoObj.nombre
+            ? String(equipoObj.nombre).split(/\s+/)[0]
+            : "UN";
+        const nextNum = count + 1;
+        setPlaceholderIdentificador(`${nombre.toUpperCase()}-${nextNum}`);
       } catch (err) {
         setUnidadesCount(0);
         setPlaceholderIdentificador("Ej: EXC-001");
@@ -96,6 +99,12 @@ const RegistrarUnidad = () => {
     }
 
     try {
+      // si el usuario dejó el identificador vacío, usar el placeholder sugerido
+      const finalIdentificador =
+        identificador && String(identificador).trim()
+          ? identificador
+          : placeholderIdentificador;
+
       const res = await fetch(
         `http://localhost:5001/unidades/agregar/${equipoId}`,
         {
@@ -105,7 +114,7 @@ const RegistrarUnidad = () => {
             Authorization: token ? `Bearer ${token}` : "",
           },
           body: JSON.stringify({
-            identificador,
+            identificador: finalIdentificador,
             fechaCompra,
           }),
         },

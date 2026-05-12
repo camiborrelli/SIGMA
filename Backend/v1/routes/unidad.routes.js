@@ -8,6 +8,7 @@ import {
   getStatsUnidadesController,
   getReparacionesUnidadController,
   asignarUnidadController,
+  eliminarUnidadController,
 } from "../controllers/unidad.controller.js";
 import { verificarToken } from "../middlewares/auth.js";
 
@@ -26,6 +27,7 @@ router.post("/agregar/:equipoId", verificarToken, agregarUnidadController);
 
 // ✅ Ruta de asignar antes de las rutas genéricas
 router.post("/asignar/:id", verificarToken, asignarUnidadController);
+router.delete("/:id", verificarToken, eliminarUnidadController);
 
 // Otras rutas
 router.get("/garantia/:id", verificarToken, getGarantiaUnidadController);

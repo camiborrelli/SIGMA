@@ -8,9 +8,6 @@
   font-weight: 700;
 }
 
-/* =========================
-   CONTENEDOR PRINCIPAL
-========================= */
 .equipos-container {
   width: 100%;
   padding: 12px;
@@ -82,6 +79,20 @@
   align-items: center;
 }
 
+.filtros-listado {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-direction: row;
+}
+
+/* limit width of search input in filtros when shown locally */
+.filtros-listado input {
+  min-width: 180px;
+  max-width: 360px;
+  width: auto;
+}
+
 .btn-ver {
   min-width: 92px;
   padding: 8px 12px;
@@ -91,9 +102,7 @@
   color: #fff;
   border: none;
   cursor: pointer;
-  transition:
-    background 0.12s ease,
-    transform 0.08s ease;
+  transition: background 0.12s ease, transform 0.08s ease;
 }
 
 .btn-ver:hover {
@@ -110,9 +119,7 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition:
-    background 0.12s ease,
-    transform 0.08s ease;
+  transition: background 0.12s ease, transform 0.08s ease;
 }
 
 .btn-register-unidad:hover {

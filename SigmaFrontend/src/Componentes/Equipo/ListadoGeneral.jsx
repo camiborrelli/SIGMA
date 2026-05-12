@@ -2,12 +2,19 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Tabla from "../Tabla";
 import ModalUnidades from "../Unidad/ModalUnidades";
-import Buscador from "../Usuario/Buscador";
 import "./ListadoGeneral.css";
 
-const ListadoGeneral = ({ onUpdated, refreshKey }) => {
+const ListadoGeneral = ({
+  onUpdated,
+  refreshKey,
+  tipoFilter: tipoFilterProp,
+  estadoFilter: estadoFilterProp,
+  busquedaProp,
+}) => {
   const [equipos, setEquipos] = useState([]);
   const [busqueda, setBusqueda] = useState("");
+  const [tipoFilter, setTipoFilter] = useState("");
+  const [estadoFilter, setEstadoFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -15,6 +22,8 @@ const ListadoGeneral = ({ onUpdated, refreshKey }) => {
 
   const [paginaActual, setPaginaActual] = useState(1);
   const [porPagina, setPorPagina] = useState(6);
+
+  const navigate = useNavigate();
 
   const fetchEquipos = async () => {
     setLoading(true);
@@ -31,9 +40,10 @@ const ListadoGeneral = ({ onUpdated, refreshKey }) => {
         setError(data.error || "Error al obtener equipos");
         setEquipos([]);
       } else {
-        setEquipos(data);
+        setEquipos(Array.isArray(data) ? data : []);
       }
-    } catch {
+    } catch (err) {
+      console.error(err);
       setError("Error de conexión");
     } finally {
       setLoading(false);
@@ -42,6 +52,7 @@ const ListadoGeneral = ({ onUpdated, refreshKey }) => {
 
   useEffect(() => {
     fetchEquipos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -49,17 +60,63 @@ const ListadoGeneral = ({ onUpdated, refreshKey }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshKey]);
 
+  // compute effective filters (props override local controls)
+  const effectiveTipo =
+    typeof tipoFilterProp !== "undefined" &&
+    tipoFilterProp !== null &&
+    tipoFilterProp !== ""
+      ? tipoFilterProp
+      : tipoFilter;
+  const effectiveEstado =
+    typeof estadoFilterProp !== "undefined" &&
+    estadoFilterProp !== null &&
+    estadoFilterProp !== ""
+      ? estadoFilterProp
+      : estadoFilter;
+  const effectiveBusqueda =
+    typeof busquedaProp !== "undefined" && busquedaProp !== null
+      ? String(busquedaProp)
+      : busqueda;
+
+  // reset page when filters change
+  useEffect(() => {
+    setPaginaActual(1);
+  }, [effectiveBusqueda, effectiveTipo, effectiveEstado]);
+
   const equiposFiltrados = equipos.filter((e) => {
-    const texto = `${e.nombre} ${e.modelo} ${e.tipo}`.toLowerCase();
-    return texto.includes(busqueda.toLowerCase());
+    const texto = `${e.nombre || ""} ${e.modelo || ""} ${
+      e.tipo || ""
+    }`.toLowerCase();
+    const matchesBusqueda = texto.includes(
+      String(effectiveBusqueda || "").toLowerCase(),
+    );
+
+    const matchesTipo = effectiveTipo
+      ? String(e.tipo || "").toLowerCase() ===
+        String(effectiveTipo || "").toLowerCase()
+      : true;
+
+    let matchesEstado = true;
+    if (effectiveEstado) {
+      const eff = String(effectiveEstado || "").toLowerCase();
+      if (e.estado) {
+        matchesEstado = String(e.estado || "").toLowerCase() === eff;
+      } else if (Array.isArray(e.unidades)) {
+        matchesEstado = e.unidades.some(
+          (u) => String(u.estado || "").toLowerCase() === eff,
+        );
+      } else {
+        matchesEstado = false;
+      }
+    }
+
+    return matchesBusqueda && matchesTipo && matchesEstado;
   });
 
-  const totalPaginas = Math.ceil(equiposFiltrados.length / porPagina);
+  const totalPaginas = Math.ceil(equiposFiltrados.length / porPagina) || 1;
   const indiceInicio = (paginaActual - 1) * porPagina;
   const indiceFin = indiceInicio + porPagina;
   const equiposPaginados = equiposFiltrados.slice(indiceInicio, indiceFin);
-
-  const navigate = useNavigate();
 
   const registrarUnidad = (equipoId) => {
     navigate("/registrarUnidad", { state: { equipoId } });
@@ -93,6 +150,67 @@ const ListadoGeneral = ({ onUpdated, refreshKey }) => {
   return (
     <div className="equipos-container">
       <h2 className="titulo">Listado de equipos</h2>
+
+      <div
+        className="filtros-listado"
+        style={{ display: "flex", gap: 12, marginBottom: 12, flexWrap: "wrap" }}
+      >
+        {typeof busquedaProp === "undefined" && (
+          <input
+            placeholder="Buscar..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            style={{
+              padding: "8px 10px",
+              borderRadius: 8,
+              border: "1px solid #e5e7eb",
+            }}
+          />
+        )}
+
+        {typeof tipoFilterProp === "undefined" && (
+          <select
+            value={tipoFilter}
+            onChange={(e) => setTipoFilter(e.target.value)}
+          >
+            <option value="">Todos los tipos</option>
+            {[...new Set(equipos.map((eq) => eq.tipo).filter(Boolean))].map(
+              (t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ),
+            )}
+          </select>
+        )}
+
+        {/* {typeof estadoFilterProp === "undefined" && (
+          <select
+            value={estadoFilter}
+            onChange={(e) => setEstadoFilter(e.target.value)}
+          >
+            <option value="">Todos los estados</option>
+            {[
+              ...new Set(
+                equipos
+                  .map((eq) => eq.estado)
+                  .concat(
+                    ...equipos.map((eq) =>
+                      Array.isArray(eq.unidades)
+                        ? eq.unidades.map((u) => u.estado)
+                        : [],
+                    ),
+                  )
+                  .filter(Boolean),
+              ),
+            ].map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        )} */}
+      </div>
 
       {loading && <p>Cargando...</p>}
       {error && <p className="error">{error}</p>}
@@ -129,7 +247,7 @@ const ListadoGeneral = ({ onUpdated, refreshKey }) => {
         <ModalUnidades
           equipo={equipoSeleccionado}
           onClose={() => setEquipoSeleccionado(null)}
-          onUpdated={onUpdated} // ✅ Esto funcionará si ListadoGeneral recibe `onUpdated` como prop
+          onUpdated={onUpdated}
         />
       )}
     </div>

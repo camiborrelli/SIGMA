@@ -7,6 +7,7 @@ import {
   getStatsUnidades,
   getReparacionesUnidad,
   asignarUnidad,
+  eliminarUnidad,
 } from "../services/unidad.services.js";
 
 export const getUnidadesPorEquipoController = async (req, res) => {
@@ -67,9 +68,7 @@ export const enviarAMantenimientoController = async (req, res) => {
       return res.status(404).json({ error: error.message });
     }
 
-    res
-      .status(500)
-      .json({ error: "Error al enviar unidad a mantenimiento" });
+    res.status(500).json({ error: "Error al enviar unidad a mantenimiento" });
   }
 };
 
@@ -99,7 +98,7 @@ export const getStatsUnidadesController = async (req, res) => {
     res.status(500).json({
       error: "Error al obtener stats de unidades",
       message: err.message,
-      stack: err.stack
+      stack: err.stack,
     });
   }
 };
@@ -127,12 +126,24 @@ export const asignarUnidadController = async (req, res) => {
     const { id } = req.params;
     const { ubicacion } = req.body;
 
-    if (!ubicacion) return res.status(400).json({ error: "Debe indicar la obra" });
+    if (!ubicacion)
+      return res.status(400).json({ error: "Debe indicar la obra" });
 
     const unidad = await asignarUnidad(id, ubicacion);
     res.status(200).json(unidad);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al asignar unidad" });
+  }
+};
+
+export const eliminarUnidadController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const unidad = await eliminarUnidad(id);
+    res.status(200).json(unidad);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al eliminar unidad" });
   }
 };

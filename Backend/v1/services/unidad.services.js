@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Unidad from "../models/unidad.model.js";
+import Equipo from "../models/equipo.model.js";
 
 export const getUnidadesPorEquipo = async (equipoId) => {
   return await Unidad.find({ equipo: equipoId }).populate("ubicacion");
@@ -16,11 +17,21 @@ export const bajaUnidad = async (id) => {
 };
 
 export const agregarUnidad = async (equipoId) => {
-  const count = await Unidad.countDocuments({ equipo: equipoId });
+  // Obtener equipo para usar su nombre como prefijo
+  const equipo = await Equipo.findById(equipoId);
+  const existentes = await Unidad.countDocuments({ equipo: equipoId });
+
+  const pref =
+    equipo && equipo.nombre
+      ? String(equipo.nombre)
+          .split(/\s+/)[0]
+          .replace(/[^A-Za-z0-9]/g, "")
+          .toUpperCase()
+      : `EQ${String(equipoId).slice(-4)}`;
 
   const nuevaUnidad = await Unidad.create({
     equipo: equipoId,
-    identificador: `EQ-${equipoId.toString().slice(-4)}-${count + 1}`,
+    identificador: `${pref}-${existentes + 1}`,
   });
 
   return nuevaUnidad;
@@ -131,7 +142,13 @@ export const agregarUnidadesAEquipo = async ({ equipoId, cantidad }) => {
   // contar unidades existentes del equipo
   const existentes = await Unidad.countDocuments({ equipo: equipoId });
   const unidades = [];
-  const pref = equipo.nombre.substring(0, 6).toUpperCase();
+  const pref =
+    equipo && equipo.nombre
+      ? String(equipo.nombre)
+          .split(/\s+/)[0]
+          .replace(/[^A-Za-z0-9]/g, "")
+          .toUpperCase()
+      : `EQ${String(equipoId).slice(-4)}`;
 
   for (let i = 1; i <= cantidad; i++) {
     const n = existentes + i;
@@ -143,4 +160,10 @@ export const agregarUnidadesAEquipo = async ({ equipoId, cantidad }) => {
 
   const creadas = await Unidad.insertMany(unidades);
   return creadas;
+};
+
+export const eliminarUnidad = async (id) => {
+  const unidad = await Unidad.findByIdAndDelete(id);
+  if (!unidad) throw new Error("Unidad no encontrada");
+  return unidad;
 };
