@@ -1,28 +1,26 @@
 import React, { useState, useEffect } from "react";
-import ListadoGeneral from "../Maquinaria/ListadoGeneral";
+import ListadoGeneral from "../Equipo/ListadoGeneral";
 import ListadoUsuarios from "../Usuario/ListadoUsuarios";
 import "./Dashboard.css";
-import EquiposAsignados from "../Maquinaria/EquiposAsignados";
 import { useNavigate } from "react-router-dom";
-import EquiposMantenimiento from "../Maquinaria/EquiposMantenimiento";
-import EquiposDadosDeBaja from "../Maquinaria/EquiposDadosDeBaja";
 import logo from "../../assets/LogoSinFondo.png";
 import RegistroObra from "../Obra/RegistroObra";
 
 const Dashboard = () => {
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
+
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("usuario");
-    Navigate("/");
+    navigate("/");
   };
 
-  const registrarMaquinaria = () => {
-    Navigate("/registrarMaquinaria");
+  const registrarEquipo = () => {
+    navigate("/registrarEquipo");
   };
 
   const registrarObra = () => {
-    Navigate("/registrarObra");
+    navigate("/registrarObra");
   };
 
   let usuario = null;
@@ -31,68 +29,108 @@ const Dashboard = () => {
   } catch (e) {
     usuario = null;
   }
+
   const rol = usuario ? usuario.rol : null;
 
-  const [totalEquipos, setTotalEquipos] = useState(null);
-  const [equiposDisponibles, setEquiposDisponibles] = useState(null);
-  const [counts, setCounts] = useState({});
+  const [stats, setStats] = useState({
+    total: 0,
+    disponibles: 0,
+    asignadas: 0,
+    mantenimiento: 0,
+    bajas: 0,
+  });
+
+  const [statsEquipos, setStatsEquipos] = useState({
+    total: 0,
+  });
 
   useEffect(() => {
-    let mounted = true;
-    const calcularCantidadEquipos = async () => {
-      const token = localStorage.getItem("token");
-      try {
-        const res = await fetch("http://localhost:5001/maquinaria", {
-          headers: {
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-        });
-        if (!res.ok) {
-          const r = await res.json().catch(() => ({}));
-          if (mounted) alert(r.error || "Error al obtener maquinaria");
-          if (mounted) setTotalEquipos(0);
-        } else {
-          const data = await res.json();
-          if (mounted) setTotalEquipos(data.length || 0);
-        }
-      } catch (err) {
-        if (mounted) alert("Error de conexión");
-        if (mounted) setTotalEquipos(0);
-      }
-    };
-
-    const equiposDisponibles = async () => {
+    const fetchStats = async () => {
       const token = localStorage.getItem("token");
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
       try {
-        const res = await fetch("http://localhost:5001/maquinaria/activas", {
+        const res = await fetch("http://localhost:5001/unidades/stats", {
           headers,
         });
+
         if (!res.ok) {
           const r = await res.json().catch(() => ({}));
-          if (mounted) alert(r.error || "Error al obtener maquinaria");
-          if (mounted) setEquiposDisponibles(0);
-        } else {
-          const data = await res.json();
-          if (mounted)
-            setEquiposDisponibles(Array.isArray(data) ? data.length : 0);
+          console.error("Error stats:", r);
+          return;
         }
+
+        const data = await res.json();
+
+        setStats({
+          total: data.total || 0,
+          disponibles: data.disponibles || 0,
+          asignadas: data.asignadas || 0,
+          mantenimiento: data.mantenimiento || 0,
+          bajas: data.bajas || 0,
+        });
       } catch (err) {
-        if (mounted) alert("Error de conexión");
-        if (mounted) setEquiposDisponibles(0);
+        console.error("Error conexión stats:", err);
       }
     };
 
-    calcularCantidadEquipos();
-    equiposDisponibles();
+    fetchStats();
+  }, []);
 
-    return () => {
-      mounted = false;
-    };
+  const fetchStatsUnidades = async () => {
+  const token = localStorage.getItem("token");
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+  try {
+    const res = await fetch("http://localhost:5001/unidades/stats", { headers });
+    if (!res.ok) return;
+    const data = await res.json();
+
+    setStats({
+      total: data.total || 0,
+      disponibles: data.disponibles || 0,
+      asignadas: data.asignadas || 0,
+      mantenimiento: data.mantenimiento || 0,
+      bajas: data.bajas || 0,
+    });
+  } catch (err) {
+    console.error("Error al obtener stats de unidades:", err);
+  }
+};
+
+// Llamada inicial
+useEffect(() => {
+  fetchStatsUnidades();
+}, []);
+
+  useEffect(() => {
+  const token = localStorage.getItem("token");
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+  const fetchStatsEquipos = async () => {
+    try {
+      const res = await fetch("http://localhost:5001/equipos/stats", {
+        headers,
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setStatsEquipos({
+          total: data.total || 0,
+        });
+      }
+    } catch (err) {
+      console.error("Error equipos stats:", err);
+    }
+  };
+
+  fetchStatsEquipos();
   }, []);
 
   return (
     <div>
+
       <div className="topbar">
         <div className="topbar-left">
           <div className="logo-container">
@@ -114,19 +152,20 @@ const Dashboard = () => {
         <div className="container-inicio-dashboard">
           <div className="inicio-texto">
             <h1 className="titulo-principal">Gestion de equipos</h1>
-            <p>
-              Administra maquinas y herramientas de la empresa Transamerican
-            </p>
+            <p>Administra maquinas y herramientas de la empresa Transamerican</p>
           </div>
+
           {rol === "Admin" && (
             <div className="inicio-acciones">
               <button className="btn btn-acciones">Registro de acciones</button>
+
               <button
                 className="btn btn-register"
-                onClick={registrarMaquinaria}
+                onClick={registrarEquipo}
               >
                 + Nuevo Equipo
               </button>
+
               <button className="btn btn-register" onClick={registrarObra}>
                 + Nueva Obra
               </button>
@@ -135,63 +174,45 @@ const Dashboard = () => {
         </div>
 
         <div className="summary-grid">
+
+          <div className="summary-card summary-card--equipos">
+            <p className="summary-card__number">
+              {statsEquipos.total}
+            </p>
+            <h4 className="summary-card__label">
+              Total Equipos
+            </h4>
+          </div>
+
           <div className="summary-card summary-card--total">
-            <div className="summary-card__icon">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M3 7a1 1 0 011-1h16a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V7z"
-                  stroke="#2563eb"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <div>
-              <p className="summary-card__number">{totalEquipos}</p>
-              <h4 className="summary-card__label">Total Equipos</h4>
-            </div>
+            <p className="summary-card__number">{stats.total}</p>
+            <h4 className="summary-card__label">Total unidades</h4>
           </div>
 
           <div className="summary-card summary-card--disponibles">
-            <div className="summary-card__icon">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M20 6L9 17l-5-5"
-                  stroke="#10b981"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <div>
-              <p className="summary-card__number">{equiposDisponibles}</p>
-              <h4 className="summary-card__label">Disponibles</h4>
-            </div>
+            <p className="summary-card__number">{stats.disponibles}</p>
+            <h4 className="summary-card__label">Disponibles</h4>
           </div>
 
-          <EquiposAsignados />
+          <div className="summary-card summary-card--asignadas">
+            <p className="summary-card__number">{stats.asignadas}</p>
+            <h4 className="summary-card__label">Asignadas</h4>
+          </div>
 
-          <EquiposMantenimiento />
+          <div className="summary-card summary-card--mantenimiento">
+            <p className="summary-card__number">{stats.mantenimiento}</p>
+            <h4 className="summary-card__label">Mantenimiento</h4>
+          </div>
 
-          <EquiposDadosDeBaja />
+          <div className="summary-card summary-card--debaja">
+            <p className="summary-card__number">{stats.bajas}</p>
+            <h4 className="summary-card__label">Dados de baja</h4>
+          </div>
+
         </div>
 
-        <div>
-          <ListadoGeneral />
+        <div className="dashboard-card">
+          <ListadoGeneral onUpdated={fetchStatsUnidades} /> 
         </div>
 
         {rol === "Admin" && (

@@ -1,16 +1,19 @@
 import { useState, useEffect } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
+
+// Auth
 import Login from "./Componentes/Usuario/Login";
 import Registro from "./Componentes/Usuario/Registro";
-import ListadoGeneral from "./Componentes/Maquinaria/ListadoGeneral";
+
+// Dashboard y principales
 import Dashboard from "./Componentes/Dashboard/Dashboard";
-import RegistrarMaquinaria from "./Componentes/Maquinaria/RegistrarMaquinaria";
-import Tabla from "./Componentes/Tabla";
-import Garantia from "./Componentes/Maquinaria/Garantia";
-import AsignarMantenimiento from "./Componentes/Maquinaria/AsignaraMantenimiento";
-import { Routes, Route } from "react-router-dom";
+import ListadoGeneral from "./Componentes/Equipo/ListadoGeneral";
+
+// Otros
 import RegistroObra from "./Componentes/Obra/RegistroObra";
-import BajaEquipo from "./Componentes/Maquinaria/BajaEquipo";
+import RegistrarEquipo from "./Componentes/Equipo/RegistrarEquipo";
+import RegistrarUnidad from "./Componentes/Unidad/RegistrarUnidad";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -19,36 +22,31 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("usuario");
+
     if (token && user) {
-      //mantener la sesion de usuario aunque se refresque la pagina
       setIsAuthenticated(true);
       setUsuario(JSON.parse(user));
     }
   }, []);
 
   return (
-    <>
-      <div className="bottom-nav">
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/register" element={<Registro />} />
-          <Route path="/maquinaria" element={<ListadoGeneral />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route
-            path="/registrarMaquinaria"
-            element={<RegistrarMaquinaria />}
-          />
-          <Route path="/garantia/:id" element={<Garantia />} />
-          <Route
-            path="/asignarMantenimiento/:id"
-            element={<AsignarMantenimiento />}
-          />
-          <Route path="/registrarObra" element={<RegistroObra />} />
-          <Route path="/tabla" element={<Tabla />} />
-          <Route path="/bajaEquipo" element={<BajaEquipo />} />
-        </Routes>
-      </div>
-    </>
+    <div className="bottom-nav">
+      <Routes>
+        {/* Auth */}
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Registro />} />
+
+        {/* App */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/equipos" element={<ListadoGeneral />} />
+        <Route path="/registrarObra" element={<RegistroObra />} />
+        <Route path="/registrarEquipo" element={<RegistrarEquipo />} />
+        <Route path="/registrarUnidad" element={<RegistrarUnidad />} />
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
+    </div>
   );
 }
 
