@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../Equipo/registrar-form.css";
 import { useNavigate, useLocation } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const RegistrarUnidad = () => {
   const [equipoId, setEquipoId] = useState("");
@@ -126,7 +127,8 @@ const RegistrarUnidad = () => {
         return setMensaje(data.error || "Error al crear unidad");
       }
 
-      alert("Unidad creada correctamente");
+      toast.success("Unidad registrada correctamente");
+      navigate("/dashboard");
 
       setEquipoId("");
       setIdentificador("");

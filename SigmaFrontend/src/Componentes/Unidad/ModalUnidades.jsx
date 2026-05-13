@@ -13,6 +13,8 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const [unidadMantenimiento, setUnidadMantenimiento] = useState(null);
   const [unidadBaja, setUnidadBaja] = useState(null);
   const [unidadAsignar, setUnidadAsignar] = useState(null);
+  const [confirmMantenimientoUnidad, setConfirmMantenimientoUnidad] =
+    useState(null);
   const [estadoFiltro, setEstadoFiltro] = useState("");
   const [obraFiltro, setObraFiltro] = useState("");
 
@@ -145,7 +147,8 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     if (!u) return false;
     const est = String(u.estado || "").toLowerCase();
     if (est.includes("mantenimiento")) {
-      finalizarMantenimiento(u);
+      // mostrar modal preguntando si desea finalizar o ver garantía
+      setConfirmMantenimientoUnidad(u);
       return false;
     } else if (est === "dada de baja" || est === "baja") {
       toast.error("La unidad está dada de baja.");
@@ -253,9 +256,11 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
                 <button
                   onClick={() => {
                     cerrarTodos();
-                    onClose();
                     const ok = enviarAMantenimiento(row);
-                    if (ok) navigate(`/garantia/${row._id}`);
+                    if (ok) {
+                      onClose();
+                      navigate(`/garantia/${row._id}`);
+                    }
                   }}
                 >
                   🛠
@@ -359,6 +364,50 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           onClose={() => setUnidadAsignar(null)}
           onUpdated={handleUpdated}
         />
+      )}
+
+      {confirmMantenimientoUnidad && (
+        <div className="modal-overlay">
+          <div className="modal-card">
+            <h3>Unidad en mantenimiento</h3>
+            <p>
+              La unidad{" "}
+              <strong>{confirmMantenimientoUnidad.identificador}</strong> está
+              actualmente en mantenimiento.
+            </p>
+            <p>¿Desea finalizar el mantenimiento o ver la garantía?</p>
+
+            <div className="acciones">
+              <button
+                className="btn-cancel"
+                onClick={() => setConfirmMantenimientoUnidad(null)}
+              >
+                Cancelar
+              </button>
+
+              <button
+                className="btn-asign"
+                onClick={() =>
+                  finalizarMantenimiento(confirmMantenimientoUnidad)
+                }
+              >
+                Finalizar mantenimiento
+              </button>
+
+              <button
+                className="btn-asign"
+                onClick={() => {
+                  const id = confirmMantenimientoUnidad._id;
+                  setConfirmMantenimientoUnidad(null);
+                  onClose();
+                  navigate(`/garantia/${id}`);
+                }}
+              >
+                Ver garantía
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
