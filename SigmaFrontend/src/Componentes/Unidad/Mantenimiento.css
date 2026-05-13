@@ -8,7 +8,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1200;
+  z-index: 9999;
 }
 
 .modal-card {
@@ -71,11 +71,11 @@ p {
 
 .btn-cancel,
 .btn-asign {
-  flex: 1;                
-  display: flex;           
-  justify-content: center;  
-  align-items: center;    
-  padding: 14px 18px;      
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 14px 18px;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 700;

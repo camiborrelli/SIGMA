@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import AsignarMantenimientoUnidad from "./AsignarMantenimientoUnidad";
 import "./Garantia.css";
+import { FaRegCalendarCheck } from "react-icons/fa";
+import { FaRegCalendarXmark } from "react-icons/fa6";
+import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
+import { FaTools } from "react-icons/fa";
 
 const Garantia = ({ id: propId }) => {
   const params = useParams();
@@ -30,71 +35,52 @@ const Garantia = ({ id: propId }) => {
   };
 
   useEffect(() => {
-    let mounted = true;
-
-    const token = localStorage.getItem("token");
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
-    const obtenerGarantia = async () => {
+    const fetchAll = async () => {
       if (!id) return;
 
       setLoading(true);
+      setError("");
+      const token = localStorage.getItem("token");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
       try {
         const res = await fetch(
           `http://localhost:5001/unidades/garantia/${id}`,
-          { headers }
+          { headers },
         );
-
         if (!res.ok) {
           const r = await res.json().catch(() => ({}));
-          if (mounted) setError(r.error || "Error al obtener garantía");
-          return;
-        }
-
-        const data = await res.json();
-
-        if (mounted) {
+          setError(r.error || "Error al obtener garantía");
+        } else {
+          const data = await res.json();
           setGarantia(data);
-
-          setMaquinariaNombre(data.identificador || "Unidad");
-
+          setMaquinariaNombre(data.nombre || data.identificador || "Unidad");
           setMaquinaId(data._id);
         }
-      } catch {
-        if (mounted) setError("Error de conexión");
+      } catch (err) {
+        setError("Error de conexión");
       } finally {
-        if (mounted) setLoading(false);
+        setLoading(false);
       }
-    };
 
-    const obtenerReparaciones = async () => {
+      // reparaciones
       try {
-        const res = await fetch(
+        const token2 = localStorage.getItem("token");
+        const headers2 = token2 ? { Authorization: `Bearer ${token2}` } : {};
+        const r2 = await fetch(
           `http://localhost:5001/unidades/${id}/reparaciones`,
-          { headers }
+          { headers: headers2 },
         );
-
-        if (!res.ok) {
-          return;
+        if (r2.ok) {
+          const d2 = await r2.json();
+          setCantReparaciones(d2.cantReparaciones || 0);
         }
-
-        const data = await res.json();
-
-        if (mounted) {
-          setCantReparaciones(data.cantReparaciones || 0);
-        }
-      } catch {
-        //no bloquea UI
+      } catch (err) {
+        // no bloquear UI
       }
     };
 
-    obtenerGarantia();
-    obtenerReparaciones();
-
-    return () => {
-      mounted = false;
-    };
+    fetchAll();
   }, [id]);
 
   const porcentajeVidaUtil = garantia
@@ -106,39 +92,34 @@ const Garantia = ({ id: propId }) => {
             ((new Date(garantia.fechaFinGarantia) - new Date()) /
               (new Date(garantia.fechaFinGarantia) -
                 new Date(garantia.fechaCompra))) *
-              100
-          )
-        )
+              100,
+          ),
+        ),
       )
     : 0;
 
   return (
     <div className="garantia-wrapper">
-      <h1 className="garantia-titulo">DETALLE DE UNIDAD</h1>
-
+      {/* <h1 className="garantia-titulo">DETALLE DE UNIDAD</h1> */}
       <div className="garantia-body">
         {loading && <p>Cargando...</p>}
         {error && <p className="garantia-error">{error}</p>}
 
-        {!loading && !error && !garantia && (
-          <p>No se encontraron datos.</p>
-        )}
+        {!loading && !error && !garantia && <p>No se encontraron datos.</p>}
 
         {garantia && (
           <>
             <div className="maquina-card">
               <div className="maquina-info">
-                <h2 className="maquina-nombre">{maquinariaNombre}</h2>
-                <p className="maquina-tipo">
-                  Estado: {garantia.estado}
-                </p>
+                <h2 className="maquina-nombre">
+                  DETALLE DE {maquinariaNombre}
+                </h2>
+                <p className="maquina-tipo">Estado: {garantia.estado}</p>
               </div>
             </div>
 
             <div className="vida-util-section">
-              <span className="porcentaje-grande">
-                {porcentajeVidaUtil}%
-              </span>
+              <span className="porcentaje-grande">{porcentajeVidaUtil}%</span>
 
               <div className="progress-bar">
                 <div
@@ -148,33 +129,109 @@ const Garantia = ({ id: propId }) => {
               </div>
             </div>
 
+            {garantia.enGarantia && (
+              <div className="garantia-activa-banner">
+                <div className="garantia-activa-check">
+                  <IoCheckmarkDoneCircleOutline size={22} color="#fff" />
+                </div>
+                <div>
+                  <h3 className="garantia-activa-titulo">GARANTÍA ACTIVA</h3>
+                  <p className="garantia-activa-desc">
+                    Su equipo está completamente cubierto bajo los términos del
+                    fabricante.
+                  </p>
+                </div>
+              </div>
+            )}
+
             <div className="fechas-section">
-              <p>
-                Inicio: {formatDate(garantia.fechaCompra)}
-              </p>
-              <p>
-                Reparaciones: {cantReparaciones}
-              </p>
+              <div className="fecha-card">
+                <div className="fecha-icono">
+                  <FaRegCalendarCheck color="#ef4444" />
+                </div>
+                <div>
+                  <p className="fecha-label">Inicio de la garantía</p>
+                  <p className="fecha-valor">
+                    {formatDate(garantia.fechaCompra)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="fecha-card">
+                <div className="fecha-icono">
+                  <FaRegCalendarXmark color="#ef4444" />
+                </div>
+                <div>
+                  <p className="fecha-label">Vencimiento de la garantía</p>
+                  <p className="fecha-valor">
+                    {formatDate(garantia.fechaFinGarantia)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="fecha-card">
+                <div className="fecha-icono">
+                  <FaTools />
+                  {/* <IoCheckmarkDoneCircleOutline color="#10b981" /> */}
+                </div>
+                <div>
+                  <p className="fecha-label">Reparaciones</p>
+                  <p className="fecha-valor">{cantReparaciones}</p>
+                </div>
+              </div>
             </div>
           </>
         )}
       </div>
-
       <div className="garantia-acciones">
-        <button
-          className="btn-asign"
-          onClick={() => setShowModal(true)}
-        >
+        <button className="btn-asign" onClick={() => setShowModal(true)}>
           ENVIAR A MANTENIMIENTO
         </button>
 
-        <button
-          className="btn-cancel"
-          onClick={() => navigate(-1)}
-        >
+        <button className="btn-cancel" onClick={() => navigate(-1)}>
           CANCELAR
         </button>
       </div>
+
+      {showModal && (
+        <AsignarMantenimientoUnidad
+          unidad={{
+            _id: maquinaId,
+            identificador: maquinariaNombre,
+            estado: garantia?.estado,
+          }}
+          onClose={() => setShowModal(false)}
+          onUpdated={async () => {
+            // refrescar datos después de enviar a mantenimiento
+            setShowModal(false);
+            try {
+              const token = localStorage.getItem("token");
+              const headers = token ? { Authorization: `Bearer ${token}` } : {};
+              const res = await fetch(
+                `http://localhost:5001/unidades/garantia/${maquinaId}`,
+                { headers },
+              );
+              if (res.ok) {
+                const data = await res.json();
+                setGarantia(data);
+                setMaquinariaNombre(
+                  data.nombre || data.identificador || "Unidad",
+                );
+              }
+              const r2 = await fetch(
+                `http://localhost:5001/unidades/${maquinaId}/reparaciones`,
+                { headers },
+              );
+              if (r2.ok) {
+                const d2 = await r2.json();
+                setCantReparaciones(d2.cantReparaciones || 0);
+              }
+            } catch (err) {
+              // ignore
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

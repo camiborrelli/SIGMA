@@ -431,3 +431,18 @@
     transform: translateX(-50%);
   }
 }
+
+.inicio-garantia,
+.fin-garantia {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: start;
+}
+
+.maquina-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 auto;
+}

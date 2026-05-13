@@ -1,10 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "./Mantenimiento.css";
+import toast from "react-hot-toast";
 
 const AsignarMantenimientoUnidad = ({ unidad, onClose, onUpdated }) => {
   const token = localStorage.getItem("token");
 
   const asignarMantenimiento = async () => {
+    if (!unidad || !unidad._id) return;
+
+    const est = String(unidad.estado || "").toLowerCase();
+    if (est.includes("baja") || est === "dada de baja") {
+      toast.error("La unidad está dada de baja.");
+      return;
+    }
+    if (est.includes("mantenimiento")) {
+      toast.error("La unidad ya está en mantenimiento.");
+      return;
+    }
+
     try {
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
@@ -13,21 +26,22 @@ const AsignarMantenimientoUnidad = ({ unidad, onClose, onUpdated }) => {
         {
           method: "POST",
           headers,
-        }
+        },
       );
 
       const body = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        return alert(body.error || "Error asignando a mantenimiento");
+        toast.error(body.error || "Error asignando a mantenimiento");
+        return;
       }
 
-      alert("Unidad enviada a mantenimiento");
+      toast.success("Unidad enviada a mantenimiento");
 
-      onUpdated();
-      onClose();
-    } catch {
-      alert("Error de conexión");
+      if (onUpdated) onUpdated();
+      if (onClose) onClose();
+    } catch (err) {
+      toast.error("Error de conexión");
     }
   };
 
@@ -37,12 +51,10 @@ const AsignarMantenimientoUnidad = ({ unidad, onClose, onUpdated }) => {
         <h2>Enviar a mantenimiento</h2>
 
         <p>
-          Unidad: <strong>{unidad.identificador}</strong>
+          Unidad: <strong>{unidad?.identificador}</strong>
         </p>
 
-        <p>
-          Esta unidad dejará de estar disponible.
-        </p>
+        <p>Esta unidad dejará de estar disponible.</p>
 
         <div className="acciones">
           <button className="btn-cancel" onClick={onClose}>

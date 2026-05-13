@@ -44,8 +44,10 @@ export const bajaUnidadController = async (req, res) => {
 export const agregarUnidadController = async (req, res) => {
   try {
     const { equipoId } = req.params;
+    // Permitir enviar `fechaCompra` (opcional) desde el body al crear la unidad
+    const { fechaCompra } = req.body;
 
-    const nuevaUnidad = await agregarUnidad(equipoId);
+    const nuevaUnidad = await agregarUnidad(equipoId, { fechaCompra });
 
     res.status(201).json(nuevaUnidad);
   } catch (error) {
@@ -77,16 +79,25 @@ export const getGarantiaUnidadController = async (req, res) => {
     const { id } = req.params;
 
     const garantia = await getGarantiaUnidad(id);
+    console.log("Garantía obtenida:", garantia);
 
     res.status(200).json(garantia);
   } catch (error) {
     console.error(error);
 
-    if (error.message.includes("no encontrada")) {
+    // Mongoose CastError (id inválido)
+    if (error.name === "CastError") {
+      return res.status(400).json({ error: "ID de unidad inválido" });
+    }
+
+    if (error.message && error.message.includes("no encontrada")) {
       return res.status(404).json({ error: error.message });
     }
 
-    res.status(500).json({ error: "Error al obtener garantía" });
+    // En modo debug devolvemos el mensaje del error para facilitar diagnóstico
+    return res
+      .status(500)
+      .json({ error: "Error al obtener garantía", message: error.message });
   }
 };
 
@@ -147,3 +158,16 @@ export const eliminarUnidadController = async (req, res) => {
     res.status(500).json({ error: "Error al eliminar unidad" });
   }
 };
+
+// export const getGarantiaUnidad = async (id) => {
+//   const unidad = await Unidad.findById(id).populate("equipo");
+//   if (!unidad) throw new Error("Unidad no encontrada");
+
+//   return {
+//     identificador: unidad.identificador,
+//     fechaCompra: unidad.fechaCompra,
+//     duracionGarantia: unidad.duracionGarantia,
+//     equipo: unidad.equipo ? unidad.equipo.nombre : "Equipo no encontrado",
+//     porcentajeGarantia: unidad.porcentajeGarantia || 0,
+//   };
+// };

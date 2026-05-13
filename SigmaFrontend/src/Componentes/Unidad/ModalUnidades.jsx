@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Tabla from "../Tabla";
 import AsignarMantenimientoUnidad from "./AsignarMantenimientoUnidad";
 import BajaUnidadModal from "./BajaUnidadModal";
 import AsignarUnidadModal from "./AsignarUnidadModal";
 import "./ModalUnidades.css";
+import toast from "react-hot-toast";
 
 const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const [unidades, setUnidades] = useState([]);
@@ -22,6 +24,8 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     setUnidadBaja(null);
     setUnidadAsignar(null);
   };
+
+  const navigate = useNavigate();
 
   const fetchUnidades = async () => {
     const token = localStorage.getItem("token");
@@ -105,6 +109,21 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
 
     return () => window.removeEventListener("resize", actualizarCantidad);
   }, []);
+
+  //Unidad -> mantenimiento
+  const enviarAMantenimiento = (u) => {
+    if (!u) return false;
+    const est = String(u.estado || "").toLowerCase();
+    if (est.includes("mantenimiento")) {
+      toast.error("La unidad ya está en mantenimiento.");
+      return false;
+    } else if (est === "dada de baja" || est === "baja") {
+      toast.error("La unidad está dada de baja.");
+      return false;
+    }
+    setUnidadMantenimiento(u);
+    return true;
+  };
 
   // preparar opciones de obras (normalizar objetos y strings)
   const obrasMap = new Map();
@@ -202,10 +221,11 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
                 </button>
 
                 <button
-                  disabled={isMantenimiento || isBaja}
                   onClick={() => {
                     cerrarTodos();
-                    setUnidadMantenimiento(row);
+                    onClose();
+                    const ok = enviarAMantenimiento(row);
+                    if (ok) navigate(`/garantia/${row._id}`);
                   }}
                 >
                   🛠
