@@ -44,13 +44,29 @@ export const agregarUnidad = async (equipoId, data = {}) => {
   return nuevaUnidad;
 };
 
-export const enviarAMantenimiento = async (unidadId) => {
+export const enviarAMantenimiento = async (unidadId, usuario = null) => {
   const unidad = await Unidad.findById(unidadId);
 
   if (!unidad) throw new Error("Unidad no encontrada");
 
   unidad.estado = "En mantenimiento";
-  unidad.cantReparaciones = (unidad.cantReparaciones || 0) + 1;
+  const prev = unidad.cantReparaciones || 0;
+  unidad.cantReparaciones = prev + 1;
+
+  console.log(
+    `enviarAMantenimiento: unidad=${unidadId} prevCant=${prev} newCant=${unidad.cantReparaciones} usuario=${usuario}`,
+  );
+
+  // push historial de mantenimiento
+  const entry = {
+    fechaInicio: new Date(),
+    fechaFin: null,
+    usuario: usuario || null,
+  };
+
+  if (!Array.isArray(unidad.historialMantenimiento))
+    unidad.historialMantenimiento = [];
+  unidad.historialMantenimiento.push(entry);
 
   await unidad.save();
 
@@ -73,6 +89,7 @@ export const getGarantiaUnidad = async (id) => {
       diasRestantes: 0,
       estado: unidad.estado,
       cantReparaciones: unidad.cantReparaciones || 0,
+      historialMantenimiento: unidad.historialMantenimiento || [],
     };
   }
 
@@ -94,6 +111,7 @@ export const getGarantiaUnidad = async (id) => {
     ),
     estado: unidad.estado,
     cantReparaciones: unidad.cantReparaciones || 0,
+    historialMantenimiento: unidad.historialMantenimiento || [],
   };
 };
 
@@ -185,5 +203,28 @@ export const agregarUnidadesAEquipo = async ({ equipoId, cantidad }) => {
 export const eliminarUnidad = async (id) => {
   const unidad = await Unidad.findByIdAndDelete(id);
   if (!unidad) throw new Error("Unidad no encontrada");
+  return unidad;
+};
+
+export const finalizarMantenimiento = async (id, usuario = null) => {
+  const unidad = await Unidad.findById(id);
+  if (!unidad) throw new Error("Unidad no encontrada");
+
+  // encontrar la última entrada de historial sin fechaFin
+  if (
+    Array.isArray(unidad.historialMantenimiento) &&
+    unidad.historialMantenimiento.length
+  ) {
+    for (let i = unidad.historialMantenimiento.length - 1; i >= 0; i--) {
+      const h = unidad.historialMantenimiento[i];
+      if (!h.fechaFin) {
+        h.fechaFin = new Date();
+        break;
+      }
+    }
+  }
+
+  unidad.estado = "Disponible";
+  await unidad.save();
   return unidad;
 };

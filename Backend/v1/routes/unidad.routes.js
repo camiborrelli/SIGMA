@@ -4,6 +4,7 @@ import {
   bajaUnidadController,
   agregarUnidadController,
   enviarAMantenimientoController,
+  finalizarMantenimientoController,
   getGarantiaUnidadController,
   getStatsUnidadesController,
   getReparacionesUnidadController,
@@ -22,6 +23,11 @@ router.post(
   "/mantenimiento/:id",
   verificarToken,
   enviarAMantenimientoController,
+);
+router.post(
+  "/mantenimiento/finalizar/:id",
+  verificarToken,
+  finalizarMantenimientoController,
 );
 router.post("/agregar/:equipoId", verificarToken, agregarUnidadController);
 

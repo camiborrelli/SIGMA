@@ -117,7 +117,6 @@ const Garantia = ({ id: propId }) => {
                 <p className="maquina-tipo">Estado: {garantia.estado}</p>
               </div>
             </div>
-
             <div className="vida-util-section">
               <span className="porcentaje-grande">{porcentajeVidaUtil}%</span>
 
@@ -128,7 +127,6 @@ const Garantia = ({ id: propId }) => {
                 />
               </div>
             </div>
-
             {garantia.enGarantia && (
               <div className="garantia-activa-banner">
                 <div className="garantia-activa-check">
@@ -179,6 +177,33 @@ const Garantia = ({ id: propId }) => {
                   <p className="fecha-valor">{cantReparaciones}</p>
                 </div>
               </div>
+
+              {garantia.historialMantenimiento &&
+                garantia.historialMantenimiento.length > 0 && (
+                  <div className="historial-section">
+                    <h3>Historial de mantenimiento</h3>
+                    <ul className="historial-list">
+                      {garantia.historialMantenimiento
+                        .slice()
+                        .reverse()
+                        .map((h, idx) => (
+                          <li key={idx} className="historial-item">
+                            <div className="historial-meta">
+                              <p className="historial-usuario">
+                                {h.usuario || "Usuario desconocido"}
+                              </p>
+                              <span className="historial-fechas">
+                                {formatDate(h.fechaInicio)} —{" "}
+                                {h.fechaFin
+                                  ? formatDate(h.fechaFin)
+                                  : "En curso"}
+                              </span>
+                            </div>
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                )}
             </div>
           </>
         )}

@@ -3,6 +3,7 @@ import {
   bajaUnidad,
   agregarUnidad,
   enviarAMantenimiento,
+  finalizarMantenimiento,
   getGarantiaUnidad,
   getStatsUnidades,
   getReparacionesUnidad,
@@ -60,7 +61,13 @@ export const enviarAMantenimientoController = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const unidad = await enviarAMantenimiento(id);
+    const usuarioNombre = req.usuario
+      ? `${req.usuario.nombre || ""} ${req.usuario.apellido || ""}`.trim() ||
+        req.usuario.email ||
+        req.usuario._id
+      : null;
+
+    const unidad = await enviarAMantenimiento(id, usuarioNombre);
 
     res.status(200).json(unidad);
   } catch (error) {
@@ -159,15 +166,18 @@ export const eliminarUnidadController = async (req, res) => {
   }
 };
 
-// export const getGarantiaUnidad = async (id) => {
-//   const unidad = await Unidad.findById(id).populate("equipo");
-//   if (!unidad) throw new Error("Unidad no encontrada");
-
-//   return {
-//     identificador: unidad.identificador,
-//     fechaCompra: unidad.fechaCompra,
-//     duracionGarantia: unidad.duracionGarantia,
-//     equipo: unidad.equipo ? unidad.equipo.nombre : "Equipo no encontrado",
-//     porcentajeGarantia: unidad.porcentajeGarantia || 0,
-//   };
-// };
+export const finalizarMantenimientoController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const usuarioNombre = req.usuario
+      ? `${req.usuario.nombre || ""} ${req.usuario.apellido || ""}`.trim() ||
+        req.usuario.email ||
+        req.usuario._id
+      : null;
+    const unidad = await finalizarMantenimiento(id, usuarioNombre);
+    res.status(200).json(unidad);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al finalizar mantenimiento" });
+  }
+};

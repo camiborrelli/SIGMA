@@ -110,12 +110,42 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     return () => window.removeEventListener("resize", actualizarCantidad);
   }, []);
 
+  const finalizarMantenimiento = (u) => {
+    const token = localStorage.getItem("token");
+    if (!u || !u._id) return;
+    try {
+      const res = fetch(
+        `http://localhost:5001/unidades/mantenimiento/finalizar/${u._id}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        },
+      )
+        .then((res) => {
+          if (!res.ok) throw new Error("Error al finalizar mantenimiento");
+          return res.json();
+        })
+        .then((data) => {
+          toast.success("Mantenimiento finalizado");
+          handleUpdated();
+        })
+        .catch((err) => {
+          console.error(err);
+          toast.error("Error al finalizar mantenimiento");
+        });
+    } catch (err) {
+      console.error(err);
+      toast.error("Error de conexión");
+    }
+  };
   //Unidad -> mantenimiento
   const enviarAMantenimiento = (u) => {
     if (!u) return false;
     const est = String(u.estado || "").toLowerCase();
     if (est.includes("mantenimiento")) {
-      toast.error("La unidad ya está en mantenimiento.");
+      finalizarMantenimiento(u);
       return false;
     } else if (est === "dada de baja" || est === "baja") {
       toast.error("La unidad está dada de baja.");

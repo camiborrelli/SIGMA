@@ -12,12 +12,20 @@ const UnidadSchema = new Schema({
     enum: ["Disponible", "Asignada", "En mantenimiento", "Dada de Baja"],
     default: "Disponible",
   },
+  cantReparaciones: { type: Number, default: 0 },
   ubicacion: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Obra",
     default: null,
   },
   fechaCompra: Date,
+  historialMantenimiento: [
+    {
+      fechaInicio: Date,
+      fechaFin: Date,
+      usuario: String,
+    },
+  ],
 });
 
 export default mongoose.model("Unidad", UnidadSchema);
