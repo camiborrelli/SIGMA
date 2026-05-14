@@ -8,22 +8,27 @@ export const crearEquipoConUnidades = async ({
   tipo,
   cantidad,
 }) => {
-  const equipo = await Equipo.create({ nombre, modelo, tipo });
-
-  const unidades = [];
   const cantidadFinal = cantidad || 1;
 
-  const pref = nombre
-    ? String(nombre)
-        .split(/\s+/)[0]
-        .replace(/[^A-Za-z0-9]/g, "")
-        .toUpperCase()
-    : `EQ${String(equipo._id).slice(-4)}`;
+  const equipo = await Equipo.create({
+    nombre,
+    modelo,
+    tipo,
+  });
+
+  const codigo = `EQ-${String(equipo._id).slice(-6).toUpperCase()}`;
+
+  equipo.codigo = codigo;
+  await equipo.save();
+
+  const unidades = [];
+
+  const existentes = await Unidad.countDocuments({ equipo: equipo._id });
 
   for (let i = 1; i <= cantidadFinal; i++) {
     unidades.push({
       equipo: equipo._id,
-      identificador: `${pref}-${i}`,
+      identificador: `${codigo}-${existentes + i}`,
     });
   }
 
@@ -31,7 +36,7 @@ export const crearEquipoConUnidades = async ({
 
   return {
     equipo,
-    unidadesCreadas, // 👈 IMPORTANTE
+    unidadesCreadas,
     cantidadGenerada: unidadesCreadas.length,
   };
 };
@@ -113,35 +118,12 @@ export const getStatsEquipos = async () => {
 export const editarEquipo = async (id, { nombre, modelo, tipo }) => {
   const equipo = await Equipo.findById(id);
   if (!equipo) throw new Error("Equipo no encontrado");
-  const nombreAntiguo = equipo.nombre;
 
   equipo.nombre = nombre;
   equipo.modelo = modelo;
   equipo.tipo = tipo;
 
   const equipoGuardado = await equipo.save();
-
-  try {
-    // Reindexar unidades en orden de creación usando la primera palabra sanificada en MAYÚSCULAS
-    const nuevoPref = equipoGuardado.nombre
-      ? String(equipoGuardado.nombre)
-          .split(/\s+/)[0]
-          .replace(/[^A-Za-z0-9]/g, "")
-          .toUpperCase()
-      : `EQ${String(equipoGuardado._id).slice(-4)}`;
-
-    const unidadesOrdenadas = await Unidad.find({ equipo: equipo._id }).sort({
-      _id: 1,
-    });
-    for (let i = 0; i < unidadesOrdenadas.length; i++) {
-      const unidad = unidadesOrdenadas[i];
-      unidad.identificador = `${nuevoPref}-${i + 1}`;
-      await unidad.save();
-    }
-  } catch (err) {
-    // si falla actualizar identificadores, loguear y seguir
-    console.error("Error actualizando identificadores de unidades:", err);
-  }
 
   return equipoGuardado;
 };

@@ -10,6 +10,7 @@ import {
   getReparacionesUnidadController,
   asignarUnidadController,
   eliminarUnidadController,
+  actualizarFechaCompraController,
 } from "../controllers/unidad.controller.js";
 import { verificarToken } from "../middlewares/auth.js";
 
@@ -42,6 +43,11 @@ router.get(
   "/:id/reparaciones",
   verificarToken,
   getReparacionesUnidadController,
+);
+router.put(
+  "/fecha-compra/:id",
+  verificarToken,
+  actualizarFechaCompraController
 );
 
 export default router;

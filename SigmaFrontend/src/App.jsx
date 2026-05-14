@@ -33,7 +33,13 @@ function App() {
 
   return (
     <div className="bottom-nav">
-      <Toaster position="top-center" />
+      <Toaster
+        position="top-center"
+        containerStyle={{
+          top: 80,
+          zIndex: 99999,
+        }}
+      />
       <Routes>
         {/* Auth */}
         <Route path="/" element={<Login />} />

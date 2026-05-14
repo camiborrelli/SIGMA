@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Tabla from "../Tabla";
 import ModalUnidades from "../Unidad/ModalUnidades";
 import "./ListadoGeneral.css";
+import {FaEye, FaPlus, FaEdit } from "react-icons/fa";
+import EditarEquipoModal from "./EditarEquipoModal";
 
 const ListadoGeneral = ({
   onUpdated,
@@ -19,6 +21,7 @@ const ListadoGeneral = ({
   const [error, setError] = useState("");
 
   const [equipoSeleccionado, setEquipoSeleccionado] = useState(null);
+  const [equipoEditar, setEquipoEditar] = useState(null);
 
   const [paginaActual, setPaginaActual] = useState(1);
   const [porPagina, setPorPagina] = useState(6);
@@ -40,7 +43,11 @@ const ListadoGeneral = ({
         setError(data.error || "Error al obtener equipos");
         setEquipos([]);
       } else {
-        setEquipos(Array.isArray(data) ? data : []);
+        const equiposOrdenados = (Array.isArray(data) ? data : []).sort((a, b) =>
+        (a.nombre || "").localeCompare(b.nombre || "")
+        );
+
+        setEquipos(equiposOrdenados);
       }
     } catch (err) {
       console.error(err);
@@ -127,23 +134,38 @@ const ListadoGeneral = ({
     { header: "Modelo", accessor: "modelo" },
     { header: "Tipo", accessor: "tipo" },
     {
-      header: "Acciones",
-      accessor: (row) => (
-        <div className="acciones-fila">
-          <button
-            className="btn-ver"
-            onClick={() => setEquipoSeleccionado(row)}
-          >
-            Ver unidades
-          </button>
-          <button
-            className="btn-register-unidad"
-            onClick={() => registrarUnidad(row._id)}
-          >
-            Registrar unidad
-          </button>
-        </div>
+  header: "Acciones",
+  accessor: (row) => (
+    <div className="acciones-fila">
+      {/* Ver unidades */}
+      <button
+        className="icon-btn ver"
+        title="Ver unidades"
+        onClick={() => setEquipoSeleccionado(row)}
+      >
+        <FaEye />
+      </button>
+
+      {/* Registrar unidad */}
+      <button
+        className="icon-btn add"
+        title="Registrar unidad"
+        onClick={() => registrarUnidad(row._id)}
+      >
+        <FaPlus />
+      </button>
+
+      {/* Editar */}
+      <button
+        className="icon-btn edit"
+        title="Editar equipo"
+        onClick={() => setEquipoEditar(row)}
+      >
+          <FaEdit />
+        </button>
+      </div>
       ),
+    className: "col-acciones",
     },
   ];
 
@@ -160,11 +182,6 @@ const ListadoGeneral = ({
             placeholder="Buscar..."
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            style={{
-              padding: "8px 10px",
-              borderRadius: 8,
-              border: "1px solid #e5e7eb",
-            }}
           />
         )}
 
@@ -248,6 +265,17 @@ const ListadoGeneral = ({
           equipo={equipoSeleccionado}
           onClose={() => setEquipoSeleccionado(null)}
           onUpdated={onUpdated}
+        />
+      )}
+
+      {equipoEditar && (
+        <EditarEquipoModal
+          equipo={equipoEditar}
+          onClose={() => setEquipoEditar(null)}
+          onUpdated={() => {
+            setEquipoEditar(null);
+            fetchEquipos();
+          }}
         />
       )}
     </div>

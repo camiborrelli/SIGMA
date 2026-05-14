@@ -82,13 +82,19 @@
   text-align: left;
 }
 
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
 .actions button {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
   margin: 0 4px;
-  padding: 4px;
+  padding: 2px;
   color: inherit;
   transition: transform 0.2s ease;
 }
@@ -214,4 +220,42 @@
 .modal-card select:focus {
   border-color: #b91c1c;
   box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.2);
+}
+
+.sigma-td,
+.sigma-th {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.modal-content .tabla-wrapper {
+  overflow-x: hidden;
+}
+
+.modal-content .sigma-table {
+  min-width: 100%;
+}
+
+.btn-cerrar {
+  align-self: center;
+  background-color: #e5e7eb;
+  color: #1f2937;
+  border: none;
+  border-radius: 10px;
+  padding: 15px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  width: fit-content;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.btn-cerrar:hover {
+  background-color: #d1d5db;
+}
+
+.btn-cerrar:active {
+  background-color: #9ca3af;
+  transform: scale(0.96);
 }
