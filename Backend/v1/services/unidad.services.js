@@ -177,22 +177,20 @@ export const agregarUnidadesAEquipo = async ({ equipoId, cantidad }) => {
   const equipo = await Equipo.findById(equipoId);
   if (!equipo) throw new Error("Equipo no encontrado");
 
-  // contar unidades existentes del equipo
+  if (!equipo.codigo) {
+    throw new Error("El equipo no tiene código asignado");
+  }
+
   const existentes = await Unidad.countDocuments({ equipo: equipoId });
+
   const unidades = [];
-  const pref =
-    equipo && equipo.nombre
-      ? String(equipo.nombre)
-          .split(/\s+/)[0]
-          .replace(/[^A-Za-z0-9]/g, "")
-          .toUpperCase()
-      : `EQ${String(equipoId).slice(-4)}`;
 
   for (let i = 1; i <= cantidad; i++) {
     const n = existentes + i;
+
     unidades.push({
       equipo: equipoId,
-      identificador: `${pref}-${n}`,
+      identificador: `${equipo.codigo}-${n}`,
     });
   }
 
@@ -226,5 +224,16 @@ export const finalizarMantenimiento = async (id, usuario = null) => {
 
   unidad.estado = "Disponible";
   await unidad.save();
+  return unidad;
+};
+
+export const actualizarFechaCompra = async (id, fechaCompra) => {
+  const unidad = await Unidad.findById(id);
+
+  if (!unidad) throw new Error("Unidad no encontrada");
+
+  unidad.fechaCompra = fechaCompra;
+  await unidad.save();
+
   return unidad;
 };

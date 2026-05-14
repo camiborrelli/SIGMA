@@ -337,9 +337,7 @@
   align-items: center;
   flex-wrap: wrap;
   padding: 16px;
-  background: #ffffff;
   border-radius: 10px;
-  box-shadow: 0 4px 14px rgba(16, 24, 40, 0.06);
   margin-bottom: 12px;
 }
 

@@ -31,12 +31,12 @@
 
 .sigma-table {
   width: 100%;
-  min-width: 850px;
   border-collapse: separate;
   border-spacing: 0;
   background: #ffffff;
   overflow: hidden;
   font-family: Inter, sans-serif;
+  table-layout: fixed;
 }
 
 /* =========================
@@ -83,7 +83,6 @@
   color: #475569;
   border-bottom: 1px solid #f1f5f9;
   vertical-align: middle;
-  white-space: nowrap;
 }
 
 /* =========================

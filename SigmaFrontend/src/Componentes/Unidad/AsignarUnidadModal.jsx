@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const AsignarUnidadModal = ({ unidad, onClose, onUpdated }) => {
   const token = localStorage.getItem("token");
   const [ubicacion, setUbicacion] = useState("");
   const [ubicaciones, setUbicaciones] = useState([]);
-  const [mensaje, setMensaje] = useState("");
-  const [tipoMensaje, setTipoMensaje] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchObras = async () => {
@@ -20,9 +20,7 @@ const AsignarUnidadModal = ({ unidad, onClose, onUpdated }) => {
         setUbicaciones(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error(err);
-        setUbicaciones([]);
-        setMensaje("Error al cargar las obras");
-        setTipoMensaje("error");
+        toast.error("Error al cargar las obras");
       }
     };
 
@@ -41,15 +39,16 @@ const AsignarUnidadModal = ({ unidad, onClose, onUpdated }) => {
 
   const asignar = async () => {
     if (!ubicacion) {
-      setMensaje("Debe seleccionar una obra");
-      setTipoMensaje("error");
+      toast.error("Debe seleccionar una obra");
       return;
     }
 
     try {
+      setLoading(true);
+
       const headers = {
         "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       };
 
       const res = await fetch(
@@ -64,20 +63,22 @@ const AsignarUnidadModal = ({ unidad, onClose, onUpdated }) => {
       const body = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        setMensaje(body.error || "Error al asignar unidad");
-        setTipoMensaje("error");
+        toast.error(body.error || "Error al asignar unidad");
         return;
       }
 
-      setMensaje("Unidad asignada correctamente");
-      setTipoMensaje("exito");
+      toast.success("Unidad asignada correctamente");
 
       onUpdated();
-      setTimeout(onClose, 1000);
+
+      setTimeout(() => {
+        onClose();
+      }, 1200);
     } catch (err) {
       console.error(err);
-      setMensaje("Error de conexión");
-      setTipoMensaje("error");
+      toast.error("Error de conexión");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -103,24 +104,12 @@ const AsignarUnidadModal = ({ unidad, onClose, onUpdated }) => {
           ))}
         </select>
 
-        {mensaje && (
-          <p
-            style={{
-              color: tipoMensaje === "error" ? "#dc2626" : "#16a34a",
-              marginTop: "8px",
-              fontWeight: "500",
-            }}
-          >
-            {mensaje}
-          </p>
-        )}
-
         <div className="acciones">
           <button className="btn-cancel" onClick={onClose}>
             Cancelar
           </button>
-          <button className="btn-asign" onClick={asignar}>
-            Guardar
+          <button className="btn-asign" onClick={asignar} disabled={loading}>
+            {loading ? "Guardando..." : "Guardar"}
           </button>
         </div>
       </div>

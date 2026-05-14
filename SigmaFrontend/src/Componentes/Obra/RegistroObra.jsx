@@ -108,8 +108,8 @@ const RegistroObra = () => {
           {/* <option value="Finalizada">Finalizada</option> */}
         </select>
 
-        <button type="submit">Registrar Obra</button>
-        <button type="button" className="cancel" onClick={() => navigate(-1)}>
+        <button type="submit" className="btn-primary">Registrar Obra</button>
+        <button type="button" className="btn-cancel" onClick={() => navigate(-1)}>
           Cancelar
         </button>
       </form>

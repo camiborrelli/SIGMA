@@ -6,6 +6,8 @@ import BajaUnidadModal from "./BajaUnidadModal";
 import AsignarUnidadModal from "./AsignarUnidadModal";
 import "./ModalUnidades.css";
 import toast from "react-hot-toast";
+import { FaRegCalendarPlus} from "react-icons/fa";
+import AgregarFechaCompraModal from "./AgregarFechaCompraModal";
 
 const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const [unidades, setUnidades] = useState([]);
@@ -17,7 +19,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     useState(null);
   const [estadoFiltro, setEstadoFiltro] = useState("");
   const [obraFiltro, setObraFiltro] = useState("");
-
+  const [unidadFecha, setUnidadFecha] = useState(null);
   const [paginaActual, setPaginaActual] = useState(1);
   const [itemsPorPagina, setItemsPorPagina] = useState(5);
 
@@ -25,6 +27,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     setUnidadMantenimiento(null);
     setUnidadBaja(null);
     setUnidadAsignar(null);
+    setUnidadFecha(null);
   };
 
   const navigate = useNavigate();
@@ -275,6 +278,27 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
                 >
                   🚫
                 </button>
+
+                <button
+                  title={
+                    row.fechaCompra
+                      ? "Ver garantía"
+                      : "Agregar fecha de compra"
+                  }
+                  onClick={() => {
+                    cerrarTodos();
+
+                    if (row.fechaCompra) {
+                      onClose();
+                      navigate(`/garantia/${row._id}`);
+                    } else {
+                      setUnidadFecha(row);
+                    }
+                  }}
+                >
+                  <FaRegCalendarPlus />
+                </button>
+
               </>
             );
           })()}
@@ -337,7 +361,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           </div>
         )}
 
-        <button className="btn-cancel" onClick={onClose}>
+        <button className="btn-cerrar" onClick={onClose}>
           Cerrar
         </button>
       </div>
@@ -362,6 +386,14 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
         <AsignarUnidadModal
           unidad={unidadAsignar}
           onClose={() => setUnidadAsignar(null)}
+          onUpdated={handleUpdated}
+        />
+      )}
+
+      {unidadFecha && (
+        <AgregarFechaCompraModal
+          unidad={unidadFecha}
+          onClose={() => setUnidadFecha(null)}
           onUpdated={handleUpdated}
         />
       )}

@@ -27,11 +27,9 @@
 .sigma-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
-  background: #fff;
+  table-layout: auto;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(16, 24, 40, 0.06);
 }
 
 .sigma-th {
@@ -66,8 +64,11 @@
   padding: 14px 16px;
   font-size: 14px;
   color: #374151;
-  word-wrap: break-word;
   vertical-align: middle;
+  max-width: 200px;
+  overflow: hidden;
+  white-space: nowrap;       
+  text-overflow: ellipsis;    
 }
 
 /* =========================
@@ -214,6 +215,52 @@
   height: 8px;
 }
 .tabla-wrapper::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.08);
   border-radius: 8px;
+}
+
+.col-acciones {
+  width: 260px;
+  min-width: 260px;
+}
+
+.acciones-fila {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.icon-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.icon-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+
+.icon-btn.ver {
+  color: #ac1818;
+}
+
+.icon-btn.add {
+  color: #111827;
+}
+
+.icon-btn.edit {
+  color: #063395;
+}
+
+.col-acciones {
+  width: 120px;
+  min-width: 120px;
 }

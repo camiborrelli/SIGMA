@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 const BajaUnidadModal = ({ unidad, onClose, onUpdated }) => {
   const [loading, setLoading] = useState(false);
@@ -8,29 +9,37 @@ const BajaUnidadModal = ({ unidad, onClose, onUpdated }) => {
     try {
       setLoading(true);
 
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const headers = {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      };
 
       const res = await fetch(
         `http://localhost:5001/unidades/baja/${unidad._id}`,
         {
           method: "POST",
           headers,
-        },
+        }
       );
 
       const body = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        return alert(body.error || "Error al dar de baja");
+        toast.error(body.error || "Error al dar de baja");
+        return;
       }
 
-      alert("Unidad dada de baja");
+      toast.success("Unidad dada de baja");
 
       onUpdated();
-      s;
-      onClose();
-    } catch {
-      alert("Error de conexión");
+
+      // cerrar modal con delay para que se vea el toast
+      setTimeout(() => {
+        onClose();
+      }, 1200);
+
+    } catch (err) {
+      toast.error("Error de conexión");
     } finally {
       setLoading(false);
     }
@@ -45,8 +54,7 @@ const BajaUnidadModal = ({ unidad, onClose, onUpdated }) => {
 
         {yaBaja ? (
           <p>
-            La unidad <strong>{unidad.identificador}</strong> ya está dada de
-            baja.
+            La unidad <strong>{unidad.identificador}</strong> ya está dada de baja.
           </p>
         ) : (
           <p>

@@ -209,25 +209,26 @@ const Dashboard = () => {
         </div>
 
         <div className="dashboard-card">
-  <div className="filters-top">
-    <input
-      className="filters-input"
-      placeholder="Buscar..."
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-    />
+          <div className="filters-top">
+            <input
+              className="filters-input"
+              placeholder="Buscar..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
 
-    <select
-      className="filters-select"
-      value={tipoFilter}
-      onChange={(e) => setTipoFilter(e.target.value)}
-    >
-      <option value="">Todos los tipos</option>
-      <option value="Maquina">Maquinas</option>
-      <option value="Herramienta">Herramientas</option>
-    </select>
-  </div>
-</div>
+            <select
+              className="filters-select"
+              value={tipoFilter}
+              onChange={(e) => setTipoFilter(e.target.value)}
+            >
+              <option value="">Todos los tipos</option>
+              <option value="Maquina">Maquinas</option>
+              <option value="Herramienta">Herramientas</option>
+            </select>
+          </div>
+        </div>
+        
           <div className="dashboard-card">
             <ListadoGeneral
               onUpdated={fetchStatsUnidades}
