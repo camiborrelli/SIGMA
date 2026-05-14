@@ -330,3 +330,48 @@
 .summary-card--equipos .summary-card__number {
   color: #4f46e5;
 }
+
+.filters-top {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(16, 24, 40, 0.06);
+  margin-bottom: 12px;
+}
+
+/* INPUT estilo Sigma */
+.filters-input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  width: 260px;
+  min-width: 180px;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+  background: #fff;
+}
+
+/* SELECT estilo Sigma */
+.filters-select {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+  background: #fff;
+  cursor: pointer;
+  transition: 0.2s;
+  min-width: 180px;
+}
+
+.filters-input,
+.filters-select {
+  background: #fff;
+  color: #070707;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+}

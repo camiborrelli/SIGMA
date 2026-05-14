@@ -209,52 +209,33 @@ const Dashboard = () => {
         </div>
 
         <div className="dashboard-card">
-          <div
-            className="filters-top"
-            style={{
-              padding: "18px",
-              background: "#fff",
-              borderRadius: 10,
-              marginBottom: 12,
-              display: "flex",
-              gap: 12,
-              alignItems: "center",
-              flexWrap: "wrap",
-            }}
-          >
-            <input
-              placeholder="Buscar..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                padding: "8px 12px",
-                borderRadius: 8,
-                border: "1px solid #e5e7eb",
-                width: 260,
-                maxWidth: "42%",
-                minWidth: 180,
-                flex: "0 0 auto",
-              }}
+  <div className="filters-top">
+    <input
+      className="filters-input"
+      placeholder="Buscar..."
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+    />
+
+    <select
+      className="filters-select"
+      value={tipoFilter}
+      onChange={(e) => setTipoFilter(e.target.value)}
+    >
+      <option value="">Todos los tipos</option>
+      <option value="Maquina">Maquinas</option>
+      <option value="Herramienta">Herramientas</option>
+    </select>
+  </div>
+</div>
+          <div className="dashboard-card">
+            <ListadoGeneral
+              onUpdated={fetchStatsUnidades}
+              tipoFilter={tipoFilter}
+              estadoFilter={estadoFilter}
+              busquedaProp={searchQuery}
             />
-
-            <select
-              value={tipoFilter}
-              onChange={(e) => setTipoFilter(e.target.value)}
-              style={{ padding: "8px 10px", borderRadius: 8 }}
-            >
-              <option value="">Todos los tipos</option>
-              <option value="Maquina">Maquinas</option>
-              <option value="Herramienta">Herramientas</option>
-            </select>
           </div>
-
-          <ListadoGeneral
-            onUpdated={fetchStatsUnidades}
-            tipoFilter={tipoFilter}
-            estadoFilter={estadoFilter}
-            busquedaProp={searchQuery}
-          />
-        </div>
 
         {rol === "Admin" && (
           <>

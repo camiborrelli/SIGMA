@@ -185,12 +185,20 @@
   }
 }
 
-.filtros select {
-  padding: 8px 10px;
-  border-radius: 8px;
-  margin: 5px;
+.filtros {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
+.filtros select {
+  min-width: 200px;
+  background: #fff;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
 .modal-card select {
   width: 100%;
   padding: 10px 12px;

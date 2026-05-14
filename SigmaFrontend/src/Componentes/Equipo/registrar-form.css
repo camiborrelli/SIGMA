@@ -103,3 +103,12 @@
   gap: 6px;
   margin-bottom: 10px;
 }
+
+.registrar-form select {
+  color: #111827; /* texto oscuro */
+}
+
+.registrar-form select option {
+  color: #111827;
+  background: white;
+}
