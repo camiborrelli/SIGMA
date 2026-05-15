@@ -49,6 +49,15 @@ export const enviarAMantenimiento = async (unidadId, usuario = null) => {
 
   if (!unidad) throw new Error("Unidad no encontrada");
 
+  // No permitir enviar si ya está en mantenimiento o dada de baja
+  if (unidad.estado === "En mantenimiento") {
+    throw new Error("Unidad ya está en mantenimiento");
+  }
+
+  if (unidad.estado === "Dada de Baja") {
+    throw new Error("Unidad dada de baja");
+  }
+
   unidad.estado = "En mantenimiento";
   const prev = unidad.cantReparaciones || 0;
   unidad.cantReparaciones = prev + 1;

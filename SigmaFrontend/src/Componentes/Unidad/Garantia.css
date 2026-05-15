@@ -448,19 +448,27 @@
 }
 
 /* Historial de mantenimiento */
+
 .historial-section {
-  background: #fff;
-  border-radius: 10px;
-  padding: 12px 14px;
-  margin-top: 10px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 20px;
+  margin-top: 18px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  border: 1px solid #eef2f7;
 }
 
 .historial-section h3 {
-  margin: 0 0 8px 0;
-  font-size: 13px;
-  font-weight: 900;
+  margin: 0 0 18px;
+  font-size: 18px;
+  font-weight: 800;
   color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
+
+/* lista */
 
 .historial-list {
   list-style: none;
@@ -468,42 +476,87 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 14px;
 }
 
+/* item */
+
 .historial-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: #f8fafc;
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.historial-item:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+}
+
+/* iconito */
+
+.historial-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #dc2626, #991b1b);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  background: #f8fafc;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid #eef2f7;
+  justify-content: center;
+  flex-shrink: 0;
+  color: white;
+  font-size: 20px;
+  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.25);
+}
+
+/* contenido */
+
+/* left / right columns for historial item */
+.historial-left {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .historial-meta {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-}
-
-.historial-meta strong {
-  font-size: 13px;
-  color: #0f172a;
+  gap: 6px;
+  margin-top: 6px;
 }
 
 .historial-fechas {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 13px;
+  color: #64748b;
+  display: block;
+}
+
+.historial-usuario {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
 }
 
 .historial-status {
   font-size: 11px;
   font-weight: 800;
-  padding: 6px 8px;
+  padding: 7px 12px;
   border-radius: 999px;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
+  justify-content: center;
+}
+.historial-status.en-curso {
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .historial-status.en-curso {
@@ -516,8 +569,102 @@
   color: #065f46;
 }
 
+/* timeline line */
+
+.historial-item::before {
+  content: "";
+  position: absolute;
+  left: 41px;
+  top: 64px;
+  bottom: -14px;
+  width: 2px;
+  background: #e2e8f0;
+}
+
+.historial-item:last-child::before {
+  display: none;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px) {
+  .historial-section {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .historial-item {
+    padding: 16px;
+    gap: 12px;
+    border-radius: 14px;
+  }
+
+  .historial-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    font-size: 18px;
+  }
+
+  .historial-item::before {
+    left: 35px;
+    top: 58px;
+  }
+
+  .historial-usuario {
+    font-size: 14px;
+  }
+
+  .historial-fechas {
+    font-size: 12px;
+  }
+
+  .historial-status {
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+}
+
 @media (min-width: 600px) {
   .historial-item {
     padding: 12px 14px;
   }
+}
+
+.garantia-vencida-banner {
+  background: #aa1c1c;
+  color: white;
+  border-radius: 10px;
+  padding: 20px 18px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.garantia-vencida-banner p {
+  color: rgb(204, 196, 196);
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.garantia-desconocida-banner {
+  background: #6b7280;
+  color: white;
+  border-radius: 10px;
+  padding: 20px 18px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.garantia-desconocida-banner p {
+  color: rgb(204, 196, 196);
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.5;
 }

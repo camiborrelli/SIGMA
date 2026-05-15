@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AsignarMantenimientoUnidad from "./AsignarMantenimientoUnidad";
+import toast from "react-hot-toast";
 import "./Garantia.css";
 import { FaRegCalendarCheck } from "react-icons/fa";
 import { FaRegCalendarXmark } from "react-icons/fa6";
@@ -117,16 +118,18 @@ const Garantia = ({ id: propId }) => {
                 <p className="maquina-tipo">Estado: {garantia.estado}</p>
               </div>
             </div>
-            <div className="vida-util-section">
-              <span className="porcentaje-grande">{porcentajeVidaUtil}%</span>
+            {garantia.enGarantia && (
+              <div className="vida-util-section">
+                <span className="porcentaje-grande">{porcentajeVidaUtil}%</span>
 
-              <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{ width: `${porcentajeVidaUtil}%` }}
-                />
+                <div className="progress-bar">
+                  <div
+                    className="progress-fill"
+                    style={{ width: `${porcentajeVidaUtil}%` }}
+                  />
+                </div>
               </div>
-            </div>
+            )}
             {garantia.enGarantia && (
               <div className="garantia-activa-banner">
                 <div className="garantia-activa-check">
@@ -137,6 +140,36 @@ const Garantia = ({ id: propId }) => {
                   <p className="garantia-activa-desc">
                     Su equipo está completamente cubierto bajo los términos del
                     fabricante.
+                  </p>
+                </div>
+              </div>
+            )}
+            {!garantia.enGarantia && garantia.fechaCompra != null && (
+              <div className="garantia-vencida-banner">
+                <div className="garantia-vencida-icono">
+                  <FaRegCalendarXmark size={42} color="#d2c8c8" />
+                </div>
+                <div>
+                  <h3 className="garantia-vencida-titulo">GARANTÍA VENCIDA</h3>
+                  <p className="garantia-vencida-desc">
+                    La garantía de su equipo ha expirado. Considere opciones de
+                    mantenimiento o renovación.
+                  </p>
+                </div>
+              </div>
+            )}
+            {garantia.fechaCompra == null && (
+              <div className="garantia-desconocida-banner">
+                <div className="garantia-desconocida-icono">
+                  <FaTools size={32} color="#d2c8c8" />
+                </div>
+                <div>
+                  <h3 className="garantia-desconocida-titulo">
+                    GARANTÍA DESCONOCIDA
+                  </h3>
+                  <p className="garantia-desconocida-desc">
+                    No se pudo determinar el estado de la garantía. Por favor,
+                    revise los datos de compra.
                   </p>
                 </div>
               </div>
@@ -188,16 +221,27 @@ const Garantia = ({ id: propId }) => {
                         .reverse()
                         .map((h, idx) => (
                           <li key={idx} className="historial-item">
-                            <div className="historial-meta">
+                            <div className="historial-left">
                               <p className="historial-usuario">
                                 {h.usuario || "Usuario desconocido"}
                               </p>
-                              <span className="historial-fechas">
-                                {formatDate(h.fechaInicio)} —{" "}
-                                {h.fechaFin
-                                  ? formatDate(h.fechaFin)
-                                  : "En curso"}
-                              </span>
+
+                              <div className="historial-meta">
+                                <span className="historial-fechas">
+                                  {formatDate(h.fechaInicio)}
+                                  {h.fechaFin
+                                    ? ` — ${formatDate(h.fechaFin)}`
+                                    : ""}
+                                </span>
+
+                                <span
+                                  className={`historial-status ${
+                                    h.fechaFin ? "finalizado" : "en-curso"
+                                  }`}
+                                >
+                                  {h.fechaFin ? "Finalizado" : "En curso"}
+                                </span>
+                              </div>
                             </div>
                           </li>
                         ))}
@@ -209,7 +253,17 @@ const Garantia = ({ id: propId }) => {
         )}
       </div>
       <div className="garantia-acciones">
-        <button className="btn-asign" onClick={() => setShowModal(true)}>
+        <button
+          className="btn-asign"
+          onClick={() => {
+            const est = String(garantia?.estado || "").toLowerCase();
+            if (est.includes("mantenimiento")) {
+              toast.error("La unidad ya está en mantenimiento.");
+              return;
+            }
+            setShowModal(true);
+          }}
+        >
           ENVIAR A MANTENIMIENTO
         </button>
 
