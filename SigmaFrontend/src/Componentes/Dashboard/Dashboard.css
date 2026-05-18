@@ -88,7 +88,6 @@
   border-radius: 8px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
   text-align: left;
-  
 }
 
 .inicio-texto p {
@@ -327,9 +326,9 @@
   background: rgba(99, 102, 241, 0.12);
 }
 
-.summary-card--equipos .summary-card__number {
+/* .summary-card--equipos .summary-card__number {
   color: #4f46e5;
-}
+} */
 
 .filters-top {
   display: flex;

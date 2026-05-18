@@ -7,7 +7,7 @@ const RegistrarEquipo = () => {
   const [nombre, setNombre] = useState("");
   const [tipo, setTipo] = useState("");
   const [modelo, setModelo] = useState("");
-  const [cantidad, setCantidad] = useState(1);
+  const [cantidad, setCantidad] = useState("");
   const [mensaje, setMensaje] = useState("");
 
   const navigate = useNavigate();
@@ -68,7 +68,7 @@ const RegistrarEquipo = () => {
       setNombre("");
       setTipo("");
       setModelo("");
-      setCantidad(1);
+      setCantidad("");
 
       navigate("/dashboard");
     } catch (err) {
