@@ -12,6 +12,7 @@ const RegistroObra = () => {
   const [fechaFin, setFechaFin] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [estado, setEstado] = useState("Activa");
+  const [ubicacion, setUbicacion] = useState("");
   const [errors, setErrors] = useState({});
   const [mensaje, setMensaje] = useState("");
 
@@ -22,6 +23,7 @@ const RegistroObra = () => {
 
     if (
       !nombre ||
+      !ubicacion ||
       !latitud ||
       !longitud ||
       !fechaInicio ||
@@ -44,6 +46,7 @@ const RegistroObra = () => {
           nombre,
           latitud,
           longitud,
+          ubicacion,
           fechaInicio,
           fechaFin,
           descripcion,
@@ -69,6 +72,7 @@ const RegistroObra = () => {
       setFechaFin("");
       setDescripcion("");
       setEstado("Activa");
+      setUbicacion("");
       navigate("/dashboard");
     } catch (error) {
       console.error("Error al registrar la obra:", error);
@@ -89,6 +93,13 @@ const RegistroObra = () => {
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
           className={errors.nombre ? "input-error" : ""}
+        />
+        <input
+          type="text"
+          placeholder="Ubicación"
+          value={ubicacion}
+          onChange={(e) => setUbicacion(e.target.value)}
+          className={errors.ubicacion ? "input-error" : ""}
         />
         <input
           type="text"

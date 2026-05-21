@@ -11,6 +11,12 @@ export const ObraSchema = new Schema({
   },
   latitud: { type: Number, required: true },
   longitud: { type: Number, required: true },
+  ubicacion: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+  },
   descripcion: { type: String, default: "" },
   cantReactivaciones: { type: Number, default: 0 },
 });

@@ -9,6 +9,7 @@ const Mapa = () => {
   const navigate = useNavigate();
   const [busqueda, setBusqueda] = useState("");
   const [estadoFilter, setEstadoFilter] = useState("");
+  const [mostrarLista, setMostrarLista] = useState(true);
 
   const position = [-34.9011, -56.1645]; // Coordenadas del deposito de transamerican (temporal)
   const [obras, setObras] = useState([]);
@@ -47,10 +48,7 @@ const Mapa = () => {
   ];
 
   const ocultarLista = () => {
-    const lista = document.querySelector(".lista-obras");
-    if (lista) {
-      lista.style.display = lista.style.display === "none" ? "block" : "none";
-    }
+    setMostrarLista(!mostrarLista);
   };
 
   return (
@@ -59,7 +57,7 @@ const Mapa = () => {
         <h1>Mapa de Obras</h1>
         <div className="btn-group">
           <button className="hide" onClick={ocultarLista}>
-            Ocultar lista
+            {mostrarLista ? "Ocultar lista" : "Ver lista"}
           </button>
           <button className="btn-home" onClick={() => navigate("/dashboard")}>
             Volver a inicio
@@ -67,13 +65,10 @@ const Mapa = () => {
         </div>
       </header>
 
-      <div
-        className="filtros-listado"
-        style={{ display: "flex", gap: 12, marginBottom: 12, flexWrap: "wrap" }}
-      >
+      <div className="filtros-listado">
         {typeof busquedaProp === "undefined" && (
           <input
-            placeholder="Buscar..."
+            placeholder="Buscar obra, ubicación o responsable..."
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
             className="buscador"
@@ -81,33 +76,56 @@ const Mapa = () => {
         )}
 
         {typeof estadoFilterProp === "undefined" && (
-          <select
-            value={estadoFilter}
-            onChange={(e) => setEstadoFilter(e.target.value)}
-          >
-            <option value="">Todos los estados</option>
+          <div className="filtros-estado">
+            <button
+              className={`filtro-btn ${!estadoFilter ? "active" : ""}`}
+              onClick={() => setEstadoFilter("")}
+            >
+              Todos
+            </button>
             {[...new Set(obras.map((o) => o.estado).filter(Boolean))].map(
-              (t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
+              (estado) => (
+                <button
+                  key={estado}
+                  className={`filtro-btn ${
+                    estadoFilter === estado ? "active" : ""
+                  }`}
+                  onClick={() => setEstadoFilter(estado)}
+                >
+                  {estado}
+                </button>
               ),
             )}
-          </select>
+          </div>
         )}
       </div>
 
       <div className="content">
-        <section className="lista-obras">
-          <h2>Obras en el mapa</h2>
-          {obrasFiltradas.map((obra) => (
-            <div className="obra-card">
-              <h3>{obra.nombre}</h3>
-              <p>{obra.descripcion || "Sin descripción"}</p>
-              <p>{obra.estado}</p>
-            </div>
-          ))}
-        </section>
+        {mostrarLista && (
+          <section className="lista-obras">
+            <h2>Obras en el mapa</h2>
+            <p>{obrasFiltradas.length} obras encontradas</p>
+            {obrasFiltradas.map((obra) => (
+              <div className="obra-card" key={obra.id}>
+                <div className="obra-card-header">
+                  <div
+                    className={`estado-badge estado-${obra.estado
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")}`}
+                  >
+                    {obra.estado}
+                  </div>
+                </div>
+                <h3>{obra.nombre}</h3>
+                <p className="ubicacion">📍 {obra.ubicacion}</p>
+                <p className="fechas">
+                  {new Date(obra.fechaInicio).toLocaleDateString("es-ES")} -{" "}
+                  {new Date(obra.fechaFin).toLocaleDateString("es-ES")}
+                </p>
+              </div>
+            ))}
+          </section>
+        )}
         <MapContainer
           center={[-34.7, -56.2]}
           zoom={10}

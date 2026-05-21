@@ -13,6 +13,10 @@ export const registrarObraSchema = Joi.object({
     "string.empty": "La longitud de la obra es obligatoria",
     "string.min": "La longitud de la obra no puede estar vacía",
   }),
+  ubicacion: Joi.string().trim().min(1).required().messages({
+    "string.empty": "La ubicación de la obra es obligatoria",
+    "string.min": "La ubicación de la obra no puede estar vacía",
+  }),
   fechaInicio: Joi.date().iso().required().messages({
     "date.base": "La fecha de inicio debe ser una fecha válida",
     "any.required": "La fecha de inicio es obligatoria",
