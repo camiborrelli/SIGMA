@@ -4,16 +4,65 @@
   margin-top: 20px;
 }
 
-button.btn-home {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  margin-left: 20px;
-  padding: 10px 8px;
+button {
+  padding: 10px 20px;
   background-color: #de5d13;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+button:hover {
+  background-color: #c94d0a;
+}
+
+button.hide {
+  background-color: white;
+  color: #de5d13;
+  border: 1px solid #de5d13;
+}
+
+button.hide:hover {
+  background-color: #f9f9f9;
+}
+
+popup {
+  font-size: 14px;
+  line-height: 1.4;
+  color: #de5d13;
+}
+
+header {
   display: flex;
-  align-items: start;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background-color: #f5f5f5;
+  gap: 20px;
+}
+
+h1 {
+  font-size: 26px;
+  margin: 0;
+}
+
+header .btn-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  align-items: center;
+}
+
+.buscador {
+  padding: 8px 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 200px;
+  margin-left: 15px;
 }
