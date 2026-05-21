@@ -46,12 +46,21 @@ const Mapa = () => {
     [-34.3, -55.8], // noreste
   ];
 
+  const ocultarLista = () => {
+    const lista = document.querySelector(".lista-obras");
+    if (lista) {
+      lista.style.display = lista.style.display === "none" ? "block" : "none";
+    }
+  };
+
   return (
     <div className="mapa-container">
       <header>
         <h1>Mapa de Obras</h1>
         <div className="btn-group">
-          <button className="hide">Ocultar lista</button>
+          <button className="hide" onClick={ocultarLista}>
+            Ocultar lista
+          </button>
           <button className="btn-home" onClick={() => navigate("/dashboard")}>
             Volver a inicio
           </button>
@@ -88,26 +97,38 @@ const Mapa = () => {
         )}
       </div>
 
-      <MapContainer
-        center={[-34.7, -56.2]}
-        zoom={10}
-        style={{ height: "600px", width: "100%" }}
-        maxBounds={bounds}
-        maxBoundsViscosity={1.0}
-      >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
-        {obrasFiltradas.map((obra) => (
-          <Marker key={obra.id} position={[obra.latitud, obra.longitud]}>
-            <Popup>
-              <strong>{obra.nombre}</strong>
+      <div className="content">
+        <section className="lista-obras">
+          <h2>Obras en el mapa</h2>
+          {obrasFiltradas.map((obra) => (
+            <div className="obra-card">
+              <h3>{obra.nombre}</h3>
               <p>{obra.descripcion || "Sin descripción"}</p>
-            </Popup>
-          </Marker>
-        ))}
-      </MapContainer>
+              <p>{obra.estado}</p>
+            </div>
+          ))}
+        </section>
+        <MapContainer
+          center={[-34.7, -56.2]}
+          zoom={10}
+          style={{ height: "600px", width: "100%" }}
+          maxBounds={bounds}
+          maxBoundsViscosity={1.0}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+          {obrasFiltradas.map((obra) => (
+            <Marker key={obra.id} position={[obra.latitud, obra.longitud]}>
+              <Popup>
+                <strong>{obra.nombre}</strong>
+                <p>{obra.descripcion || "Sin descripción"}</p>
+              </Popup>
+            </Marker>
+          ))}
+        </MapContainer>
+      </div>
     </div>
   );
 };
