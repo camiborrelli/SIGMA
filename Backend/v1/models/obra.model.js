@@ -2,7 +2,6 @@ import mongoose, { Schema } from "mongoose";
 
 export const ObraSchema = new Schema({
   nombre: { type: String, required: true, minlength: 1, trim: true },
-  ubicacion: { type: String, required: true, minlength: 1, trim: true },
   fechaInicio: { type: Date, required: true },
   fechaFin: { type: Date, required: true },
   estado: {
@@ -10,12 +9,15 @@ export const ObraSchema = new Schema({
     enum: ["Activa", "Finalizada", "Cancelada"],
     default: "Activa",
   },
+  latitud: { type: Number, required: true },
+  longitud: { type: Number, required: true },
+  descripcion: { type: String, default: "" },
   cantReactivaciones: { type: Number, default: 0 },
 });
 
 // Evitar duplicados por nombre + ubicacion (insensible a mayúsculas/minúsculas)
 ObraSchema.index(
-  { nombre: 1, ubicacion: 1 },
+  { nombre: 1, latitud: 1, longitud: 1 },
   { unique: true, collation: { locale: "en", strength: 2 } },
 );
 

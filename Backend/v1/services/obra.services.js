@@ -2,12 +2,14 @@ import Obra from "../models/obra.model.js";
 
 export const registrarObraServices = async ({
   nombre,
-  ubicacion,
+  latitud,
+  longitud,
   fechaInicio,
   fechaFin,
   estado,
+  descripcion,
 }) => {
-  const existe = await Obra.findOne({ nombre, ubicacion }).collation({
+  const existe = await Obra.findOne({ nombre, latitud, longitud }).collation({
     locale: "en",
     strength: 2,
   });
@@ -19,10 +21,12 @@ export const registrarObraServices = async ({
 
   const nuevaObra = new Obra({
     nombre,
-    ubicacion,
+    latitud,
+    longitud,
     fechaInicio,
     fechaFin,
     estado,
+    descripcion,
   });
   await nuevaObra.save();
   return nuevaObra;

@@ -5,6 +5,7 @@ import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/LogoSinFondo.png";
 import RegistroObra from "../Obra/RegistroObra";
+import Mapa from "../Mapa/Mapa";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -172,6 +173,12 @@ const Dashboard = () => {
               <button className="btn btn-register" onClick={registrarObra}>
                 + Nueva Obra
               </button>
+              <button
+                className="btn btn-register"
+                onClick={() => navigate("/mapa")}
+              >
+                Ver mapa
+              </button>
             </div>
           )}
         </div>
@@ -228,15 +235,15 @@ const Dashboard = () => {
             </select>
           </div>
         </div>
-        
-          <div className="dashboard-card">
-            <ListadoGeneral
-              onUpdated={fetchStatsUnidades}
-              tipoFilter={tipoFilter}
-              estadoFilter={estadoFilter}
-              busquedaProp={searchQuery}
-            />
-          </div>
+
+        <div className="dashboard-card">
+          <ListadoGeneral
+            onUpdated={fetchStatsUnidades}
+            tipoFilter={tipoFilter}
+            estadoFilter={estadoFilter}
+            busquedaProp={searchQuery}
+          />
+        </div>
 
         {rol === "Admin" && (
           <>
