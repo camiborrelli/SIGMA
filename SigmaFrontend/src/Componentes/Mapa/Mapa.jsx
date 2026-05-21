@@ -107,21 +107,20 @@ const Mapa = () => {
             <p>{obrasFiltradas.length} obras encontradas</p>
             {obrasFiltradas.map((obra) => (
               <div className="obra-card" key={obra.id}>
-                <div className="obra-card-header">
-                  <div
-                    className={`estado-badge estado-${obra.estado
-                      .toLowerCase()
-                      .replace(/\s+/g, "-")}`}
-                  >
-                    {obra.estado}
-                  </div>
-                </div>
+                <div className="obra-card-header"></div>
                 <h3>{obra.nombre}</h3>
                 <p className="ubicacion">📍 {obra.ubicacion}</p>
                 <p className="fechas">
                   {new Date(obra.fechaInicio).toLocaleDateString("es-ES")} -{" "}
                   {new Date(obra.fechaFin).toLocaleDateString("es-ES")}
                 </p>
+                <div
+                  className={`estado-badge estado-${obra.estado
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")}`}
+                >
+                  {obra.estado}
+                </div>
               </div>
             ))}
           </section>

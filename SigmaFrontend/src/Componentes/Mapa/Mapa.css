@@ -30,12 +30,6 @@ button.hide:hover {
   background-color: #f9f9f9;
 }
 
-popup {
-  font-size: 14px;
-  line-height: 1.4;
-  color: #de5d13;
-}
-
 header {
   display: flex;
   flex-direction: row;
@@ -163,22 +157,34 @@ header .btn-group {
 }
 
 .estado-badge {
-  display: inline-block;
-  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 12px;
   border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  width: fit-content;
 }
 
-.estado-badge.estado-en-planificación {
-  background-color: #fef3c7;
-  color: #92400e;
-}
-
-.estado-badge.estado-en-ejecución {
-  background-color: #d1fae5;
+.estado-badge.estado-activa {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
   color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.estado-badge.estado-finalizada {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+.estado-badge.estado-cancelada {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #991b1b;
+  border: 1px solid #fca5a5;
 }
 
 .obra-card h3 {
