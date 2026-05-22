@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginRegistro.css";
+import toast from "react-hot-toast";
+import CambiarContrasenia from "./CambiarContrasenia";
 
 const Login = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
   const [erros, setErrors] = useState({});
+  const [showmodal, setShowModal] = useState(false);
+  const [usuario, setUsuario] = useState(null);
 
   const [rolSeleccionado, setRolSeleccionado] = useState("Funcionario");
 
@@ -15,7 +19,7 @@ const Login = () => {
     password: "",
   });
 
-  const [usuario, setUsuario] = useState(null);
+  const [showCambiarContrasenia, setShowCambiarContrasenia] = useState(false);
 
   const toggle = () => {
     setMensaje("");
@@ -24,7 +28,6 @@ const Login = () => {
 
   const token = localStorage.getItem("token");
   const user = localStorage.getItem("usuario");
-
 
   useEffect(() => {
     if (token && user) {
@@ -88,7 +91,9 @@ const Login = () => {
 
         <div className="roles">
           <button
-            className={`role-btn ${rolSeleccionado === "Funcionario" ? "active" : ""}`}
+            className={`role-btn ${
+              rolSeleccionado === "Funcionario" ? "active" : ""
+            }`}
             onClick={() => setRolSeleccionado("Funcionario")}
             type="button"
           >
@@ -96,7 +101,9 @@ const Login = () => {
           </button>
 
           <button
-            className={`role-btn ${rolSeleccionado === "Admin" ? "active" : ""}`}
+            className={`role-btn ${
+              rolSeleccionado === "Admin" ? "active" : ""
+            }`}
             onClick={() => setRolSeleccionado("Admin")}
             type="button"
           >
@@ -125,6 +132,14 @@ const Login = () => {
 
           {mensaje && <p className="error">{mensaje}</p>}
 
+          <button
+            type="button"
+            className=" btn-restore"
+            onClick={() => setShowCambiarContrasenia(true)}
+          >
+            ¿Olvidaste tu contraseña?
+          </button>
+
           <button className="btn btn-register">INICIAR SESIÓN</button>
         </form>
 
@@ -135,6 +150,11 @@ const Login = () => {
           </span>
         </p>
       </div>
+
+      <CambiarContrasenia
+        isOpen={showCambiarContrasenia}
+        onClose={() => setShowCambiarContrasenia(false)}
+      />
     </div>
   );
 };

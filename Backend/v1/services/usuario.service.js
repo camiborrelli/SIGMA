@@ -114,15 +114,24 @@ export const reactivarUsuarioService = async (id) => {
   }
 };
 
-export const cambiarContraseñaUsuario = async (id, nuevaContraseña) => {
+export const cambiarContraseniaUsuario = async (id, nuevaContrasenia) => {
   try {
     const usuario = await Usuario.findById(id);
     if (!usuario) {
       throw new Error("Usuario no encontrado");
     }
-    const passwordHash = await bcrypt.hash(nuevaContraseña, 10);
+    const passwordHash = await bcrypt.hash(nuevaContrasenia, 10);
     usuario.password = passwordHash;
     return await usuario.save();
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const getUsuarioPorEmail = async (email) => {
+  try {
+    const usuario = await Usuario.findOne({ email });
+    return usuario; // Devuelve null si no existe, en lugar de lanzar error
   } catch (err) {
     throw err;
   }

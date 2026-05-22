@@ -4,9 +4,12 @@ import {
   cambiarRolUsuario,
   obtenerUsuarios,
   darBajaUsuario,
-  cambiarContraseñaUsuario,
+  cambiarContraseniaUsuario,
   reactivarUsuarioService,
+  getUsuarioPorEmail,
 } from "../services/usuario.service.js";
+import bcrypt from "bcrypt";
+import Usuario from "../models/usuario.model.js";
 
 export const register = async (req, res) => {
   try {
@@ -88,9 +91,11 @@ export const darDeBajaUsuario = async (req, res) => {
     const { id } = req.params;
     const usuarioActualizado = await darBajaUsuario(id);
 
+    const { password, ...usuarioSinPassword } = usuarioActualizado.toObject();
+
     res.status(200).json({
       message: "Usuario dado de baja correctamente",
-      usuario: usuarioActualizado,
+      usuario: usuarioSinPassword,
     });
   } catch (error) {
     res.status(400).json({
@@ -104,9 +109,11 @@ export const reactivarUsuario = async (req, res) => {
     const { id } = req.params;
     const usuarioActualizado = await reactivarUsuarioService(id);
 
+    const { password, ...usuarioSinPassword } = usuarioActualizado.toObject();
+
     res.status(200).json({
       message: "Usuario reactivado correctamente",
-      usuario: usuarioActualizado,
+      usuario: usuarioSinPassword,
     });
   } catch (error) {
     res.status(400).json({
@@ -115,18 +122,112 @@ export const reactivarUsuario = async (req, res) => {
   }
 };
 
-export const cambiarContraseña = async (req, res) => {
+// export const recuperarContraseña = async (req, res) => {
+//   try {
+//     const { email } = req.body;
+//     const usuario = await getUsuarioPorEmail(email);
+//     if (!usuario) {
+//       return res.status(404).json({ error: "Usuario no encontrado" });
+//     }
+//     // NO devolver la contraseña, solo confirmar que se envió email
+//     res.status(200).json({
+//       message: "Si el email existe en el sistema, recibirás instrucciones de recuperación",
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       error: "Error al procesar la solicitud",
+//     });
+//   }
+// };
+
+export const verificarEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: "Email es requerido" });
+    }
+
+    const usuario = await getUsuarioPorEmail(email);
+    if (!usuario) {
+      return res.status(404).json({ error: "Email no registrado" });
+    }
+
+    res.status(200).json({
+      message: "Email verificado correctamente",
+      existe: true,
+      usuarioId: usuario._id,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Error al verificar email",
+    });
+  }
+};
+
+export const cambiarContraseniaSinLogin = async (req, res) => {
   try {
     const { id } = req.params;
     const { nuevaContraseña } = req.body;
-    const usuarioActualizado = await cambiarContraseñaUsuario(
+
+    console.log("ID:", id);
+    console.log("Body recibido:", req.body);
+    console.log("nuevaContraseña:", nuevaContraseña);
+
+    if (!nuevaContraseña) {
+      return res.status(400).json({ error: "La contraseña es requerida" });
+    }
+
+    if (nuevaContraseña.length < 6) {
+      return res
+        .status(400)
+        .json({ error: "La contraseña debe tener al menos 6 caracteres" });
+    }
+
+    const usuario = await Usuario.findById(id);
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    const passwordHash = await bcrypt.hash(nuevaContraseña, 10);
+    usuario.password = passwordHash;
+    const usuarioActualizado = await usuario.save();
+
+    const { password, ...usuarioSinPassword } = usuarioActualizado.toObject();
+
+    res.status(200).json({
+      message: "Contraseña cambiada exitosamente",
+      usuario: usuarioSinPassword,
+    });
+  } catch (error) {
+    console.error("Error en cambiarContraseniaSinLogin:", error);
+    res.status(500).json({
+      error: error.message || "Error al cambiar contraseña",
+    });
+  }
+};
+
+export const cambiarContrasenia = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { emailActual } = req.body;
+
+    const usuario = await getUsuarioPorEmail(emailActual);
+
+    if (usuario == null) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+    const { nuevaContrasenia } = req.body;
+    const usuarioActualizado = await cambiarContraseniaUsuario(
       id,
-      nuevaContraseña,
+      nuevaContrasenia,
     );
+
+    const { password, ...usuarioSinPassword } = usuarioActualizado.toObject();
 
     res.status(200).json({
       message: "Contraseña actualizada correctamente",
-      usuario: usuarioActualizado,
+      usuario: usuarioSinPassword,
     });
   } catch (error) {
     res.status(400).json({

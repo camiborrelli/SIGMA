@@ -44,3 +44,32 @@
 .buscador-clear:hover {
   color: #dc2626;
 }
+
+btn .btn-change {
+  background: #bbbec4;
+  color: rgb(0, 0, 0);
+  border: none;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+}
+btn .btn-change:hover {
+  background: #9fa2a8;
+  color: #1f2937;
+}
+button .btn-cancel {
+  background: #f10b03;
+  color: #1f2937;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+}
+button .btn-cancel:hover {
+  background: #d32f2f;
+  color: #1f2937;
+}

@@ -41,3 +41,14 @@
   background: #c62828;
   color: white;
 }
+
+.btn-restore {
+  background: white;
+  color: #c62828;
+  margin-top: 10px;
+}
+
+.btn-restore:hover {
+  background: white;
+  color: #a61c1c;
+}
