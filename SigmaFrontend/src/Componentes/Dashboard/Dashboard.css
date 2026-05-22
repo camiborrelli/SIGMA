@@ -118,7 +118,8 @@
 
 .dashboard-card h2 {
   margin: 0 0 16px 0;
-  font-size: 18px;
+  font-size: 22px;
+  font-weight: 700;
 }
 
 .titulo-principal {
@@ -337,7 +338,7 @@
   flex-wrap: wrap;
   padding: 16px;
   border-radius: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 /* INPUT estilo Sigma */
@@ -371,4 +372,10 @@
   color: #070707;
   border: 1px solid #e5e7eb;
   font-size: 14px;
+}
+
+h2 {
+  padding: 16px;
+  font-size: 18px;
+  font-size: 24px;
 }

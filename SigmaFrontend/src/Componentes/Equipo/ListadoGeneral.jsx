@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Tabla from "../Tabla";
 import ModalUnidades from "../Unidad/ModalUnidades";
 import "./ListadoGeneral.css";
-import {FaEye, FaPlus, FaEdit } from "react-icons/fa";
+import { FaEye, FaPlus, FaEdit } from "react-icons/fa";
 import EditarEquipoModal from "./EditarEquipoModal";
 
 const ListadoGeneral = ({
@@ -43,8 +43,8 @@ const ListadoGeneral = ({
         setError(data.error || "Error al obtener equipos");
         setEquipos([]);
       } else {
-        const equiposOrdenados = (Array.isArray(data) ? data : []).sort((a, b) =>
-        (a.nombre || "").localeCompare(b.nombre || "")
+        const equiposOrdenados = (Array.isArray(data) ? data : []).sort(
+          (a, b) => (a.nombre || "").localeCompare(b.nombre || ""),
         );
 
         setEquipos(equiposOrdenados);
@@ -134,52 +134,50 @@ const ListadoGeneral = ({
     { header: "Modelo", accessor: "modelo" },
     { header: "Tipo", accessor: "tipo" },
     {
-  header: "Acciones",
-  accessor: (row) => (
-    <div className="acciones-fila">
-      {/* Ver unidades */}
-      <button
-        className="icon-btn ver"
-        title="Ver unidades"
-        onClick={() => setEquipoSeleccionado(row)}
-      >
-        <FaEye />
-      </button>
+      header: "Acciones",
+      accessor: (row) => (
+        <div className="acciones-fila">
+          {/* Ver unidades */}
+          <button
+            className="icon-btn ver"
+            title="Ver unidades"
+            onClick={() => setEquipoSeleccionado(row)}
+          >
+            <FaEye />
+          </button>
 
-      {/* Registrar unidad */}
-      <button
-        className="icon-btn add"
-        title="Registrar unidad"
-        onClick={() => registrarUnidad(row._id)}
-      >
-        <FaPlus />
-      </button>
+          {/* Registrar unidad */}
+          <button
+            className="icon-btn add"
+            title="Registrar unidad"
+            onClick={() => registrarUnidad(row._id)}
+          >
+            <FaPlus />
+          </button>
 
-      {/* Editar */}
-      <button
-        className="icon-btn edit"
-        title="Editar equipo"
-        onClick={() => setEquipoEditar(row)}
-      >
-          <FaEdit />
-        </button>
-      </div>
+          {/* Editar */}
+          <button
+            className="icon-btn edit"
+            title="Editar equipo"
+            onClick={() => setEquipoEditar(row)}
+          >
+            <FaEdit />
+          </button>
+        </div>
       ),
-    className: "col-acciones",
+      className: "col-acciones",
     },
   ];
 
   return (
     <div className="equipos-container">
-      <h2 className="titulo">Listado de equipos</h2>
-
       <div
         className="filtros-listado"
         style={{ display: "flex", gap: 12, marginBottom: 12, flexWrap: "wrap" }}
       >
         {typeof busquedaProp === "undefined" && (
           <input
-            placeholder="Buscar..."
+            placeholder="Buscar equipo por nombre o modelo"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
           />
@@ -235,6 +233,29 @@ const ListadoGeneral = ({
       {!loading && !error && (
         <>
           <div className="tabla-wrapper">
+            {typeof busquedaProp === "undefined" && (
+              <input
+                placeholder="Buscar equipo por nombre o modelo"
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+              />
+            )}
+
+            {typeof tipoFilterProp === "undefined" && (
+              <select
+                value={tipoFilter}
+                onChange={(e) => setTipoFilter(e.target.value)}
+              >
+                <option value="">Todos los tipos</option>
+                {[...new Set(equipos.map((eq) => eq.tipo).filter(Boolean))].map(
+                  (t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ),
+                )}
+              </select>
+            )}
             <Tabla columns={columns} data={equiposPaginados} />
           </div>
 

@@ -216,10 +216,12 @@ const Dashboard = () => {
         </div>
 
         <div className="dashboard-card">
+          <h2>Listado de Equipos</h2>
+
           <div className="filters-top">
             <input
               className="filters-input"
-              placeholder="Buscar..."
+              placeholder="Buscar equipo por nombre o modelo"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -234,9 +236,7 @@ const Dashboard = () => {
               <option value="Herramienta">Herramientas</option>
             </select>
           </div>
-        </div>
 
-        <div className="dashboard-card">
           <ListadoGeneral
             onUpdated={fetchStatsUnidades}
             tipoFilter={tipoFilter}
