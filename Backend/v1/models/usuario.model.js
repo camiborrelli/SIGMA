@@ -29,10 +29,15 @@ export const UsuarioSchema = new Schema(
       enum: ["Admin", "Funcionario"],
       default: "Funcionario",
     },
+    estado: {
+      type: String,
+      enum: ["Activo", "Inactivo"],
+      default: "Activo",
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export default mongoose.model("Usuario", UsuarioSchema);

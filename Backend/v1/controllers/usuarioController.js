@@ -1,5 +1,12 @@
 import { registrarUsuario } from "../services/usuario.service.js";
-import { loginUsuario, cambiarRolUsuario, obtenerUsuarios } from "../services/usuario.service.js";
+import {
+  loginUsuario,
+  cambiarRolUsuario,
+  obtenerUsuarios,
+  darBajaUsuario,
+  cambiarContraseñaUsuario,
+  reactivarUsuarioService,
+} from "../services/usuario.service.js";
 
 export const register = async (req, res) => {
   try {
@@ -49,8 +56,7 @@ export const cambiarRol = async (req, res) => {
 
     const usuarioActualizado = await cambiarRolUsuario(id, rol);
 
-    const { password, ...usuarioSinPassword } =
-      usuarioActualizado.toObject();
+    const { password, ...usuarioSinPassword } = usuarioActualizado.toObject();
 
     res.status(200).json({
       message: "Rol actualizado correctamente",
@@ -73,6 +79,58 @@ export const getUsuarios = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       error: "Error al obtener usuarios",
+    });
+  }
+};
+
+export const darDeBajaUsuario = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const usuarioActualizado = await darBajaUsuario(id);
+
+    res.status(200).json({
+      message: "Usuario dado de baja correctamente",
+      usuario: usuarioActualizado,
+    });
+  } catch (error) {
+    res.status(400).json({
+      error: error.message,
+    });
+  }
+};
+
+export const reactivarUsuario = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const usuarioActualizado = await reactivarUsuarioService(id);
+
+    res.status(200).json({
+      message: "Usuario reactivado correctamente",
+      usuario: usuarioActualizado,
+    });
+  } catch (error) {
+    res.status(400).json({
+      error: error.message,
+    });
+  }
+};
+
+export const cambiarContraseña = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nuevaContraseña } = req.body;
+    const usuarioActualizado = await cambiarContraseñaUsuario(
+      id,
+      nuevaContraseña,
+    );
+
+    res.status(200).json({
+      message: "Contraseña actualizada correctamente",
+      usuario: usuarioActualizado,
+    });
+  } catch (error) {
+    res.status(400).json({
+      error: error.message,
     });
   }
 };

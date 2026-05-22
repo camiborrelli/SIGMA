@@ -2,12 +2,17 @@ import React, { useEffect, useState } from "react";
 import Tabla from "../Tabla";
 import "./ListadoUsuarios.css";
 import Buscador from "./Buscador";
+import BajaUsuarioModal from "./BajaUsuarioModal";
+import toast from "react-hot-toast";
 
 const ListadoUsuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [showModalBaja, setShowModalBaja] = useState(false);
+  const [usuarioABaja, setUsuarioABaja] = useState(null);
+  const [mostrarInactivos, setMostrarInactivos] = useState(false);
 
   const [paginaActual, setPaginaActual] = useState(1);
 
@@ -71,38 +76,36 @@ const ListadoUsuarios = () => {
       const texto = `${u.nombre} ${u.apellido} ${u.email}`.toLowerCase();
       return texto.includes(busqueda.toLowerCase());
     })
+    .filter((u) => {
+      if (mostrarInactivos) {
+        return u.estado === "Inactivo";
+      }
+      return u.estado !== "Inactivo";
+    })
     .sort((a, b) =>
-      a.apellido.toLowerCase().localeCompare(b.apellido.toLowerCase())
+      a.apellido.toLowerCase().localeCompare(b.apellido.toLowerCase()),
     );
 
-  const totalPaginas = Math.ceil(
-    usuariosFiltrados.length / usuariosPorPagina
-  );
+  const totalPaginas = Math.ceil(usuariosFiltrados.length / usuariosPorPagina);
 
   const indiceInicio = (paginaActual - 1) * usuariosPorPagina;
   const indiceFin = indiceInicio + usuariosPorPagina;
 
-  const usuariosPaginados = usuariosFiltrados.slice(
-    indiceInicio,
-    indiceFin
-  );
+  const usuariosPaginados = usuariosFiltrados.slice(indiceInicio, indiceFin);
 
   //Cambiar rol a Admin
   const cambiarRol = async (id) => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(
-        `http://localhost:5001/usuarios/${id}/rol`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ rol: "Admin" }),
-        }
-      );
+      const res = await fetch(`http://localhost:5001/usuarios/${id}/rol`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ rol: "Admin" }),
+      });
 
       const data = await res.json();
 
@@ -110,48 +113,144 @@ const ListadoUsuarios = () => {
         alert(data.error || "Error al cambiar rol");
         return;
       }
-
+      toast.success("Rol cambiado a Admin correctamente");
       setUsuarios((prev) => prev.filter((u) => u._id !== id));
     } catch (err) {
       alert("Error de conexión");
     }
   };
 
-  const columns = [
-    { header: "Nombre", accessor: "nombre" },
-    { header: "Apellido", accessor: "apellido" },
-    { header: "Email", accessor: "email" },
-    {
-      header: "Rol",
-      accessor: () => (
-        <span className="estado-funcionario">Funcionario</span>
-      ),
-    },
-    {
-      header: "Acciones",
-      accessor: (row) => (
-        <button
-          className="btn-cambiar-rol"
-          onClick={() => cambiarRol(row._id)}
-        >
-          Cambiar rol
-        </button>
-      ),
-    },
-  ];
+  const darDeBajaUsuario = async (id) => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`http://localhost:5001/usuarios/${id}/baja`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Error al dar de baja al usuario");
+        return;
+      }
+      toast.success("Usuario dado de baja correctamente");
+      setUsuarios((prev) => prev.filter((u) => u._id !== id));
+      setShowModalBaja(false);
+      setUsuarioABaja(null);
+    } catch (err) {
+      alert("Error de conexión");
+    }
+  };
+
+  const reactivarUsuario = async (id) => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(
+        `http://localhost:5001/usuarios/${id}/reactivar`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || "Error al reactivar usuario");
+        return;
+      }
+      toast.success("Usuario reactivado correctamente");
+      setUsuarios((prev) => prev.filter((u) => u._id !== id));
+    } catch (err) {
+      toast.error("Error de conexión");
+    }
+  };
+
+  const columns = mostrarInactivos
+    ? [
+        { header: "Nombre", accessor: "nombre" },
+        { header: "Apellido", accessor: "apellido" },
+        { header: "Email", accessor: "email" },
+        {
+          header: "Acciones",
+          accessor: (row) => (
+            <button
+              className="btn-reactivar"
+              onClick={() => reactivarUsuario(row._id)}
+            >
+              Reactivar
+            </button>
+          ),
+        },
+      ]
+    : [
+        { header: "Nombre", accessor: "nombre" },
+        { header: "Apellido", accessor: "apellido" },
+        { header: "Email", accessor: "email" },
+        {
+          header: "Rol",
+          accessor: () => (
+            <span className="estado-funcionario">Funcionario</span>
+          ),
+        },
+        {
+          header: "Acciones",
+          accessor: (row) => (
+            <div style={{ display: "flex", gap: "8px" }}>
+              <button
+                className="btn-cambiar-rol"
+                onClick={() => cambiarRol(row._id)}
+              >
+                Cambiar rol
+              </button>
+              <button
+                className="btn-dar-baja"
+                onClick={() => {
+                  setUsuarioABaja(row);
+                  setShowModalBaja(true);
+                }}
+              >
+                Dar de baja
+              </button>
+            </div>
+          ),
+        },
+      ];
 
   return (
     <div className="usuarios-container">
-      <h2 className="titulo">Listado de funcionarios</h2>
+      <h2 className="titulo">
+        {mostrarInactivos
+          ? "Usuarios dados de baja"
+          : "Listado de funcionarios"}
+      </h2>
+      <div className="filters">
+        <Buscador
+          value={busqueda}
+          onChange={(val) => {
+            setBusqueda(val);
+            setPaginaActual(1);
+          }}
+          placeholder="Buscar funcionario..."
+        />
 
-      <Buscador
-        value={busqueda}
-        onChange={(val) => {
-          setBusqueda(val);
-          setPaginaActual(1);
-        }}
-        placeholder="Buscar funcionario..."
-      />
+        <button
+          className="btn-bajas"
+          onClick={() => {
+            setMostrarInactivos(!mostrarInactivos);
+            setPaginaActual(1);
+          }}
+        >
+          {mostrarInactivos
+            ? "Volver a funcionarios activos"
+            : "Ver usuarios dados de baja"}
+        </button>
+      </div>
 
       {loading && <p>Cargando...</p>}
       {error && <p className="error">{error}</p>}
@@ -176,15 +275,37 @@ const ListadoUsuarios = () => {
                 </div>
 
                 <div className="usuario-info">
-                  <p><strong>Email:</strong> {u.email}</p>
+                  <p>
+                    <strong>Email:</strong> {u.email}
+                  </p>
                 </div>
 
-                <button
-                  className="btn-cambiar-rol"
-                  onClick={() => cambiarRol(u._id)}
-                >
-                  Hacer admin
-                </button>
+                {mostrarInactivos ? (
+                  <button
+                    className="btn-reactivar"
+                    onClick={() => reactivarUsuario(u._id)}
+                  >
+                    Reactivar
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      className="btn-cambiar-rol"
+                      onClick={() => cambiarRol(u._id)}
+                    >
+                      Hacer admin
+                    </button>
+                    <button
+                      className="btn-dar-baja"
+                      onClick={() => {
+                        setUsuarioABaja(u);
+                        setShowModalBaja(true);
+                      }}
+                    >
+                      Dar de baja
+                    </button>
+                  </>
+                )}
               </div>
             ))}
           </div>
@@ -211,6 +332,18 @@ const ListadoUsuarios = () => {
             </div>
           )}
         </>
+      )}
+
+      {showModalBaja && (
+        <BajaUsuarioModal
+          usuario={usuarioABaja}
+          isOpen={showModalBaja}
+          onClose={() => {
+            setShowModalBaja(false);
+            setUsuarioABaja(null);
+          }}
+          onConfirm={darDeBajaUsuario}
+        />
       )}
     </div>
   );

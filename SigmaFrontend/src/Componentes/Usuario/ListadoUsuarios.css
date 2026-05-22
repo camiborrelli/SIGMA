@@ -42,7 +42,7 @@
 }
 
 .btn-cambiar-rol {
-  background-color: #c62828;
+  background-color: #c66228;
   color: white;
   border: none;
   padding: 6px 12px;
@@ -72,7 +72,6 @@
 }
 
 @media (max-width: 1024px) {
-
   .sigma-table {
     display: none;
   }
@@ -112,7 +111,7 @@
     padding: 4px 10px;
     border-radius: 999px;
     background: rgba(37, 99, 235, 0.15);
-    color: #1d4ed8;   
+    color: #1d4ed8;
     font-weight: 600;
     border: 1px solid rgba(37, 99, 235, 0.35);
   }
@@ -141,7 +140,6 @@
     background: #a61c1c;
     transform: translateY(-1px);
   }
-
 }
 
 @media (max-width: 768px) {
@@ -159,7 +157,7 @@
     background: #ffffff;
     padding: 16px;
     border-radius: 14px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.20);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -183,7 +181,7 @@
     padding: 4px 10px;
     border-radius: 999px;
     background: rgba(37, 99, 235, 0.15);
-    color: #1d4ed8; 
+    color: #1d4ed8;
     font-weight: 600;
     border: 1px solid rgba(37, 99, 235, 0.35);
   }
@@ -200,14 +198,14 @@
 
   .usuario-card .btn-cambiar-rol {
     margin-top: 6px;
-    width: fit-content;       
-    min-width: 140px; 
+    width: fit-content;
+    min-width: 140px;
     border-radius: 10px;
     font-size: 13px;
     padding: 8px;
     background: #c62828;
     transition: all 0.2s ease;
-    align-self: center;       
+    align-self: center;
     text-align: center;
   }
 
@@ -246,4 +244,66 @@
 .tabla-desktop {
   width: 100%;
   overflow-x: auto;
+}
+
+.btn-dar-baja {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-reactivar {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.btn-reactivar:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.btn-bajas {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.btn-bajas:hover {
+  background: #d3d4d69c;
+  color: #1f2937;
+  transform: translateY(-1px);
+}
+
+.usuarios-container .filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.filters button {
+  background: #e5e7eb;
+  color: #1f2937;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }

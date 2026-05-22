@@ -21,11 +21,11 @@ export const registrarUsuario = async (data) => {
 
   //Crear usuario
   const nuevoUsuario = new Usuario({
-  nombre,
-  apellido,
-  email,
-  password: passwordHash,
-  rol: rol || "Funcionario",
+    nombre,
+    apellido,
+    email,
+    password: passwordHash,
+    rol: rol || "Funcionario",
   });
 
   return await nuevoUsuario.save();
@@ -82,4 +82,48 @@ export const cambiarRolUsuario = async (idUsuario, nuevoRol) => {
 
 export const obtenerUsuarios = async () => {
   return await Usuario.find({ rol: "Funcionario" }).select("-password");
+};
+
+export const darBajaUsuario = async (id) => {
+  try {
+    const usuario = await Usuario.findById(id);
+
+    if (!usuario) {
+      throw new Error("Usuario no encontrado");
+    }
+    usuario.estado = "Inactivo";
+
+    return await usuario.save();
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const reactivarUsuarioService = async (id) => {
+  try {
+    const usuario = await Usuario.findById(id);
+
+    if (!usuario) {
+      throw new Error("Usuario no encontrado");
+    }
+    usuario.estado = "Activo";
+
+    return await usuario.save();
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const cambiarContraseñaUsuario = async (id, nuevaContraseña) => {
+  try {
+    const usuario = await Usuario.findById(id);
+    if (!usuario) {
+      throw new Error("Usuario no encontrado");
+    }
+    const passwordHash = await bcrypt.hash(nuevaContraseña, 10);
+    usuario.password = passwordHash;
+    return await usuario.save();
+  } catch (err) {
+    throw err;
+  }
 };
