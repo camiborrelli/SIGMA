@@ -1,7 +1,110 @@
+:root {
+  /* --- COLORES PRIMARIOS Y MARCA --- */
+  --color-primary: #1e3a8a; /* Azul profundo para elementos principales y branding */
+  --color-primary-hover: #1d4ed8; /* Azul ligeramente más claro para estados hover */
+
+  /* --- COLORES DE ACENTO y ESTADOS --- */
+  --color-accent-orange: #f4976c; /* Naranja suave para botones secundarios o destacar activos */
+  --color-accent-orange-hover: #e2855b;
+
+  --color-status-active: #2ec4b6; /* Menta/Verde azulado para estados "Activa" u obras en curso */
+  --color-status-active-bg: #e6f9f7; /* Fondo sutil para las etiquetas de estado activo */
+
+  --color-status-canceled: #e63946; /* Rojo suave para "Cancelada" o alertas */
+  --color-status-canceled-bg: #fde8e8;
+
+  /* --- NEUTROS (FONDOS Y SUPERFICIES) --- */
+  --color-bg-main: #f8fafc; /* Gris extra claro para el fondo de la app (reduce la fatiga visual) */
+  --color-surface: #ffffff; /* Blanco puro para tarjetas, contenedores y barras de navegación */
+  --color-border: #e2e8f0; /* Gris claro para bordes finos y separadores */
+
+  /* --- TEXTO y TIPOGRAFÍA --- */
+  --color-text-main: #1e293b; /* Gris casi negro para títulos y texto principal (mejor que el #000000 puro) */
+  --color-text-muted: #64748b; /* Gris medio para subtítulos, fechas y texto secundario */
+  --color-text-on-primary: #ffffff; /* Texto blanco sobre fondos oscuros */
+}
+
 .mapa-container {
   width: 100%;
-  height: 500px;
-  margin-top: 20px;
+  height: calc(100vh - 70px);
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #ffffff;
+  display: flex;
+  /* justify-content: space-between; */
+  align-items: center;
+  padding: 10px 40px;
+  height: 70px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-img {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+}
+
+.nav {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.btn-nav {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: 0.2s;
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+.btn-nav:hover {
+  color: #de5d13;
+  background: rgba(222, 93, 19, 0.1);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.usuario-nombre {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.btn-logout {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.btn-logout:hover {
+  background: #991b1b;
 }
 
 button {
@@ -21,33 +124,44 @@ button:hover {
 }
 
 button.hide {
-  background-color: white;
-  color: #de5d13;
-  border: 1px solid #de5d13;
+  background-color: transparent;
+  color: var(--color-primary);
+  border: none;
+  padding: 10px 8px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
 }
 
 button.hide:hover {
-  background-color: #f9f9f9;
+  color: var(--color-primary-hover);
+  background-color: transparent;
+  transition: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 header {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
+  padding: 12px 20px;
   background-color: #f5f5f5;
-  gap: 20px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 h1 {
-  font-size: 26px;
+  font-size: 18px;
   margin: 0;
+  font-weight: 600;
+  color: #1f2937;
+  white-space: nowrap;
 }
 
 header .btn-group {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 12px;
   align-items: center;
 }
@@ -62,12 +176,11 @@ header .btn-group {
 }
 
 .buscador {
-  padding: 10px 2cqb;
+  padding: 8px 60px;
   border: 1px solid #e5e7eb;
   border-radius: 24px;
-  font-size: 14px;
-  width: 400px;
-  margin-left: 0;
+  font-size: 13px;
+  width: 300px;
   background: white;
   color: #374151;
   transition: 0.2s;
@@ -79,7 +192,7 @@ header .btn-group {
 }
 
 .buscador:focus {
-  border-color: #de5d13;
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(222, 93, 19, 0.1);
 }
 
@@ -90,10 +203,10 @@ header .btn-group {
 }
 
 .filtro-btn {
-  padding: 8px 16px;
+  padding: 6px 14px;
   border: 1px solid #e5e7eb;
   border-radius: 20px;
-  font-size: 13px;
+  font-size: 12px;
   background: white;
   color: #6b7280;
   cursor: pointer;
@@ -103,14 +216,14 @@ header .btn-group {
 }
 
 .filtro-btn:hover {
-  border-color: #de5d13;
-  color: #ffffff;
+  background-color: var(--color-status-active-bg);
+  color: #6b7280;
 }
 
 .filtro-btn.active {
-  background: #de5d13;
+  background: #1f2937;
   color: white;
-  border-color: #de5d13;
+  border-color: #1f2937;
 }
 
 .content {
@@ -205,4 +318,197 @@ p.fechas {
   font-size: 11px;
   color: #9ca3af;
   margin: 6px 0 0 0;
+}
+
+/* Responsive para tabletas y móviles */
+@media (max-width: 1024px) {
+  .mapa-container {
+    height: calc(100vh - 140px);
+  }
+
+  .lista-obras {
+    max-width: 40%;
+    max-height: 500px;
+  }
+
+  header {
+    padding: 10px 16px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  h1 {
+    font-size: 16px;
+  }
+
+  .filtros-listado {
+    padding: 0 16px;
+    gap: 8px;
+  }
+
+  .buscador {
+    width: 280px;
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mapa-container {
+    height: calc(100vh - 130px);
+  }
+
+  .topbar {
+    padding: 10px 12px;
+    gap: 6px;
+    height: auto;
+    flex-wrap: wrap;
+  }
+
+  .logo-container {
+    gap: 6px;
+  }
+
+  .logo-img {
+    height: 25px;
+  }
+
+  .logo-container span {
+    display: none;
+  }
+
+  .nav {
+    display: none;
+  }
+
+  .usuario-nombre {
+    display: none;
+  }
+
+  .btn-logout {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  header {
+    padding: 8px 12px;
+    gap: 6px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  h1 {
+    font-size: 14px;
+    width: 100%;
+  }
+
+  header .btn-group {
+    width: 100%;
+  }
+
+  .hide {
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+
+  .filtros-listado {
+    padding: 0 12px;
+    gap: 6px;
+    flex-direction: column;
+  }
+
+  .buscador {
+    width: 100%;
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .filtros-estado {
+    width: 100%;
+    gap: 6px;
+  }
+
+  .filtro-btn {
+    padding: 5px 12px;
+    font-size: 11px;
+  }
+
+  .content {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .lista-obras {
+    max-width: 100%;
+    max-height: 300px;
+    margin-top: 0;
+  }
+
+  .obra-card {
+    padding: 10px;
+    margin-bottom: 8px;
+  }
+
+  .obra-card h3 {
+    font-size: 13px;
+  }
+
+  p.ubicacion {
+    font-size: 11px;
+  }
+
+  p.fechas {
+    font-size: 10px;
+  }
+
+  .leaflet-container {
+    height: 300px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar {
+    padding: 8px 10px;
+  }
+
+  header {
+    padding: 6px 10px;
+  }
+
+  h1 {
+    font-size: 13px;
+  }
+
+  .hide {
+    font-size: 11px;
+  }
+
+  .buscador {
+    font-size: 11px;
+    padding: 6px 10px;
+    width: 100%;
+  }
+
+  .filtro-btn {
+    padding: 4px 10px;
+    font-size: 10px;
+  }
+
+  .lista-obras {
+    max-height: 250px;
+  }
+
+  .obra-card {
+    padding: 8px;
+    margin-bottom: 6px;
+  }
+
+  .obra-card h3 {
+    font-size: 12px;
+  }
+
+  button.hide {
+    font-size: 10px;
+    padding: 3px 5px;
+  }
 }

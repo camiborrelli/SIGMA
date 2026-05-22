@@ -4,6 +4,10 @@ import { useNavigate } from "react-router-dom";
 import Dashboard from "../Dashboard/Dashboard";
 import "./Mapa.css";
 import { useState, useEffect } from "react";
+import logo from "../../assets/LogoSinFondo.png";
+import { TfiMapAlt } from "react-icons/tfi";
+import { VscTools } from "react-icons/vsc";
+import { BiHide } from "react-icons/bi";
 
 const Mapa = () => {
   const navigate = useNavigate();
@@ -13,6 +17,19 @@ const Mapa = () => {
 
   const position = [-34.9011, -56.1645]; // Coordenadas del deposito de transamerican (temporal)
   const [obras, setObras] = useState([]);
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    navigate("/");
+  };
+
+  let usuario = null;
+  try {
+    usuario = JSON.parse(localStorage.getItem("usuario"));
+  } catch (e) {
+    usuario = null;
+  }
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -52,101 +69,129 @@ const Mapa = () => {
   };
 
   return (
-    <div className="mapa-container">
-      <header>
-        <h1>Mapa de Obras</h1>
-        <div className="btn-group">
-          <button className="hide" onClick={ocultarLista}>
-            {mostrarLista ? "Ocultar lista" : "Ver lista"}
+    <>
+      <div className="topbar">
+        <div className="logo-container">
+          <img src={logo} alt="Logo" className="logo-img" />
+          <span>SIGMA</span>
+        </div>
+
+        <nav className="nav">
+          <button className="btn-nav" onClick={() => navigate("/dashboard")}>
+            <VscTools /> Gestion de Equipos
           </button>
-          <button className="btn-home" onClick={() => navigate("/dashboard")}>
-            Volver a inicio
+          <button className="btn-nav" onClick={() => navigate("/mapa")}>
+            <TfiMapAlt /> Ver Mapa
+          </button>
+        </nav>
+
+        <div className="topbar-right">
+          <span className="usuario-nombre">
+            {usuario ? `${usuario.nombre} ${usuario.apellido}` : "Usuario"}
+          </span>
+          <button className="btn-logout" onClick={logout}>
+            Cerrar sesión
           </button>
         </div>
-      </header>
+      </div>
 
-      <div className="filtros-listado">
-        {typeof busquedaProp === "undefined" && (
-          <input
-            placeholder="Buscar obra, ubicación o responsable..."
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-            className="buscador"
-          />
-        )}
-
-        {typeof estadoFilterProp === "undefined" && (
-          <div className="filtros-estado">
-            <button
-              className={`filtro-btn ${!estadoFilter ? "active" : ""}`}
-              onClick={() => setEstadoFilter("")}
-            >
-              Todos
+      <div className="mapa-container">
+        <header>
+          <h1>Mapa de Obras</h1>
+          <div className="btn-group">
+            <button className="hide" onClick={ocultarLista}>
+              {/* <BiHide /> */}
+              {mostrarLista ? "Ocultar lista" : "Ver lista"}
             </button>
-            {[...new Set(obras.map((o) => o.estado).filter(Boolean))].map(
-              (estado) => (
-                <button
-                  key={estado}
-                  className={`filtro-btn ${
-                    estadoFilter === estado ? "active" : ""
-                  }`}
-                  onClick={() => setEstadoFilter(estado)}
-                >
-                  {estado}
-                </button>
-              ),
-            )}
+            {/* <button className="btn-home" onClick={() => navigate("/dashboard")}>
+              Volver a inicio
+            </button> */}
           </div>
-        )}
-      </div>
+        </header>
 
-      <div className="content">
-        {mostrarLista && (
-          <section className="lista-obras">
-            <h2>Obras en el mapa</h2>
-            <p>{obrasFiltradas.length} obras encontradas</p>
-            {obrasFiltradas.map((obra) => (
-              <div className="obra-card" key={obra.id}>
-                <div className="obra-card-header"></div>
-                <h3>{obra.nombre}</h3>
-                <p className="ubicacion">📍 {obra.ubicacion}</p>
-                <p className="fechas">
-                  {new Date(obra.fechaInicio).toLocaleDateString("es-ES")} -{" "}
-                  {new Date(obra.fechaFin).toLocaleDateString("es-ES")}
-                </p>
-                <div
-                  className={`estado-badge estado-${obra.estado
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")}`}
-                >
-                  {obra.estado}
+        <div className="filtros-listado">
+          {typeof busquedaProp === "undefined" && (
+            <input
+              placeholder="Buscar obra, ubicación o responsable..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              className="buscador"
+            />
+          )}
+
+          {typeof estadoFilterProp === "undefined" && (
+            <div className="filtros-estado">
+              <button
+                className={`filtro-btn ${!estadoFilter ? "active" : ""}`}
+                onClick={() => setEstadoFilter("")}
+              >
+                Todos
+              </button>
+              {[...new Set(obras.map((o) => o.estado).filter(Boolean))].map(
+                (estado) => (
+                  <button
+                    key={estado}
+                    className={`filtro-btn ${
+                      estadoFilter === estado ? "active" : ""
+                    }`}
+                    onClick={() => setEstadoFilter(estado)}
+                  >
+                    {estado}
+                  </button>
+                ),
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="content">
+          {mostrarLista && (
+            <section className="lista-obras">
+              <h2>Obras en el mapa</h2>
+              <p>{obrasFiltradas.length} obras encontradas</p>
+              {obrasFiltradas.map((obra) => (
+                <div className="obra-card" key={obra.id}>
+                  <div className="obra-card-header"></div>
+                  <h3>{obra.nombre}</h3>
+                  <p className="ubicacion">📍 {obra.ubicacion}</p>
+                  <p className="fechas">
+                    {new Date(obra.fechaInicio).toLocaleDateString("es-ES")} -{" "}
+                    {new Date(obra.fechaFin).toLocaleDateString("es-ES")}
+                  </p>
+                  <div
+                    className={`estado-badge estado-${obra.estado
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")}`}
+                  >
+                    {obra.estado}
+                  </div>
                 </div>
-              </div>
+              ))}
+            </section>
+          )}
+          <MapContainer
+            center={[-34.7, -56.2]}
+            zoom={10}
+            style={{ height: "600px", width: "100%" }}
+            maxBounds={bounds}
+            maxBoundsViscosity={1.0}
+          >
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            {obrasFiltradas.map((obra) => (
+              <Marker key={obra.id} position={[obra.latitud, obra.longitud]}>
+                <Popup>
+                  <strong>{obra.nombre}</strong>
+                  <p>{obra.descripcion || "Sin descripción"}</p>
+                </Popup>
+              </Marker>
             ))}
-          </section>
-        )}
-        <MapContainer
-          center={[-34.7, -56.2]}
-          zoom={10}
-          style={{ height: "600px", width: "100%" }}
-          maxBounds={bounds}
-          maxBoundsViscosity={1.0}
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-          {obrasFiltradas.map((obra) => (
-            <Marker key={obra.id} position={[obra.latitud, obra.longitud]}>
-              <Popup>
-                <strong>{obra.nombre}</strong>
-                <p>{obra.descripcion || "Sin descripción"}</p>
-              </Popup>
-            </Marker>
-          ))}
-        </MapContainer>
+          </MapContainer>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

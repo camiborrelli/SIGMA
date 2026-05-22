@@ -6,9 +6,12 @@ import { useNavigate } from "react-router-dom";
 import logo from "../../assets/LogoSinFondo.png";
 import RegistroObra from "../Obra/RegistroObra";
 import Mapa from "../Mapa/Mapa";
+import { TfiMapAlt } from "react-icons/tfi";
+import { VscTools } from "react-icons/vsc";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [mostrarMapa, setMostrarMapa] = useState(false);
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -143,6 +146,15 @@ const Dashboard = () => {
           </div>
         </div>
 
+        <nav className="nav">
+          <button className="btn-nav" onClick={() => navigate("/dashboard")}>
+            <VscTools /> Gestion de Equipos
+          </button>
+          <button className="btn-nav" onClick={() => navigate("/mapa")}>
+            <TfiMapAlt /> Ver Mapa
+          </button>
+        </nav>
+
         <div className="topbar-right">
           <span className="usuario-nombre">
             {usuario ? `${usuario.nombre} ${usuario.apellido}` : "Usuario"}
@@ -153,113 +165,119 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="container">
-        <div className="container-inicio-dashboard">
-          <div className="inicio-texto">
-            <h1 className="titulo-principal">Gestion de equipos</h1>
-            <p>
-              Administra maquinas y herramientas de la empresa Transamerican
-            </p>
+      {mostrarMapa ? (
+        <Mapa />
+      ) : (
+        <div className="container">
+          <div className="container-inicio-dashboard">
+            <div className="inicio-texto">
+              <h1 className="titulo-principal">Gestion de equipos</h1>
+              <p>
+                Administra maquinas y herramientas de la empresa Transamerican
+              </p>
+            </div>
+
+            {rol === "Admin" && (
+              <div className="inicio-acciones">
+                <button className="btn btn-acciones">
+                  Registro de acciones
+                </button>
+
+                <button className="btn btn-register" onClick={registrarEquipo}>
+                  + Nuevo Equipo
+                </button>
+
+                <button className="btn btn-register" onClick={registrarObra}>
+                  + Nueva Obra
+                </button>
+                <button
+                  className="btn btn-register btn-ver-mapa-hidden"
+                  onClick={() => navigate("/mapa")}
+                >
+                  Ver mapa
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="summary-grid">
+            <div className="summary-card summary-card--equipos">
+              <p className="summary-card__number">{statsEquipos.total}</p>
+              <h4 className="summary-card__label">Total Equipos</h4>
+            </div>
+
+            <div className="summary-card summary-card--total">
+              <p className="summary-card__number">{stats.total}</p>
+              <h4 className="summary-card__label">Total unidades</h4>
+            </div>
+
+            <div className="summary-card summary-card--disponibles">
+              <p className="summary-card__number">{stats.disponibles}</p>
+              <h4 className="summary-card__label">Disponibles</h4>
+            </div>
+
+            <div className="summary-card summary-card--asignadas">
+              <p className="summary-card__number">{stats.asignadas}</p>
+              <h4 className="summary-card__label">Asignadas</h4>
+            </div>
+
+            <div className="summary-card summary-card--mantenimiento">
+              <p className="summary-card__number">{stats.mantenimiento}</p>
+              <h4 className="summary-card__label">Mantenimiento</h4>
+            </div>
+
+            <div className="summary-card summary-card--debaja">
+              <p className="summary-card__number">{stats.bajas}</p>
+              <h4 className="summary-card__label">Dados de baja</h4>
+            </div>
+          </div>
+
+          <div className="dashboard-card">
+            <h2>Listado de Equipos</h2>
+
+            <div className="filters-top">
+              <input
+                className="filters-input"
+                placeholder="Buscar equipo por nombre o modelo"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+
+              <select
+                className="filters-select"
+                value={tipoFilter}
+                onChange={(e) => setTipoFilter(e.target.value)}
+              >
+                <option value="">Todos los tipos</option>
+                <option value="Maquina">Maquinas</option>
+                <option value="Herramienta">Herramientas</option>
+              </select>
+            </div>
+
+            <ListadoGeneral
+              onUpdated={fetchStatsUnidades}
+              tipoFilter={tipoFilter}
+              estadoFilter={estadoFilter}
+              busquedaProp={searchQuery}
+            />
           </div>
 
           {rol === "Admin" && (
-            <div className="inicio-acciones">
-              <button className="btn btn-acciones">Registro de acciones</button>
+            <>
+              <div className="container-inicio-dashboard">
+                <div className="inicio-texto">
+                  <h1 className="titulo-principal">Gestión de usuarios</h1>
+                  <p>Administra los funcionarios del sistema</p>
+                </div>
+              </div>
 
-              <button className="btn btn-register" onClick={registrarEquipo}>
-                + Nuevo Equipo
-              </button>
-
-              <button className="btn btn-register" onClick={registrarObra}>
-                + Nueva Obra
-              </button>
-              <button
-                className="btn btn-register"
-                onClick={() => navigate("/mapa")}
-              >
-                Ver mapa
-              </button>
-            </div>
+              <div className="dashboard-card">
+                <ListadoUsuarios />
+              </div>
+            </>
           )}
         </div>
-
-        <div className="summary-grid">
-          <div className="summary-card summary-card--equipos">
-            <p className="summary-card__number">{statsEquipos.total}</p>
-            <h4 className="summary-card__label">Total Equipos</h4>
-          </div>
-
-          <div className="summary-card summary-card--total">
-            <p className="summary-card__number">{stats.total}</p>
-            <h4 className="summary-card__label">Total unidades</h4>
-          </div>
-
-          <div className="summary-card summary-card--disponibles">
-            <p className="summary-card__number">{stats.disponibles}</p>
-            <h4 className="summary-card__label">Disponibles</h4>
-          </div>
-
-          <div className="summary-card summary-card--asignadas">
-            <p className="summary-card__number">{stats.asignadas}</p>
-            <h4 className="summary-card__label">Asignadas</h4>
-          </div>
-
-          <div className="summary-card summary-card--mantenimiento">
-            <p className="summary-card__number">{stats.mantenimiento}</p>
-            <h4 className="summary-card__label">Mantenimiento</h4>
-          </div>
-
-          <div className="summary-card summary-card--debaja">
-            <p className="summary-card__number">{stats.bajas}</p>
-            <h4 className="summary-card__label">Dados de baja</h4>
-          </div>
-        </div>
-
-        <div className="dashboard-card">
-          <h2>Listado de Equipos</h2>
-
-          <div className="filters-top">
-            <input
-              className="filters-input"
-              placeholder="Buscar equipo por nombre o modelo"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-
-            <select
-              className="filters-select"
-              value={tipoFilter}
-              onChange={(e) => setTipoFilter(e.target.value)}
-            >
-              <option value="">Todos los tipos</option>
-              <option value="Maquina">Maquinas</option>
-              <option value="Herramienta">Herramientas</option>
-            </select>
-          </div>
-
-          <ListadoGeneral
-            onUpdated={fetchStatsUnidades}
-            tipoFilter={tipoFilter}
-            estadoFilter={estadoFilter}
-            busquedaProp={searchQuery}
-          />
-        </div>
-
-        {rol === "Admin" && (
-          <>
-            <div className="container-inicio-dashboard">
-              <div className="inicio-texto">
-                <h1 className="titulo-principal">Gestión de usuarios</h1>
-                <p>Administra los funcionarios del sistema</p>
-              </div>
-            </div>
-
-            <div className="dashboard-card">
-              <ListadoUsuarios />
-            </div>
-          </>
-        )}
-      </div>
+      )}
     </div>
   );
 };

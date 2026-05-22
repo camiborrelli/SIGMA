@@ -241,15 +241,40 @@
   }
 
   .topbar {
-    padding: 12px 16px;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    padding: 10px 16px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    height: auto;
+  }
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo-img {
+    height: 30px;
+  }
+
+  .logo-container span {
+    display: none;
+  }
+
+  .nav {
+    display: none;
   }
 
   .topbar-right {
-    width: 100%;
-    justify-content: space-between;
+    width: auto;
+    justify-content: flex-end;
+  }
+
+  .usuario-nombre {
+    display: none;
   }
 
   .container-inicio-dashboard {
@@ -299,9 +324,11 @@
   .modal-card {
     max-width: 100%;
   }
+}
 
-  .logo-img {
-    height: 30px;
+@media (min-width: 769px) {
+  .btn-ver-mapa-hidden {
+    display: none;
   }
 }
 
@@ -378,4 +405,21 @@ h2 {
   padding: 16px;
   font-size: 18px;
   font-size: 24px;
+}
+
+nav button {
+  background: #e5e7eb;
+  color: #1f2937;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+nav button:hover {
+  background: #e5e7eb;
+  color: #1f2937;
+  transform: translateY(-1px);
 }
