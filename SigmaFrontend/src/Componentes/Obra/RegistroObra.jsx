@@ -144,16 +144,6 @@ const RegistroObra = () => {
           className={errors.descripcion ? "input-error" : ""}
         />
 
-        <select
-          value={estado}
-          onChange={(e) => setEstado(e.target.value)}
-          className={errors.estado ? "input-error" : ""}
-        >
-          <option value="Activa">Activa</option>
-          <option value="Finalizada">Finalizada</option>
-          <option value="Cancelada">Cancelada</option>
-        </select>
-
         <button type="submit" className="btn-primary">
           Registrar Obra
         </button>
