@@ -31,6 +31,16 @@ const Mapa = () => {
     usuario = null;
   }
 
+  const getLatidudYlongitud = (ubicacion) => {
+    const res = await "https://serpapi.com/search?engine=google_maps";
+    if(!res.ok) return null;
+    const data = await res.json();
+    if(!data || !data.local_results || !data.local_results[0]) return null;
+    const latitud = data.local_results[0].latitude;
+    const longitud = data.local_results[0].longitude;
+    return { latitud, longitud };
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
