@@ -44,8 +44,8 @@ const RegistroObra = () => {
         headers,
         body: JSON.stringify({
           nombre,
-          latitud,
-          longitud,
+          latitud = await getLatitudYLongitud(ubicacion)?.latitud || latitud,
+          longitud = await getLatitudYLongitud(ubicacion)?.longitud || longitud,
           ubicacion,
           fechaInicio,
           fechaFin,
@@ -80,6 +80,34 @@ const RegistroObra = () => {
     }
   };
 
+  const getLatitudYLongitud = async (direccion) => {
+    try {
+      const API_KEY = "TU_API_KEY";
+
+      const res = await fetch(
+        `https://serpapi.com/search.json?engine=google_maps&q=${encodeURIComponent(
+          direccion,
+        )}&type=search&api_key=${API_KEY}`,
+      );
+
+      if (!res.ok) return null;
+
+      const data = await res.json();
+
+      const place = data.local_results?.[0];
+
+      if (!place) return null;
+
+      return {
+        latitud: place.gps_coordinates?.latitude,
+        longitud: place.gps_coordinates?.longitude,
+      };
+    } catch (error) {
+      console.error("Error obteniendo coordenadas:", error);
+      return null;
+    }
+  };
+
   return (
     <div className="obra-content">
       <h2>Registro de Obra</h2>
@@ -101,7 +129,7 @@ const RegistroObra = () => {
           onChange={(e) => setUbicacion(e.target.value)}
           className={errors.ubicacion ? "input-error" : ""}
         />
-        <input
+        {/* <input
           type="text"
           placeholder="Latitud ej: -34.9011"
           value={latitud}
@@ -114,7 +142,7 @@ const RegistroObra = () => {
           value={longitud}
           onChange={(e) => setLongitud(e.target.value)}
           className={errors.longitud ? "input-error" : ""}
-        />
+        /> */}
         <input
           type="text"
           placeholder="Fecha de inicio"
