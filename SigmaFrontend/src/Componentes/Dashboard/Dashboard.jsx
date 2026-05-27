@@ -8,10 +8,13 @@ import RegistroObra from "../Obra/RegistroObra";
 import Mapa from "../Mapa/Mapa";
 import { TfiMapAlt } from "react-icons/tfi";
 import { VscTools } from "react-icons/vsc";
+import PerfilUsuario from "../Usuario/PerfilUsuario";
+import { FaRegUser } from "react-icons/fa";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [mostrarMapa, setMostrarMapa] = useState(false);
+  const [mostrarPerfil, setMostrarPerfil] = useState(false);
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -156,9 +159,14 @@ const Dashboard = () => {
         </nav>
 
         <div className="topbar-right">
-          <span className="usuario-nombre">
+          <button
+            className="usuario-nombre"
+            onClick={() => navigate("/perfil")}
+          >
+            {" "}
+            <FaRegUser />
             {usuario ? `${usuario.nombre} ${usuario.apellido}` : "Usuario"}
-          </span>
+          </button>
           <button className="btn-logout" onClick={logout}>
             Cerrar sesión
           </button>
@@ -278,6 +286,8 @@ const Dashboard = () => {
           )}
         </div>
       )}
+
+      {mostrarPerfil && <PerfilUsuario />}
     </div>
   );
 };

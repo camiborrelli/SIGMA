@@ -17,6 +17,7 @@ import RegistrarEquipo from "./Componentes/Equipo/RegistrarEquipo";
 import RegistrarUnidad from "./Componentes/Unidad/RegistrarUnidad";
 import Garantia from "./Componentes/Unidad/Garantia";
 import Mapa from "./Componentes/Mapa/Mapa";
+import PerfilUsuario from "./Componentes/Usuario/PerfilUsuario";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -55,6 +56,7 @@ function App() {
         <Route path="/registrarUnidad" element={<RegistrarUnidad />} />
         <Route path="/garantia/:id" element={<Garantia />} />
         <Route path="/mapa" element={<Mapa />} />
+        <Route path="/perfil" element={<PerfilUsuario />} />
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>

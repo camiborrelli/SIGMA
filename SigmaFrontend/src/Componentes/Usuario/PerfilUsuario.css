@@ -1,0 +1,37 @@
+.card-usuario {
+  background-color: #fff;
+  padding: 20px;
+  width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+}
+
+.card-usuario h2 {
+  margin-top: 20px;
+  color: #333;
+}
+
+.card-usuario p {
+  color: #555;
+  margin: 8px 0;
+}
+
+.card-usuario button {
+  margin-top: 16px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #575b6b 0%, #6e6a72 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.card-usuario button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #575b6b 0%, #555258 100%);
+}
