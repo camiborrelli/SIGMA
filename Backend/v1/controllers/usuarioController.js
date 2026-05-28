@@ -142,23 +142,32 @@ export const reactivarUsuario = async (req, res) => {
 
 export const verificarEmail = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, password } = req.body;
 
-    if (!email) {
-      return res.status(400).json({ error: "Email es requerido" });
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ error: "Email y contraseña son requeridos" });
     }
 
     const usuario = await getUsuarioPorEmail(email);
     if (!usuario) {
-      return res.status(404).json({ error: "Email no registrado" });
+      return res.status(404).json({ error: "Email o contraseña incorrectos" });
+    }
+
+    // Verificar contraseña con bcrypt
+    const passwordValida = await bcrypt.compare(password, usuario.password);
+    if (!passwordValida) {
+      return res.status(404).json({ error: "Email o contraseña incorrectos" });
     }
 
     res.status(200).json({
-      message: "Email verificado correctamente",
+      message: "Email y contraseña verificados correctamente",
       existe: true,
       usuarioId: usuario._id,
     });
   } catch (error) {
+    console.error("Error al verificar email:", error);
     res.status(500).json({
       error: "Error al verificar email",
     });

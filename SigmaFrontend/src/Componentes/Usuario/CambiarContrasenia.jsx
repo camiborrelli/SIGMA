@@ -9,10 +9,11 @@ const CambiarContrasenia = ({ isOpen, onClose }) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loadingRecovery, setLoadingRecovery] = useState(false);
+  const [passwordEmail, setPasswordEmail] = useState("");
 
   const handleVerificarEmail = async () => {
-    if (!recoveryEmail) {
-      toast.error("Por favor ingresa tu correo electrónico");
+    if (!recoveryEmail || !passwordEmail) {
+      toast.error("Por favor ingresa tu correo electrónico y contraseña");
       return;
     }
 
@@ -23,7 +24,10 @@ const CambiarContrasenia = ({ isOpen, onClose }) => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: recoveryEmail }),
+          body: JSON.stringify({
+            email: recoveryEmail,
+            password: passwordEmail,
+          }),
         },
       );
 
@@ -38,7 +42,7 @@ const CambiarContrasenia = ({ isOpen, onClose }) => {
       setRecoveryStep(2);
       toast.success("Email verificado. Por favor ingresa tu nueva contraseña");
     } catch (error) {
-      toast.error("Error al verificar email");
+      toast.error("Email o contraseña incorrectos");
     } finally {
       setLoadingRecovery(false);
     }
@@ -93,6 +97,7 @@ const CambiarContrasenia = ({ isOpen, onClose }) => {
   const handleCerrarModal = () => {
     setRecoveryStep(1);
     setRecoveryEmail("");
+    setPasswordEmail("");
     setUsuarioId(null);
     setNewPassword("");
     setConfirmPassword("");
@@ -103,7 +108,9 @@ const CambiarContrasenia = ({ isOpen, onClose }) => {
     setRecoveryStep(1);
     setUsuarioId(null);
     setNewPassword("");
+    setRecoveryEmail("");
     setConfirmPassword("");
+    setPasswordEmail("");
   };
 
   if (!isOpen) return null;
@@ -112,14 +119,24 @@ const CambiarContrasenia = ({ isOpen, onClose }) => {
     <div className="modal-overlay">
       <div className="modal-content cambiar-contrasenia-modal">
         {recoveryStep === 1 ? (
-          <>
+          <form>
             <h3>Recuperar contraseña</h3>
-            <p>Ingresa tu correo electrónico para verificar tu cuenta.</p>
+            <p>
+              Ingresa tu correo electrónico y contraseña para verificar tu
+              cuenta.
+            </p>
             <input
               type="email"
               placeholder="Correo electrónico"
               value={recoveryEmail}
               onChange={(e) => setRecoveryEmail(e.target.value)}
+              disabled={loadingRecovery}
+            />
+            <input
+              type="password"
+              placeholder="Contraseña"
+              value={passwordEmail}
+              onChange={(e) => setPasswordEmail(e.target.value)}
               disabled={loadingRecovery}
             />
             <button
@@ -132,7 +149,7 @@ const CambiarContrasenia = ({ isOpen, onClose }) => {
             <button onClick={handleCerrarModal} className="btn-cancel">
               Cerrar
             </button>
-          </>
+          </form>
         ) : (
           <>
             <h3>Cambiar contraseña</h3>

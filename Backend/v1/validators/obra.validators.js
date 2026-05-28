@@ -17,18 +17,16 @@ export const registrarObraSchema = Joi.object({
     "string.empty": "La ubicación de la obra es obligatoria",
     "string.min": "La ubicación de la obra no puede estar vacía",
   }),
-  fechaInicio: Joi.date().iso().required().messages({
+  fechaInicio: Joi.date().iso().optional().messages({
     "date.base": "La fecha de inicio debe ser una fecha válida",
-    "any.required": "La fecha de inicio es obligatoria",
   }),
   fechaFin: Joi.date()
     .iso()
     .greater(Joi.ref("fechaInicio"))
-    .required()
+    .optional()
     .messages({
       "date.base": "La fecha de fin debe ser una fecha válida",
       "date.greater": "La fecha de fin debe ser posterior a la fecha de inicio",
-      "any.required": "La fecha de fin es obligatoria",
     }),
   estado: Joi.string()
     .trim()
