@@ -219,14 +219,21 @@ export const cambiarContraseniaSinLogin = async (req, res) => {
 export const cambiarContrasenia = async (req, res) => {
   try {
     const { id } = req.params;
-    const { emailActual } = req.body;
-
-    const usuario = await getUsuarioPorEmail(emailActual);
-
-    if (usuario == null) {
-      return res.status(404).json({ error: "Usuario no encontrado" });
-    }
     const { nuevaContrasenia } = req.body;
+    const { confirmarContrasenia } = req.body;
+
+    if (!nuevaContrasenia || !confirmarContrasenia) {
+      return res
+        .status(400)
+        .json({
+          error: "La nueva contraseña y su confirmación son requeridas",
+        });
+    }
+
+    if (nuevaContrasenia !== confirmarContrasenia) {
+      return res.status(400).json({ error: "Las contraseñas no coinciden" });
+    }
+
     const usuarioActualizado = await cambiarContraseniaUsuario(
       id,
       nuevaContrasenia,

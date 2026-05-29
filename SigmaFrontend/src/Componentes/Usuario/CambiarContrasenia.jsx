@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import "./CambiarContrasenia.css";
 
-const CambiarContrasenia = ({ isOpen, onClose }) => {
-  const [recoveryStep, setRecoveryStep] = useState(1); // 1: email, 2: nueva contraseña
+const CambiarContrasenia = ({ isOpen, onClose, desdePerfil = false }) => {
+  const [recoveryStep, setRecoveryStep] = useState(1);
   const [recoveryEmail, setRecoveryEmail] = useState("");
   const [usuarioId, setUsuarioId] = useState(null);
   const [newPassword, setNewPassword] = useState("");
@@ -11,13 +11,25 @@ const CambiarContrasenia = ({ isOpen, onClose }) => {
   const [loadingRecovery, setLoadingRecovery] = useState(false);
   const [passwordEmail, setPasswordEmail] = useState("");
 
-  const handleVerificarEmail = async () => {
-    if (!recoveryEmail || !passwordEmail) {
-      toast.error("Por favor ingresa tu correo electrónico y contraseña");
-      return;
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (desdePerfil) {
+      const usuarioIdLocal = localStorage.getItem("usuarioId");
+
+      setRecoveryStep(2);
+      setUsuarioId(usuarioIdLocal);
+    } else {
+      setRecoveryStep(1);
+      setUsuarioId(null);
     }
+  }, [isOpen, desdePerfil]);
+
+  const handleVerificarEmail = async (e) => {
+    e.preventDefault();
 
     setLoadingRecovery(true);
+
     try {
       const res = await fetch(
         "http://localhost:5001/usuarios/verificar-email",
@@ -40,6 +52,7 @@ const CambiarContrasenia = ({ isOpen, onClose }) => {
 
       setUsuarioId(data.usuarioId);
       setRecoveryStep(2);
+
       toast.success("Email verificado. Por favor ingresa tu nueva contraseña");
     } catch (error) {
       toast.error("Email o contraseña incorrectos");
@@ -65,6 +78,7 @@ const CambiarContrasenia = ({ isOpen, onClose }) => {
     }
 
     setLoadingRecovery(true);
+
     try {
       const res = await fetch(
         `http://localhost:5001/usuarios/${usuarioId}/cambiar-contrasenia-recuperar`,
@@ -119,12 +133,14 @@ const CambiarContrasenia = ({ isOpen, onClose }) => {
     <div className="modal-overlay">
       <div className="modal-content cambiar-contrasenia-modal">
         {recoveryStep === 1 ? (
-          <form>
+          <form onSubmit={handleVerificarEmail}>
             <h3>Recuperar contraseña</h3>
+
             <p>
               Ingresa tu correo electrónico y contraseña para verificar tu
               cuenta.
             </p>
+
             <input
               type="email"
               placeholder="Correo electrónico"
@@ -132,6 +148,7 @@ const CambiarContrasenia = ({ isOpen, onClose }) => {
               onChange={(e) => setRecoveryEmail(e.target.value)}
               disabled={loadingRecovery}
             />
+
             <input
               type="password"
               placeholder="Contraseña"
@@ -139,21 +156,29 @@ const CambiarContrasenia = ({ isOpen, onClose }) => {
               onChange={(e) => setPasswordEmail(e.target.value)}
               disabled={loadingRecovery}
             />
+
             <button
-              onClick={handleVerificarEmail}
+              type="submit"
               disabled={loadingRecovery}
               className="btn-change"
             >
               {loadingRecovery ? "Verificando..." : "Verificar email"}
             </button>
-            <button onClick={handleCerrarModal} className="btn-cancel">
+
+            <button
+              type="button"
+              onClick={handleCerrarModal}
+              className="btn-cancel"
+            >
               Cerrar
             </button>
           </form>
         ) : (
           <>
             <h3>Cambiar contraseña</h3>
-            <p>Ingresa tu nueva contraseña para {recoveryEmail}</p>
+
+            <p>Ingresa tu nueva contraseña</p>
+
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -161,18 +186,13 @@ const CambiarContrasenia = ({ isOpen, onClose }) => {
               }}
             >
               <input
-                type="email"
-                value={recoveryEmail}
-                style={{ display: "none" }}
-                readOnly
-              />
-              <input
                 type="password"
                 placeholder="Nueva contraseña"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 disabled={loadingRecovery}
               />
+
               <input
                 type="password"
                 placeholder="Confirmar contraseña"
@@ -180,6 +200,7 @@ const CambiarContrasenia = ({ isOpen, onClose }) => {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={loadingRecovery}
               />
+
               <button
                 type="submit"
                 disabled={loadingRecovery}
@@ -187,14 +208,26 @@ const CambiarContrasenia = ({ isOpen, onClose }) => {
               >
                 {loadingRecovery ? "Cambiando..." : "Cambiar contraseña"}
               </button>
+
+              {/* {!desdePerfil && (
+                <button
+                  type="button"
+                  onClick={handleVolverPaso1}
+                  disabled={loadingRecovery}
+                  className="btn-cancel"
+                >
+                  Volver
+                </button>
+              )} */}
+
+              <button
+                type="button"
+                onClick={handleCerrarModal}
+                className="btn-cancel"
+              >
+                Cerrar
+              </button>
             </form>
-            <button
-              onClick={handleVolverPaso1}
-              disabled={loadingRecovery}
-              className="btn-cancel"
-            >
-              Volver
-            </button>
           </>
         )}
       </div>

@@ -3,9 +3,12 @@ import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import "./CambiarContrasenia.css";
 import "./PerfilUsuario.css";
+import CambiarContrasenia from "./CambiarContrasenia";
 
 const PerfilUsuario = () => {
   const [usuario, setUsuario] = useState(null);
+  const [mostrarCambiarContrasenia, setMostrarCambiarContrasenia] =
+    useState(false);
 
   useEffect(() => {
     try {
@@ -20,28 +23,60 @@ const PerfilUsuario = () => {
   }, []);
 
   return (
-    <div>
-      <h2>Perfil de Usuario</h2>
+    <div className="perfil-usuario-container">
       <div className="card-usuario">
         {usuario ? (
-          <div>
-            <p>
-              <strong>Nombre:</strong> {usuario.nombre}
-            </p>
-            <p>
-              <strong>Email:</strong> {usuario.email}
-            </p>
-            <p>
-              <strong>Rol:</strong> {usuario.rol}
-            </p>
-          </div>
+          <>
+            <div className="usuario-header">
+              <div className="usuario-avatar">
+                {usuario.nombre?.charAt(0).toUpperCase()}
+              </div>
+
+              <h2 className="usuario-titulo">{usuario.nombre}</h2>
+
+              <p className="usuario-subtitulo">Información del usuario</p>
+            </div>
+
+            <div className="usuario-info">
+              <div className="usuario-item">
+                <span className="usuario-label">Nombre</span>
+                <span className="usuario-value">{usuario.nombre}</span>
+              </div>
+
+              <div className="usuario-item">
+                <span className="usuario-label">Email</span>
+                <span className="usuario-value">{usuario.email}</span>
+              </div>
+
+              <div className="usuario-item">
+                <span className="usuario-label">Rol</span>
+                <span className="usuario-value">{usuario.rol}</span>
+              </div>
+            </div>
+
+            <button onClick={() => setMostrarCambiarContrasenia(true)}>
+              Cambiar Contraseña
+            </button>
+
+            <button
+              className="btn-edit"
+              onClick={() =>
+                alert("Funcionalidad de edición de perfil en desarrollo")
+              }
+            >
+              Editar Perfil
+            </button>
+          </>
         ) : (
           <p>Usuario no encontrado</p>
         )}
-        {/* <button onClick={() => navigate("/cambiar-contrasenia")}>
-          Cambiar Contraseña
-        </button> */}
       </div>
+
+      <CambiarContrasenia
+        isOpen={mostrarCambiarContrasenia}
+        onClose={() => setMostrarCambiarContrasenia(false)}
+        desdePerfil={true}
+      />
     </div>
   );
 };

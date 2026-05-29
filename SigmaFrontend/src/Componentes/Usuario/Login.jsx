@@ -79,6 +79,7 @@ const Login = () => {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("usuario");
+    localStorage.removeItem("usuarioId");
     setIsAuthenticated(false);
     setUsuario(null);
   };
@@ -154,6 +155,7 @@ const Login = () => {
       <CambiarContrasenia
         isOpen={showCambiarContrasenia}
         onClose={() => setShowCambiarContrasenia(false)}
+        desdePerfil={false}
       />
     </div>
   );
