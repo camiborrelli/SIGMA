@@ -15,6 +15,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [mostrarMapa, setMostrarMapa] = useState(false);
   const [mostrarPerfil, setMostrarPerfil] = useState(false);
+  const [mostrarGestion, setMostrarGestion] = useState(true);
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -161,7 +162,11 @@ const Dashboard = () => {
         <div className="topbar-right">
           <button
             className="usuario-nombre"
-            onClick={() => navigate("/perfil")}
+            onClick={() => {
+              setMostrarPerfil(true);
+              setMostrarGestion(false);
+              setMostrarMapa(false);
+            }}
           >
             {" "}
             <FaRegUser />
@@ -175,6 +180,8 @@ const Dashboard = () => {
 
       {mostrarMapa ? (
         <Mapa />
+      ) : mostrarPerfil ? (
+        <PerfilUsuario />
       ) : (
         <div className="container">
           <div className="container-inicio-dashboard">
@@ -286,8 +293,6 @@ const Dashboard = () => {
           )}
         </div>
       )}
-
-      {mostrarPerfil && <PerfilUsuario />}
     </div>
   );
 };
