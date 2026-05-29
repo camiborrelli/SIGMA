@@ -161,7 +161,7 @@ const Dashboard = () => {
 
         <div className="topbar-right">
           <button
-            className="usuario-nombre"
+            className="btn-nav usuario"
             onClick={() => {
               setMostrarPerfil(true);
               setMostrarGestion(false);

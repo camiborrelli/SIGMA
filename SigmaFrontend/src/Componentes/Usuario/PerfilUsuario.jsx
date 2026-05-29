@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import "./CambiarContrasenia.css";
 import "./PerfilUsuario.css";
 import CambiarContrasenia from "./CambiarContrasenia";
+import { TbLockPassword } from "react-icons/tb";
 
 const PerfilUsuario = () => {
   const [usuario, setUsuario] = useState(null);
@@ -55,7 +56,7 @@ const PerfilUsuario = () => {
             </div>
 
             <button onClick={() => setMostrarCambiarContrasenia(true)}>
-              Cambiar Contraseña
+              Cambiar Contraseña <TbLockPassword />
             </button>
 
             <button
