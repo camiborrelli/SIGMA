@@ -78,7 +78,7 @@ const RegistroObra = () => {
           ubicacion,
           latitud,
           longitud,
-          fechaInicio,
+          fechaInicio: fechaInicio || null,
           estado,
         }),
       });
@@ -151,7 +151,7 @@ const RegistroObra = () => {
           type="text"
           placeholder="Fecha de inicio (YYYY-MM-DD)"
           value={fechaInicio}
-          onFocus={(e) => (e.target.type = "string")}
+          onFocus={(e) => (e.target.type = "date")}
           onBlur={(e) => {
             if (!e.target.value) e.target.type = "text";
           }}

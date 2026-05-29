@@ -1,21 +1,17 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { useNavigate } from "react-router-dom";
-import Dashboard from "../Dashboard/Dashboard";
 import "./Mapa.css";
 import { useState, useEffect } from "react";
 import logo from "../../assets/LogoSinFondo.png";
 import { TfiMapAlt } from "react-icons/tfi";
 import { VscTools } from "react-icons/vsc";
-import { BiHide } from "react-icons/bi";
 
 const Mapa = () => {
   const navigate = useNavigate();
   const [busqueda, setBusqueda] = useState("");
   const [estadoFilter, setEstadoFilter] = useState("");
   const [mostrarLista, setMostrarLista] = useState(true);
-
-  const position = [-34.9011, -56.1645]; // Coordenadas del deposito de transamerican (temporal)
   const [obras, setObras] = useState([]);
 
   const logout = () => {
@@ -49,7 +45,6 @@ const Mapa = () => {
     fetchObras();
   }, []);
 
-  // Filtrar obras basado en búsqueda y estado
   const obrasFiltradas = obras.filter((obra) => {
     const coincideBusqueda = obra.nombre
       .toLowerCase()
@@ -58,15 +53,10 @@ const Mapa = () => {
     return coincideBusqueda && coincideEstado;
   });
 
-  // Límites aproximados para Montevideo y Canelones
   const bounds = [
-    [-35.1, -56.5], // suroeste
-    [-34.3, -55.8], // noreste
+    [-35.1, -56.5],
+    [-34.3, -55.8],
   ];
-
-  const ocultarLista = () => {
-    setMostrarLista(!mostrarLista);
-  };
 
   return (
     <>
@@ -99,49 +89,44 @@ const Mapa = () => {
         <header>
           <h1>Mapa de Obras</h1>
           <div className="btn-group">
-            <button className="hide" onClick={ocultarLista}>
-              {/* <BiHide /> */}
+            <button
+              className="hide"
+              onClick={() => setMostrarLista(!mostrarLista)}
+            >
               {mostrarLista ? "Ocultar lista" : "Ver lista"}
             </button>
-            {/* <button className="btn-home" onClick={() => navigate("/dashboard")}>
-              Volver a inicio
-            </button> */}
           </div>
         </header>
 
         <div className="filtros-listado">
-          {typeof busquedaProp === "undefined" && (
-            <input
-              placeholder="Buscar obra, ubicación o responsable..."
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-              className="buscador"
-            />
-          )}
+          <input
+            placeholder="Buscar obra, ubicación o responsable..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            className="buscador"
+          />
 
-          {typeof estadoFilterProp === "undefined" && (
-            <div className="filtros-estado">
-              <button
-                className={`filtro-btn ${!estadoFilter ? "active" : ""}`}
-                onClick={() => setEstadoFilter("")}
-              >
-                Todos
-              </button>
-              {[...new Set(obras.map((o) => o.estado).filter(Boolean))].map(
-                (estado) => (
-                  <button
-                    key={estado}
-                    className={`filtro-btn ${
-                      estadoFilter === estado ? "active" : ""
-                    }`}
-                    onClick={() => setEstadoFilter(estado)}
-                  >
-                    {estado}
-                  </button>
-                ),
-              )}
-            </div>
-          )}
+          <div className="filtros-estado">
+            <button
+              className={`filtro-btn ${!estadoFilter ? "active" : ""}`}
+              onClick={() => setEstadoFilter("")}
+            >
+              Todos
+            </button>
+            {[...new Set(obras.map((o) => o.estado).filter(Boolean))].map(
+              (estado) => (
+                <button
+                  key={estado}
+                  className={`filtro-btn ${
+                    estadoFilter === estado ? "active" : ""
+                  }`}
+                  onClick={() => setEstadoFilter(estado)}
+                >
+                  {estado}
+                </button>
+              ),
+            )}
+          </div>
         </div>
 
         <div className="content">
@@ -150,16 +135,18 @@ const Mapa = () => {
               <h2>Obras en el mapa</h2>
               <p>{obrasFiltradas.length} obras encontradas</p>
               {obrasFiltradas.map((obra) => (
-                <div className="obra-card" key={obra.id}>
+                <div className="obra-card" key={obra._id}>
                   <div className="obra-card-header"></div>
                   <h3>{obra.nombre}</h3>
                   <p className="ubicacion">📍 {obra.ubicacion}</p>
                   <p className="fechas">
-                    {new Date(obra.fechaInicio).toLocaleDateString("es-ES") ||
-                      "Sin fecha"}{" "}
+                    {obra.fechaInicio
+                      ? new Date(obra.fechaInicio).toLocaleDateString("es-ES")
+                      : "Sin fecha"}{" "}
                     -{" "}
-                    {new Date(obra.fechaFin).toLocaleDateString("es-ES") ||
-                      "Sin fecha"}
+                    {obra.fechaFin
+                      ? new Date(obra.fechaFin).toLocaleDateString("es-ES")
+                      : "Sin fecha"}
                   </p>
                   <div
                     className={`estado-badge estado-${obra.estado
@@ -172,6 +159,7 @@ const Mapa = () => {
               ))}
             </section>
           )}
+
           <MapContainer
             center={[-34.7, -56.2]}
             zoom={10}
@@ -184,10 +172,23 @@ const Mapa = () => {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
             {obrasFiltradas.map((obra) => (
-              <Marker key={obra.id} position={[obra.latitud, obra.longitud]}>
+              <Marker key={obra._id} position={[obra.latitud, obra.longitud]}>
                 <Popup>
                   <strong>{obra.nombre}</strong>
-                  <p>{obra.descripcion || "Sin descripción"}</p>
+                  <br />
+                  <span>📍 {obra.ubicacion}</span>
+                  <br />
+                  <span>
+                    {obra.fechaInicio
+                      ? new Date(obra.fechaInicio).toLocaleDateString("es-ES")
+                      : "Sin fecha"}{" "}
+                    -{" "}
+                    {obra.fechaFin
+                      ? new Date(obra.fechaFin).toLocaleDateString("es-ES")
+                      : "Sin fecha"}
+                  </span>
+                  <br />
+                  <span>{obra.estado}</span>
                 </Popup>
               </Marker>
             ))}
