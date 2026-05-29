@@ -6,6 +6,9 @@ import { useState, useEffect } from "react";
 import logo from "../../assets/LogoSinFondo.png";
 import { TfiMapAlt } from "react-icons/tfi";
 import { VscTools } from "react-icons/vsc";
+import { FaRegUser } from "react-icons/fa";
+import PerfilUsuario from "../Usuario/PerfilUsuario";
+import Dashboard from "../Dashboard/Dashboard";
 
 const Mapa = () => {
   const navigate = useNavigate();
@@ -13,6 +16,10 @@ const Mapa = () => {
   const [estadoFilter, setEstadoFilter] = useState("");
   const [mostrarLista, setMostrarLista] = useState(true);
   const [obras, setObras] = useState([]);
+
+  const [mostrarMapa, setMostrarMapa] = useState(true);
+  const [mostrarPerfil, setMostrarPerfil] = useState(false);
+  const [mostrarGestion, setMostrarGestion] = useState(false);
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -76,125 +83,139 @@ const Mapa = () => {
         </nav>
 
         <div className="topbar-right">
-          <span className="usuario-nombre">
+          <button
+            className="btn-nav usuario"
+            onClick={() => {
+              setMostrarPerfil(true);
+              setMostrarGestion(false);
+              setMostrarMapa(false);
+            }}
+          >
+            {" "}
+            <FaRegUser />
             {usuario ? `${usuario.nombre} ${usuario.apellido}` : "Usuario"}
-          </span>
+          </button>
           <button className="btn-logout" onClick={logout}>
             Cerrar sesión
           </button>
         </div>
       </div>
+      {mostrarPerfil ? (
+        <PerfilUsuario />
+      ) : mostrarGestion ? (
+        <Dashboard />
+      ) : (
+        <div className="mapa-container">
+          <header>
+            <h1>Mapa de Obras</h1>
+            <div className="btn-group">
+              <button
+                className="hide"
+                onClick={() => setMostrarLista(!mostrarLista)}
+              >
+                {mostrarLista ? "Ocultar lista" : "Ver lista"}
+              </button>
+            </div>
+          </header>
 
-      <div className="mapa-container">
-        <header>
-          <h1>Mapa de Obras</h1>
-          <div className="btn-group">
-            <button
-              className="hide"
-              onClick={() => setMostrarLista(!mostrarLista)}
-            >
-              {mostrarLista ? "Ocultar lista" : "Ver lista"}
-            </button>
-          </div>
-        </header>
-
-        <div className="filtros-listado">
-          <input
-            placeholder="Buscar obra, ubicación o responsable..."
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-            className="buscador"
-          />
-
-          <div className="filtros-estado">
-            <button
-              className={`filtro-btn ${!estadoFilter ? "active" : ""}`}
-              onClick={() => setEstadoFilter("")}
-            >
-              Todos
-            </button>
-            {[...new Set(obras.map((o) => o.estado).filter(Boolean))].map(
-              (estado) => (
-                <button
-                  key={estado}
-                  className={`filtro-btn ${
-                    estadoFilter === estado ? "active" : ""
-                  }`}
-                  onClick={() => setEstadoFilter(estado)}
-                >
-                  {estado}
-                </button>
-              ),
-            )}
-          </div>
-        </div>
-
-        <div className="content">
-          {mostrarLista && (
-            <section className="lista-obras">
-              <h2>Obras en el mapa</h2>
-              <p>{obrasFiltradas.length} obras encontradas</p>
-              {obrasFiltradas.map((obra) => (
-                <div className="obra-card" key={obra._id}>
-                  <div className="obra-card-header"></div>
-                  <h3>{obra.nombre}</h3>
-                  <p className="ubicacion">📍 {obra.ubicacion}</p>
-                  <p className="fechas">
-                    {obra.fechaInicio
-                      ? new Date(obra.fechaInicio).toLocaleDateString("es-ES")
-                      : "Sin fecha"}{" "}
-                    -{" "}
-                    {obra.fechaFin
-                      ? new Date(obra.fechaFin).toLocaleDateString("es-ES")
-                      : "Sin fecha"}
-                  </p>
-                  <div
-                    className={`estado-badge estado-${obra.estado
-                      .toLowerCase()
-                      .replace(/\s+/g, "-")}`}
-                  >
-                    {obra.estado}
-                  </div>
-                </div>
-              ))}
-            </section>
-          )}
-
-          <MapContainer
-            center={[-34.7, -56.2]}
-            zoom={10}
-            style={{ height: "600px", width: "100%" }}
-            maxBounds={bounds}
-            maxBoundsViscosity={1.0}
-          >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          <div className="filtros-listado">
+            <input
+              placeholder="Buscar obra, ubicación o responsable..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              className="buscador"
             />
-            {obrasFiltradas.map((obra) => (
-              <Marker key={obra._id} position={[obra.latitud, obra.longitud]}>
-                <Popup>
-                  <strong>{obra.nombre}</strong>
-                  <br />
-                  <span>📍 {obra.ubicacion}</span>
-                  <br />
-                  <span>
-                    {obra.fechaInicio
-                      ? new Date(obra.fechaInicio).toLocaleDateString("es-ES")
-                      : "Sin fecha"}{" "}
-                    -{" "}
-                    {obra.fechaFin
-                      ? new Date(obra.fechaFin).toLocaleDateString("es-ES")
-                      : "Sin fecha"}
-                  </span>
-                  <br />
-                  <span>{obra.estado}</span>
-                </Popup>
-              </Marker>
-            ))}
-          </MapContainer>
+
+            <div className="filtros-estado">
+              <button
+                className={`filtro-btn ${!estadoFilter ? "active" : ""}`}
+                onClick={() => setEstadoFilter("")}
+              >
+                Todos
+              </button>
+              {[...new Set(obras.map((o) => o.estado).filter(Boolean))].map(
+                (estado) => (
+                  <button
+                    key={estado}
+                    className={`filtro-btn ${
+                      estadoFilter === estado ? "active" : ""
+                    }`}
+                    onClick={() => setEstadoFilter(estado)}
+                  >
+                    {estado}
+                  </button>
+                ),
+              )}
+            </div>
+          </div>
+
+          <div className="content">
+            {mostrarLista && (
+              <section className="lista-obras">
+                <h2>Obras en el mapa</h2>
+                <p>{obrasFiltradas.length} obras encontradas</p>
+                {obrasFiltradas.map((obra) => (
+                  <div className="obra-card" key={obra._id}>
+                    <div className="obra-card-header"></div>
+                    <h3>{obra.nombre}</h3>
+                    <p className="ubicacion">📍 {obra.ubicacion}</p>
+                    <p className="fechas">
+                      {obra.fechaInicio
+                        ? new Date(obra.fechaInicio).toLocaleDateString("es-ES")
+                        : "Sin fecha"}{" "}
+                      -{" "}
+                      {obra.fechaFin
+                        ? new Date(obra.fechaFin).toLocaleDateString("es-ES")
+                        : "Sin fecha"}
+                    </p>
+                    <div
+                      className={`estado-badge estado-${obra.estado
+                        .toLowerCase()
+                        .replace(/\s+/g, "-")}`}
+                    >
+                      {obra.estado}
+                    </div>
+                  </div>
+                ))}
+              </section>
+            )}
+
+            <MapContainer
+              center={[-34.7, -56.2]}
+              zoom={10}
+              style={{ height: "600px", width: "100%" }}
+              maxBounds={bounds}
+              maxBoundsViscosity={1.0}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+              {obrasFiltradas.map((obra) => (
+                <Marker key={obra._id} position={[obra.latitud, obra.longitud]}>
+                  <Popup>
+                    <strong>{obra.nombre}</strong>
+                    <br />
+                    <span>📍 {obra.ubicacion}</span>
+                    <br />
+                    <span>
+                      {obra.fechaInicio
+                        ? new Date(obra.fechaInicio).toLocaleDateString("es-ES")
+                        : "Sin fecha"}{" "}
+                      -{" "}
+                      {obra.fechaFin
+                        ? new Date(obra.fechaFin).toLocaleDateString("es-ES")
+                        : "Sin fecha"}
+                    </span>
+                    <br />
+                    <span>{obra.estado}</span>
+                  </Popup>
+                </Marker>
+              ))}
+            </MapContainer>
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 };
