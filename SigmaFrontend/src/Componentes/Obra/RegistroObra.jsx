@@ -14,23 +14,54 @@ const RegistroObra = () => {
   const [estado, setEstado] = useState("Activa");
   const [ubicacion, setUbicacion] = useState("");
   const [errors, setErrors] = useState({});
-  const [mensaje, setMensaje] = useState("");
+  const [geocodingStatus, setGeocodingStatus] = useState("");
+  const geocodificar = async () => {
+    if (!ubicacion.trim()) return;
+
+    setGeocodingStatus("🔍 Buscando coordenadas...");
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          ubicacion,
+        )}&format=json&limit=1&countrycodes=uy`,
+        {
+          headers: {
+            "Accept-Language": "es",
+            "User-Agent": "SIGMA-App/1.0",
+          },
+        },
+      );
+      const data = await res.json();
+
+      if (!data || data.length === 0) {
+        setLatitud("");
+        setLongitud("");
+        setGeocodingStatus("⚠️ No se encontró la dirección, verificá el texto");
+        return;
+      }
+
+      console.log("Geocoding result:", data[0]);
+      console.log(latitud, longitud);
+
+      setLatitud(parseFloat(data[0].lat));
+      setLongitud(parseFloat(data[0].lon));
+      setGeocodingStatus(`✅ ${data[0].display_name}`);
+    } catch (err) {
+      setGeocodingStatus("❌ Error al buscar coordenadas");
+    }
+  };
 
   const registrarObra = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
-    setMensaje("");
     setErrors({});
 
-    if (
-      !nombre ||
-      !ubicacion ||
-      !latitud ||
-      !longitud ||
-      !fechaInicio ||
-      !fechaFin ||
-      !descripcion
-    ) {
+    if (!nombre || !ubicacion) {
       toast.error("Por favor completa todos los campos obligatorios");
+      return;
+    }
+
+    if (!latitud || !longitud) {
+      toast.error("No se pudieron obtener las coordenadas de la dirección");
       return;
     }
 
@@ -44,12 +75,10 @@ const RegistroObra = () => {
         headers,
         body: JSON.stringify({
           nombre,
+          ubicacion,
           latitud,
           longitud,
-          ubicacion,
           fechaInicio,
-          fechaFin,
-          descripcion,
           estado,
         }),
       });
@@ -57,14 +86,13 @@ const RegistroObra = () => {
 
       if (!res.ok) {
         setErrors(result.errors || {});
-        setMensaje(
+        toast.error(
           result.error || result.message || "Error al registrar la obra",
         );
         return;
       }
 
       toast.success("Obra registrada correctamente");
-      // Limpiar todos los campos
       setNombre("");
       setLatitud("");
       setLongitud("");
@@ -73,6 +101,7 @@ const RegistroObra = () => {
       setDescripcion("");
       setEstado("Activa");
       setUbicacion("");
+      setGeocodingStatus("");
       navigate("/dashboard");
     } catch (error) {
       console.error("Error al registrar la obra:", error);
@@ -89,46 +118,48 @@ const RegistroObra = () => {
         )}
         <input
           type="text"
-          placeholder="Nombre de la obra"
+          placeholder="Nombre de la obra (obligatorio)"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
           className={errors.nombre ? "input-error" : ""}
         />
         <input
           type="text"
-          placeholder="Ubicación"
+          placeholder="Ubicación (ej: Av. 18 de Julio 1234, Montevideo) (obligatorio)"
           value={ubicacion}
-          onChange={(e) => setUbicacion(e.target.value)}
+          onChange={(e) => {
+            setUbicacion(e.target.value);
+            setLatitud(""); // 👈 resetear si cambia la dirección
+            setLongitud("");
+            setGeocodingStatus("");
+          }}
+          onBlur={geocodificar} // 👈 geocodifica al salir del campo
           className={errors.ubicacion ? "input-error" : ""}
         />
+        {/* Feedback visual de geocodificación */}
+        {geocodingStatus && (
+          <small
+            style={{
+              color: geocodingStatus.startsWith("✅") ? "green" : "orange",
+            }}
+          >
+            {geocodingStatus}
+          </small>
+        )}
+
         <input
           type="text"
-          placeholder="Latitud ej: -34.9011"
-          value={latitud}
-          onChange={(e) => setLatitud(e.target.value)}
-          className={errors.latitud ? "input-error" : ""}
-        />
-        <input
-          type="text"
-          placeholder="Longitud ej: -58.3816"
-          value={longitud}
-          onChange={(e) => setLongitud(e.target.value)}
-          className={errors.longitud ? "input-error" : ""}
-        />
-        <input
-          type="text"
-          placeholder="Fecha de inicio"
+          placeholder="Fecha de inicio (YYYY-MM-DD)"
           value={fechaInicio}
-          onFocus={(e) => (e.target.type = "date")}
+          onFocus={(e) => (e.target.type = "string")}
           onBlur={(e) => {
             if (!e.target.value) e.target.type = "text";
           }}
           onChange={(e) => setFechaInicio(e.target.value)}
-          className={errors.fechaInicio ? "input-error" : ""}
         />
-        <input
+        {/* <input
           type="text"
-          placeholder="Fecha de fin"
+          placeholder="Fecha de fin (YYYY-MM-DD)"
           value={fechaFin}
           onFocus={(e) => (e.target.type = "date")}
           onBlur={(e) => {
@@ -136,13 +167,13 @@ const RegistroObra = () => {
           }}
           onChange={(e) => setFechaFin(e.target.value)}
           className={errors.fechaFin ? "input-error" : ""}
-        />
-        <textarea
+        /> */}
+        {/* <textarea
           placeholder="Descripción"
           value={descripcion}
           onChange={(e) => setDescripcion(e.target.value)}
           className={errors.descripcion ? "input-error" : ""}
-        />
+        /> */}
 
         <button type="submit" className="btn-primary">
           Registrar Obra

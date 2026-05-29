@@ -2,22 +2,22 @@ import mongoose, { Schema } from "mongoose";
 
 export const ObraSchema = new Schema({
   nombre: { type: String, required: true, minlength: 1, trim: true },
-  fechaInicio: { type: Date, required: true },
-  fechaFin: { type: Date, required: true },
+  fechaInicio: { type: Date, required: false },
+  fechaFin: { type: Date, required: false },
   estado: {
     type: String,
     enum: ["Activa", "Finalizada", "Cancelada"],
     default: "Activa",
   },
-  latitud: { type: Number, required: true },
-  longitud: { type: Number, required: true },
+  latitud: { type: Number, required: false },
+  longitud: { type: Number, required: false },
   ubicacion: {
     type: String,
     required: true,
     unique: true,
     trim: true,
   },
-  descripcion: { type: String, default: "" },
+  // descripcion: { type: String, required: false, trim: true },
   cantReactivaciones: { type: Number, default: 0 },
 });
 

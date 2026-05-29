@@ -6,9 +6,7 @@ export const registrarObraServices = async ({
   longitud,
   ubicacion,
   fechaInicio,
-  fechaFin,
   estado,
-  descripcion,
 }) => {
   const existe = await Obra.findOne({ nombre, latitud, longitud }).collation({
     locale: "en",
@@ -26,9 +24,7 @@ export const registrarObraServices = async ({
     longitud,
     ubicacion,
     fechaInicio,
-    fechaFin,
     estado,
-    descripcion,
   });
   await nuevaObra.save();
   return nuevaObra;

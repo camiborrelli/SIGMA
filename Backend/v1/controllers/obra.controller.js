@@ -8,25 +8,15 @@ import Obra from "../models/obra.model.js";
 
 export const registrarObraController = async (req, res) => {
   try {
-    const {
-      nombre,
-      latitud,
-      longitud,
-      ubicacion,
-      fechaInicio,
-      fechaFin,
-      estado,
-      descripcion,
-    } = req.body;
+    const { nombre, latitud, longitud, ubicacion, fechaInicio, estado } =
+      req.body;
     const nuevaObra = await registrarObraServices({
       nombre,
       latitud,
       longitud,
       ubicacion,
       fechaInicio,
-      fechaFin,
       estado,
-      descripcion,
     });
     res.status(201).json(nuevaObra);
   } catch (error) {

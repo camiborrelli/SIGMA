@@ -155,8 +155,11 @@ const Mapa = () => {
                   <h3>{obra.nombre}</h3>
                   <p className="ubicacion">📍 {obra.ubicacion}</p>
                   <p className="fechas">
-                    {new Date(obra.fechaInicio).toLocaleDateString("es-ES")} -{" "}
-                    {new Date(obra.fechaFin).toLocaleDateString("es-ES")}
+                    {new Date(obra.fechaInicio).toLocaleDateString("es-ES") ||
+                      "Sin fecha"}{" "}
+                    -{" "}
+                    {new Date(obra.fechaFin).toLocaleDateString("es-ES") ||
+                      "Sin fecha"}
                   </p>
                   <div
                     className={`estado-badge estado-${obra.estado
