@@ -1,70 +1,152 @@
-.titulo {
-  margin-bottom: 15px;
-  color: #333;
-}
-
-.sigma-table {
+.usuarios-container {
   width: 100%;
-  border-collapse: collapse;
+}
+
+.titulo {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.subtitulo-admin {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+.listado-card-header-label h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 16px;
+}
+
+.filters-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+  margin-bottom: 24px;
+  width: 100%;
+  flex-wrap: nowrap;
+}
+
+.buscador-wrapper {
+  flex: 0 1 360px;
+  width: 100%;
+}
+
+.btn-bajas {
+  background-color: #e2e8f0;
+  color: #334155;
+  border: none;
+  padding: 10px 18px;
   border-radius: 8px;
-  overflow: hidden;
-  table-layout: fixed;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
 }
 
-.sigma-th {
-  background-color: #f4f6f8;
-  text-align: left;
-  padding: 12px;
-  font-size: 14px;
-  color: #333;
+.btn-bajas:hover {
+  background-color: #cbd5e1;
+  color: #0f172a;
 }
 
-.sigma-tr {
-  background-color: #ffffff;
-}
-
-.sigma-tr.alt {
-  background-color: #f4f6f8;
-}
-
-.sigma-td {
-  padding: 12px;
-  font-size: 14px;
-  color: #333;
-}
-
-.estado-funcionario {
-  background-color: #1976d2;
-  color: white;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 12px;
+.btn-cambiar-rol, .btn-dar-baja, .btn-reactivar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  height: 34px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .btn-cambiar-rol {
-  background-color: #c66228;
+  background-color: #dc2626;
   color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 13px;
 }
 
 .btn-cambiar-rol:hover {
   background-color: #a61c1c;
 }
 
-.error {
-  color: red;
-  margin-top: 10px;
+.btn-dar-baja {
+  background-color: #334155;
+  color: white;
 }
 
-.section-header {
+.btn-dar-baja:hover {
+  background-color: #1e293b;
+}
+
+.btn-reactivar {
+  background-color: #16a34a;
+  color: white;
+}
+
+.btn-reactivar:hover {
+  background-color: #15803d;
+}
+
+.tabla-desktop {
   width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  margin-bottom: 16px;
+  overflow-x: auto;
+  background: #ffffff;
+  border-radius: 12px;
+}
+
+.sigma-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.sigma-th {
+  background-color: #f8fafc;
+  text-align: left;
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #475569;
+  font-weight: 600;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.sigma-tr {
+  background-color: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.sigma-td {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #334155;
+}
+
+.estado-funcionario {
+  background-color: #2563eb;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.error {
+  color: #ef4444;
+  margin-top: 10px;
+  font-size: 14px;
 }
 
 .usuarios-mobile {
@@ -72,8 +154,22 @@
 }
 
 @media (max-width: 1024px) {
-  .sigma-table {
+  .tabla-desktop {
     display: none;
+  }
+
+  .filters-container {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .buscador-wrapper {
+    flex: 1;
+  }
+
+  .btn-bajas {
+    width: auto;
   }
 
   .usuarios-mobile {
@@ -85,83 +181,13 @@
 
   .usuario-card {
     background: #ffffff;
-    padding: 14px;
+    padding: 20px;
     border-radius: 14px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border: 1px solid #f1f5f9;
-  }
-
-  .usuario-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .usuario-nombre-card {
-    font-weight: 600;
-    font-size: 14px;
-    color: #0f172a;
-  }
-
-  .usuario-rol {
-    font-size: 11px;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: rgba(37, 99, 235, 0.15);
-    color: #1d4ed8;
-    font-weight: 600;
-    border: 1px solid rgba(37, 99, 235, 0.35);
-  }
-
-  .usuario-info {
-    font-size: 13px;
-    color: #64748b;
-  }
-
-  .usuario-info strong {
-    color: #334155;
-    font-weight: 500;
-  }
-
-  .usuario-card .btn-cambiar-rol {
-    margin-top: 6px;
-    width: 100%;
-    border-radius: 10px;
-    font-size: 13px;
-    padding: 8px;
-    background: #c62828;
-    transition: all 0.2s ease;
-  }
-
-  .usuario-card .btn-cambiar-rol:hover {
-    background: #a61c1c;
-    transform: translateY(-1px);
-  }
-}
-
-@media (max-width: 768px) {
-  .sigma-table {
-    display: none;
-  }
-
-  .usuarios-mobile {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
     gap: 14px;
-  }
-
-  .usuario-card {
-    background: #ffffff;
-    padding: 16px;
-    border-radius: 14px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border: 1px solid #f1f5f9;
+    border: 1px solid #e2e8f0;
   }
 
   .usuario-card-header {
@@ -178,40 +204,49 @@
 
   .usuario-rol {
     font-size: 11px;
-    padding: 4px 10px;
+    padding: 3px 10px;
     border-radius: 999px;
-    background: rgba(37, 99, 235, 0.15);
-    color: #1d4ed8;
+    background: rgba(37, 99, 235, 0.12);
+    color: #2563eb;
     font-weight: 600;
-    border: 1px solid rgba(37, 99, 235, 0.35);
+    border: 1px solid rgba(37, 99, 235, 0.2);
   }
 
   .usuario-info {
+    background: #fff5f5;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #fee2e2;
     font-size: 13px;
-    color: #64748b;
+    word-break: break-all;
   }
 
-  .usuario-info strong {
-    color: #334155;
-    font-weight: 500;
+  .card-acciones {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
   }
 
-  .usuario-card .btn-cambiar-rol {
-    margin-top: 6px;
-    width: fit-content;
-    min-width: 140px;
-    border-radius: 10px;
-    font-size: 13px;
-    padding: 8px;
-    background: #c62828;
-    transition: all 0.2s ease;
-    align-self: center;
-    text-align: center;
+  .card-acciones button {
+    flex: 1;
+    height: 36px;
+  }
+}
+
+@media (max-width: 680px) {
+  .filters-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
   }
 
-  .usuario-card .btn-cambiar-rol:hover {
-    background: #a61c1c;
-    transform: translateY(-1px);
+  .btn-bajas {
+    width: 100%;
+  }
+
+  .usuarios-mobile {
+    grid-template-columns: 1fr;
+    gap: 14px;
   }
 }
 
@@ -235,75 +270,4 @@
 .paginacion button:disabled {
   background: #ccc;
   cursor: not-allowed;
-}
-
-.usuarios-container {
-  width: 100%;
-}
-
-.tabla-desktop {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.btn-dar-baja {
-  background: #dc2626;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.btn-reactivar {
-  background: #16a34a;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 13px;
-  transition: all 0.2s ease;
-}
-
-.btn-reactivar:hover {
-  background: #15803d;
-  transform: translateY(-1px);
-}
-
-.btn-bajas {
-  background: #2563eb;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  margin-top: 12px;
-  margin-bottom: 12px;
-  transition: all 0.2s ease;
-}
-
-.btn-bajas:hover {
-  background: #d3d4d69c;
-  color: #1f2937;
-  transform: translateY(-1px);
-}
-
-.usuarios-container .filters {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.filters button {
-  background: #e5e7eb;
-  color: #1f2937;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
