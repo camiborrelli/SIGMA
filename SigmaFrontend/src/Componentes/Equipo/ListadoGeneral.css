@@ -264,3 +264,154 @@
   width: 120px;
   min-width: 120px;
 }
+
+.equipos-mobile {
+  display: none;
+}
+
+.tabla-desktop {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* =========================
+   MEDIA QUERY: TABLETS (MÁXIMO 1024px)
+   ========================= */
+@media (max-width: 1024px) {
+  .tabla-desktop {
+    display: none; /* Oculta la tabla clásica */
+  }
+
+  .equipos-mobile {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 Columnas de tarjetas */
+    gap: 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .equipo-card {
+    background: #ffffff;
+    padding: 16px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border: 1px solid #f1f5f9;
+  }
+
+  .equipo-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Permite que el tag salte abajo si no entra */
+  gap: 8px;        /* Evita que se toquen al envolver */
+  border-bottom: 1px solid #f8fafc;
+  padding-bottom: 8px;
+}
+
+  .equipo-nombre-card {
+    font-weight: 700;
+    font-size: 15px;
+    color: #0f172a;
+  }
+
+  .equipo-tipo-tag {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(185, 28, 28, 0.1);
+    color: #b91c1c;
+    font-weight: 600;
+    border: 1px solid rgba(185, 28, 28, 0.2);
+  }
+
+  .equipo-info {
+    font-size: 13px;
+    color: #64748b;
+    flex-grow: 1; /* Empuja las acciones al fondo si las tarjetas difieren en altura */
+  }
+
+  .equipo-info strong {
+    color: #334155;
+    font-weight: 500;
+  }
+
+  .equipo-card-acciones {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+    margin-top: 8px;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 10px;
+  }
+
+  /* Rediseño de botones tipo icono expandidos con texto para móvil */
+  .equipo-card-acciones .icon-btn {
+    flex: 1;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    gap: 4px;
+    padding: 8px 4px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .equipo-card-acciones .icon-btn.ver {
+    background-color: rgba(172, 24, 24, 0.05);
+  }
+  .equipo-card-acciones .icon-btn.add {
+    background-color: rgba(17, 24, 39, 0.05);
+  }
+  .equipo-card-acciones .icon-btn.edit {
+    background-color: rgba(6, 51, 149, 0.05);
+  }
+
+  .equipo-tipo-tag {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #cbd5e1;
+  }
+
+  .equipo-tipo-tag.tag-herramienta {
+    background: rgba(185, 28, 28, 0.1);
+    color: #b91c1c;
+    border: 1px solid rgba(185, 28, 28, 0.25);
+  }
+
+  .equipo-tipo-tag.tag-maquina {
+    background: rgba(2, 132, 199, 0.1); /* Celeste / Azul sutil */
+    color: #0284c7;
+    border: 1px solid rgba(2, 132, 199, 0.25);
+  }
+
+  .equipo-tipo-tag.tag-vehiculo {
+    background: rgba(245, 158, 11, 0.1); /* Ámbar / Naranja */
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+  }
+}
+
+@media (max-width: 768px) {
+  .equipos-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .equipo-card {
+    padding: 16px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  }
+
+  .equipo-card-acciones .icon-btn {
+    font-size: 11px;
+    padding: 8px 2px;
+  }
+}

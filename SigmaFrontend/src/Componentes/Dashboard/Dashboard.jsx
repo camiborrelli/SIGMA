@@ -16,6 +16,7 @@ const Dashboard = () => {
   const [mostrarMapa, setMostrarMapa] = useState(false);
   const [mostrarPerfil, setMostrarPerfil] = useState(false);
   const [mostrarGestion, setMostrarGestion] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false); // Estado para el menú responsive
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -23,13 +24,8 @@ const Dashboard = () => {
     navigate("/");
   };
 
-  const registrarEquipo = () => {
-    navigate("/registrarEquipo");
-  };
-
-  const registrarObra = () => {
-    navigate("/registrarObra");
-  };
+  const registrarEquipo = () => navigate("/registrarEquipo");
+  const registrarObra = () => navigate("/registrarObra");
 
   let usuario = null;
   try {
@@ -48,57 +44,18 @@ const Dashboard = () => {
     bajas: 0,
   });
 
-  const [statsEquipos, setStatsEquipos] = useState({
-    total: 0,
-  });
+  const [statsEquipos, setStatsEquipos] = useState({ total: 0 });
   const [tipoFilter, setTipoFilter] = useState("");
   const [estadoFilter, setEstadoFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      const token = localStorage.getItem("token");
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
-      try {
-        const res = await fetch("http://localhost:5001/unidades/stats", {
-          headers,
-        });
-
-        if (!res.ok) {
-          const r = await res.json().catch(() => ({}));
-          console.error("Error stats:", r);
-          return;
-        }
-
-        const data = await res.json();
-
-        setStats({
-          total: data.total || 0,
-          disponibles: data.disponibles || 0,
-          asignadas: data.asignadas || 0,
-          mantenimiento: data.mantenimiento || 0,
-          bajas: data.bajas || 0,
-        });
-      } catch (err) {
-        console.error("Error conexión stats:", err);
-      }
-    };
-
-    fetchStats();
-  }, []);
-
   const fetchStatsUnidades = async () => {
     const token = localStorage.getItem("token");
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
     try {
-      const res = await fetch("http://localhost:5001/unidades/stats", {
-        headers,
-      });
+      const res = await fetch("http://localhost:5001/unidades/stats", { headers });
       if (!res.ok) return;
       const data = await res.json();
-
       setStats({
         total: data.total || 0,
         disponibles: data.disponibles || 0,
@@ -107,37 +64,23 @@ const Dashboard = () => {
         bajas: data.bajas || 0,
       });
     } catch (err) {
-      console.error("Error al obtener stats de unidades:", err);
+      console.error("Error stats unidades:", err);
     }
   };
 
-  // Llamada inicial
   useEffect(() => {
     fetchStatsUnidades();
-  }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
     const fetchStatsEquipos = async () => {
       try {
-        const res = await fetch("http://localhost:5001/equipos/stats", {
-          headers,
-        });
-
+        const token = localStorage.getItem("token");
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+        const res = await fetch("http://localhost:5001/equipos/stats", { headers });
         const data = await res.json();
-
-        if (res.ok) {
-          setStatsEquipos({
-            total: data.total || 0,
-          });
-        }
+        if (res.ok) setStatsEquipos({ total: data.total || 0 });
       } catch (err) {
         console.error("Error equipos stats:", err);
       }
     };
-
     fetchStatsEquipos();
   }, []);
 
@@ -150,11 +93,23 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <nav className="nav">
-          <button className="btn-nav" onClick={() => navigate("/dashboard")}>
+        {/* Botón Hamburguesa para Mobile */}
+        <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+          ☰
+        </button>
+
+        {/* Navegación Responsive */}
+        <nav className={`nav ${menuOpen ? "open" : ""}`}>
+          <button 
+            className="btn-nav" 
+            onClick={() => { navigate("/dashboard"); setMenuOpen(false); }}
+          >
             <VscTools /> Gestion de Equipos
           </button>
-          <button className="btn-nav" onClick={() => navigate("/mapa")}>
+          <button 
+            className="btn-nav" 
+            onClick={() => { navigate("/mapa"); setMenuOpen(false); }}
+          >
             <TfiMapAlt /> Ver Mapa
           </button>
         </nav>
@@ -166,9 +121,9 @@ const Dashboard = () => {
               setMostrarPerfil(true);
               setMostrarGestion(false);
               setMostrarMapa(false);
+              setMenuOpen(false);
             }}
           >
-            {" "}
             <FaRegUser />
             {usuario ? `${usuario.nombre} ${usuario.apellido}` : "Usuario"}
           </button>
@@ -187,28 +142,15 @@ const Dashboard = () => {
           <div className="container-inicio-dashboard">
             <div className="inicio-texto">
               <h1 className="titulo-principal">Gestion de equipos</h1>
-              <p>
-                Administra maquinas y herramientas de la empresa Transamerican
-              </p>
+              <p>Administra maquinas y herramientas de la empresa Transamerican</p>
             </div>
 
             {rol === "Admin" && (
               <div className="inicio-acciones">
-                <button className="btn btn-acciones">
-                  Registro de acciones
-                </button>
-
-                <button className="btn btn-register" onClick={registrarEquipo}>
-                  + Nuevo Equipo
-                </button>
-
-                <button className="btn btn-register" onClick={registrarObra}>
-                  + Nueva Obra
-                </button>
-                <button
-                  className="btn btn-register btn-ver-mapa-hidden"
-                  onClick={() => navigate("/mapa")}
-                >
+                <button className="btn btn-acciones">Registro de acciones</button>
+                <button className="btn btn-register" onClick={registrarEquipo}>+ Nuevo Equipo</button>
+                <button className="btn btn-register" onClick={registrarObra}>+ Nueva Obra</button>
+                <button className="btn btn-register btn-ver-mapa-hidden" onClick={() => navigate("/mapa")}>
                   Ver mapa
                 </button>
               </div>
@@ -220,27 +162,22 @@ const Dashboard = () => {
               <p className="summary-card__number">{statsEquipos.total}</p>
               <h4 className="summary-card__label">Total Equipos</h4>
             </div>
-
             <div className="summary-card summary-card--total">
               <p className="summary-card__number">{stats.total}</p>
               <h4 className="summary-card__label">Total unidades</h4>
             </div>
-
             <div className="summary-card summary-card--disponibles">
               <p className="summary-card__number">{stats.disponibles}</p>
               <h4 className="summary-card__label">Disponibles</h4>
             </div>
-
             <div className="summary-card summary-card--asignadas">
               <p className="summary-card__number">{stats.asignadas}</p>
               <h4 className="summary-card__label">Asignadas</h4>
             </div>
-
             <div className="summary-card summary-card--mantenimiento">
               <p className="summary-card__number">{stats.mantenimiento}</p>
               <h4 className="summary-card__label">Mantenimiento</h4>
             </div>
-
             <div className="summary-card summary-card--debaja">
               <p className="summary-card__number">{stats.bajas}</p>
               <h4 className="summary-card__label">Dados de baja</h4>
@@ -249,7 +186,6 @@ const Dashboard = () => {
 
           <div className="dashboard-card">
             <h2>Listado de Equipos</h2>
-
             <div className="filters-top">
               <input
                 className="filters-input"
@@ -257,7 +193,6 @@ const Dashboard = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-
               <select
                 className="filters-select"
                 value={tipoFilter}
@@ -268,7 +203,6 @@ const Dashboard = () => {
                 <option value="Herramienta">Herramientas</option>
               </select>
             </div>
-
             <ListadoGeneral
               onUpdated={fetchStatsUnidades}
               tipoFilter={tipoFilter}
@@ -285,7 +219,6 @@ const Dashboard = () => {
                   <p>Administra los funcionarios del sistema</p>
                 </div>
               </div>
-
               <div className="dashboard-card">
                 <ListadoUsuarios />
               </div>

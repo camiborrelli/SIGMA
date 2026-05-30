@@ -15,7 +15,6 @@ const ListadoUsuarios = () => {
   const [mostrarInactivos, setMostrarInactivos] = useState(false);
 
   const [paginaActual, setPaginaActual] = useState(1);
-
   const [usuariosPorPagina, setUsuariosPorPagina] = useState(6);
 
   useEffect(() => {
@@ -23,11 +22,11 @@ const ListadoUsuarios = () => {
       const width = window.innerWidth;
 
       if (width <= 768) {
-        setUsuariosPorPagina(4); //mobile
+        setUsuariosPorPagina(4); // mobile
       } else if (width <= 1024) {
-        setUsuariosPorPagina(5); //tablet
+        setUsuariosPorPagina(5); // tablet
       } else {
-        setUsuariosPorPagina(6); //desktop
+        setUsuariosPorPagina(6); // desktop
       }
     };
 
@@ -83,7 +82,7 @@ const ListadoUsuarios = () => {
       return u.estado !== "Inactivo";
     })
     .sort((a, b) =>
-      a.apellido.toLowerCase().localeCompare(b.apellido.toLowerCase()),
+      a.apellido.toLowerCase().localeCompare(b.apellido.toLowerCase())
     );
 
   const totalPaginas = Math.ceil(usuariosFiltrados.length / usuariosPorPagina);
@@ -93,7 +92,6 @@ const ListadoUsuarios = () => {
 
   const usuariosPaginados = usuariosFiltrados.slice(indiceInicio, indiceFin);
 
-  //Cambiar rol a Admin
   const cambiarRol = async (id) => {
     const token = localStorage.getItem("token");
 
@@ -156,7 +154,7 @@ const ListadoUsuarios = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
       const data = await res.json();
 
@@ -224,20 +222,20 @@ const ListadoUsuarios = () => {
 
   return (
     <div className="usuarios-container">
-      <h2 className="titulo">
-        {mostrarInactivos
-          ? "Usuarios dados de baja"
-          : "Listado de funcionarios"}
-      </h2>
-      <div className="filters">
-        <Buscador
-          value={busqueda}
-          onChange={(val) => {
-            setBusqueda(val);
-            setPaginaActual(1);
-          }}
-          placeholder="Buscar funcionario..."
-        />
+      <h2 className="titulo">Gestión de usuarios</h2>
+      <p className="subtitulo-admin">Administra los funcionarios del sistema</p>
+      
+      <div className="filters-container">
+        <div className="buscador-wrapper">
+          <Buscador
+            value={busqueda}
+            onChange={(val) => {
+              setBusqueda(val);
+              setPaginaActual(1);
+            }}
+            placeholder="Buscar funcionario..."
+          />
+        </div>
 
         <button
           className="btn-bajas"
@@ -250,6 +248,14 @@ const ListadoUsuarios = () => {
             ? "Volver a funcionarios activos"
             : "Ver usuarios dados de baja"}
         </button>
+      </div>
+
+      <div className="listado-card-header-label">
+        <h3>
+          {mostrarInactivos
+            ? "Usuarios dados de baja"
+            : "Listado de funcionarios"}
+        </h3>
       </div>
 
       {loading && <p>Cargando...</p>}
@@ -269,9 +275,7 @@ const ListadoUsuarios = () => {
                     {u.nombre} {u.apellido}
                   </span>
 
-                  <span className={`usuario-rol ${u.rol.toLowerCase()}`}>
-                    {u.rol}
-                  </span>
+                  <span className="usuario-rol">Funcionario</span>
                 </div>
 
                 <div className="usuario-info">
@@ -280,32 +284,34 @@ const ListadoUsuarios = () => {
                   </p>
                 </div>
 
-                {mostrarInactivos ? (
-                  <button
-                    className="btn-reactivar"
-                    onClick={() => reactivarUsuario(u._id)}
-                  >
-                    Reactivar
-                  </button>
-                ) : (
-                  <>
+                <div className="card-acciones">
+                  {mostrarInactivos ? (
                     <button
-                      className="btn-cambiar-rol"
-                      onClick={() => cambiarRol(u._id)}
+                      className="btn-reactivar"
+                      onClick={() => reactivarUsuario(u._id)}
                     >
-                      Hacer admin
+                      Reactivar
                     </button>
-                    <button
-                      className="btn-dar-baja"
-                      onClick={() => {
-                        setUsuarioABaja(u);
-                        setShowModalBaja(true);
-                      }}
-                    >
-                      Dar de baja
-                    </button>
-                  </>
-                )}
+                  ) : (
+                    <>
+                      <button
+                        className="btn-cambiar-rol"
+                        onClick={() => cambiarRol(u._id)}
+                      >
+                        Cambiar rol
+                      </button>
+                      <button
+                        className="btn-dar-baja"
+                        onClick={() => {
+                          setUsuarioABaja(u);
+                          setShowModalBaja(true);
+                        }}
+                      >
+                        Dar de baja
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             ))}
           </div>

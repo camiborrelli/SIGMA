@@ -28,6 +28,23 @@ const ListadoGeneral = ({
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const actualizarCantidad = () => {
+      const width = window.innerWidth;
+      if (width <= 768) {
+        setPorPagina(4); // Mobile
+      } else if (width <= 1024) {
+        setPorPagina(5); // Tablet
+      } else {
+        setPorPagina(6); // Desktop
+      }
+    };
+
+    actualizarCantidad();
+    window.addEventListener("resize", actualizarCantidad);
+    return () => window.removeEventListener("resize", actualizarCantidad);
+  }, []);
+
   const fetchEquipos = async () => {
     setLoading(true);
     const token = localStorage.getItem("token");
@@ -46,7 +63,6 @@ const ListadoGeneral = ({
         const equiposOrdenados = (Array.isArray(data) ? data : []).sort(
           (a, b) => (a.nombre || "").localeCompare(b.nombre || ""),
         );
-
         setEquipos(equiposOrdenados);
       }
     } catch (err) {
@@ -59,15 +75,12 @@ const ListadoGeneral = ({
 
   useEffect(() => {
     fetchEquipos();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (typeof refreshKey !== "undefined") fetchEquipos();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshKey]);
 
-  // compute effective filters (props override local controls)
   const effectiveTipo =
     typeof tipoFilterProp !== "undefined" &&
     tipoFilterProp !== null &&
@@ -85,10 +98,9 @@ const ListadoGeneral = ({
       ? String(busquedaProp)
       : busqueda;
 
-  // reset page when filters change
   useEffect(() => {
     setPaginaActual(1);
-  }, [effectiveBusqueda, effectiveTipo, effectiveEstado]);
+  }, [effectiveBusqueda, effectiveTipo, effectiveEstado, porPagina]);
 
   const equiposFiltrados = equipos.filter((e) => {
     const texto = `${e.nombre || ""} ${e.modelo || ""} ${
@@ -137,7 +149,6 @@ const ListadoGeneral = ({
       header: "Acciones",
       accessor: (row) => (
         <div className="acciones-fila">
-          {/* Ver unidades */}
           <button
             className="icon-btn ver"
             title="Ver unidades"
@@ -145,8 +156,6 @@ const ListadoGeneral = ({
           >
             <FaEye />
           </button>
-
-          {/* Registrar unidad */}
           <button
             className="icon-btn add"
             title="Registrar unidad"
@@ -154,8 +163,6 @@ const ListadoGeneral = ({
           >
             <FaPlus />
           </button>
-
-          {/* Editar */}
           <button
             className="icon-btn edit"
             title="Editar equipo"
@@ -198,33 +205,6 @@ const ListadoGeneral = ({
             )}
           </select>
         )}
-
-        {/* {typeof estadoFilterProp === "undefined" && (
-          <select
-            value={estadoFilter}
-            onChange={(e) => setEstadoFilter(e.target.value)}
-          >
-            <option value="">Todos los estados</option>
-            {[
-              ...new Set(
-                equipos
-                  .map((eq) => eq.estado)
-                  .concat(
-                    ...equipos.map((eq) =>
-                      Array.isArray(eq.unidades)
-                        ? eq.unidades.map((u) => u.estado)
-                        : [],
-                    ),
-                  )
-                  .filter(Boolean),
-              ),
-            ].map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        )} */}
       </div>
 
       {loading && <p>Cargando...</p>}
@@ -232,31 +212,51 @@ const ListadoGeneral = ({
 
       {!loading && !error && (
         <>
-          <div className="tabla-wrapper">
-            {typeof busquedaProp === "undefined" && (
-              <input
-                placeholder="Buscar equipo por nombre o modelo"
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-              />
-            )}
-
-            {typeof tipoFilterProp === "undefined" && (
-              <select
-                value={tipoFilter}
-                onChange={(e) => setTipoFilter(e.target.value)}
-              >
-                <option value="">Todos los tipos</option>
-                {[...new Set(equipos.map((eq) => eq.tipo).filter(Boolean))].map(
-                  (t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ),
-                )}
-              </select>
-            )}
+          <div className="tabla-desktop">
             <Tabla columns={columns} data={equiposPaginados} />
+          </div>
+
+          <div className="equipos-mobile">
+            {equiposPaginados.map((eq) => (
+              <div key={eq._id || eq.id} className="equipo-card">
+                <div className="equipo-card-header">
+                  <span className="equipo-nombre-card">{eq.nombre}</span>
+                  <span className={`equipo-tipo-tag tag-${String(eq.tipo || 'sin-tipo').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-')}`}>
+                    {eq.tipo || "Sin tipo"}
+                  </span>
+                </div>
+
+                <div className="equipo-info">
+                  <p>
+                    <strong>Modelo:</strong> {eq.modelo || "N/A"}
+                  </p>
+                </div>
+
+                <div className="equipo-card-acciones">
+                  <button
+                    className="icon-btn ver"
+                    title="Ver unidades"
+                    onClick={() => setEquipoSeleccionado(eq)}
+                  >
+                    <FaEye /> Ver Unidades
+                  </button>
+                  <button
+                    className="icon-btn add"
+                    title="Registrar unidad"
+                    onClick={() => registrarUnidad(eq._id || eq.id)}
+                  >
+                    <FaPlus /> Añadir
+                  </button>
+                  <button
+                    className="icon-btn edit"
+                    title="Editar equipo"
+                    onClick={() => setEquipoEditar(eq)}
+                  >
+                    <FaEdit /> Editar
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
 
           {totalPaginas > 1 && (

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./BajaUsuarioModal.css";
+import "./BajaUsuarioModal.css"; // Asegúrate de que el CSS tenga los nuevos nombres
 
 const BajaUsuarioModal = ({ usuario, isOpen, onClose, onConfirm }) => {
   const [loading, setLoading] = useState(false);
@@ -16,36 +16,29 @@ const BajaUsuarioModal = ({ usuario, isOpen, onClose, onConfirm }) => {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content baja-modal">
-        <div className="modal-header">
+    <div className="baja-modal-overlay">
+      <div className="baja-modal-card">
+        <div className="baja-modal-header">
           <h2>Dar de baja usuario</h2>
-          <button className="modal-close" onClick={onClose}>
-            ✕
-          </button>
+          <button className="baja-modal-close" onClick={onClose}>✕</button>
         </div>
 
-        <div className="modal-body">
-          <p className="warning-text">⚠️ Estás a punto de dar de baja a:</p>
-          <div className="usuario-info">
-            <p>
-              <strong>
-                {usuario.nombre} {usuario.apellido} - {usuario.email}
-              </strong>
-            </p>
+        <div className="baja-modal-body">
+          <p>Estás a punto de dar de baja a:</p>
+          <div className="baja-usuario-info">
+            <p><strong>{usuario.nombre} {usuario.apellido} - {usuario.email}</strong></p>
           </div>
-          <p className="warning-text">
-            Esta acción marcará al usuario como inactivo y no podrá acceder al
-            sistema.
+          <p className="baja-warning-text">
+            Esta acción marcará al usuario como inactivo y no podrá acceder al sistema.
           </p>
         </div>
 
-        <div className="modal-footer">
-          <button className="btn-cancel" onClick={onClose} disabled={loading}>
+        <div className="baja-modal-footer">
+          <button className="baja-btn-cancel" onClick={onClose} disabled={loading}>
             Cancelar
           </button>
           <button
-            className="btn-confirm-baja"
+            className="baja-btn-confirm"
             onClick={handleConfirm}
             disabled={loading}
           >

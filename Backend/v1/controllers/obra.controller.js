@@ -2,6 +2,8 @@ import {
   registrarObraServices,
   getObraPorIdServices,
   getObrasServices,
+  getDetalleObraServices,
+  finalizarObraServices,
 } from "../services/obra.services.js";
 import mongoose from "mongoose";
 import Obra from "../models/obra.model.js";
@@ -90,5 +92,59 @@ export const eliminarObraController = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al eliminar obra" });
+  }
+};
+
+export const getDetalleObraController = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        error: "ID inválido",
+      });
+    }
+
+    const detalle = await getDetalleObraServices(id);
+
+    if (!detalle) {
+      return res.status(404).json({
+        error: "Obra no encontrada",
+      });
+    }
+
+    res.status(200).json(detalle);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      error: "Error al obtener detalle de obra",
+    });
+  }
+};
+
+export const finalizarObraController = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "ID de obra inválido" });
+    }
+
+    const obraFinalizada = await finalizarObraServices(id);
+
+    res.status(200).json({
+      message: "Obra finalizada correctamente y unidades liberadas",
+      obra: obraFinalizada
+    });
+
+  } catch (error) {
+    console.error("Error en finalizarObraController:", error);
+
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
+
+    res.status(500).json({ error: "Error al finalizar la obra" });
   }
 };
