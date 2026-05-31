@@ -130,8 +130,8 @@ const CambiarContrasenia = ({ isOpen, onClose, desdePerfil = false }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content cambiar-contrasenia-modal">
+    <div className="modal-overlay-password">
+      <div className="cambiar-contrasenia-modal">
         {recoveryStep === 1 ? (
           <form onSubmit={handleVerificarEmail}>
             <h3>Recuperar contraseña</h3>
