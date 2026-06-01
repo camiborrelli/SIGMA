@@ -3,15 +3,14 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import { Toaster } from "react-hot-toast";
 
-// Auth
 import Login from "./Componentes/Usuario/Login";
 import Registro from "./Componentes/Usuario/Registro";
 
-// Dashboard y principales
+import MainLayout from "./Componentes/Layout/MainLayout";
+
 import Dashboard from "./Componentes/Dashboard/Dashboard";
 import ListadoGeneral from "./Componentes/Equipo/ListadoGeneral";
 
-// Otros
 import RegistroObra from "./Componentes/Obra/RegistroObra";
 import RegistrarEquipo from "./Componentes/Equipo/RegistrarEquipo";
 import RegistrarUnidad from "./Componentes/Unidad/RegistrarUnidad";
@@ -34,7 +33,7 @@ function App() {
   }, []);
 
   return (
-    <div className="bottom-nav">
+    <div className="app-main-root">
       <Toaster
         position="top-center"
         containerStyle={{
@@ -43,21 +42,22 @@ function App() {
         }}
       />
       <Routes>
-        {/* Auth */}
+
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Registro />} />
 
-        {/* App */}
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/equipos" element={<ListadoGeneral />} />
-        <Route path="/registrarObra" element={<RegistroObra />} />
-        <Route path="/registrarEquipo" element={<RegistrarEquipo />} />
-        <Route path="/registrarUnidad" element={<RegistrarUnidad />} />
-        <Route path="/garantia/:id" element={<Garantia />} />
-        <Route path="/mapa" element={<Mapa />} />
-        <Route path="/perfil" element={<PerfilUsuario />} />
-        {/* Fallback */}
+        <Route element={<MainLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/equipos" element={<ListadoGeneral />} />
+          <Route path="/registrarObra" element={<RegistroObra />} />
+          <Route path="/registrarEquipo" element={<RegistrarEquipo />} />
+          <Route path="/registrarUnidad" element={<RegistrarUnidad />} />
+          <Route path="/garantia/:id" element={<Garantia />} />
+          <Route path="/mapa" element={<Mapa />} />
+          <Route path="/perfil" element={<PerfilUsuario />} />
+        </Route>
+
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </div>

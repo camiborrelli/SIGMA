@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Tabla from "../Tabla";
 import ModalUnidades from "../Unidad/ModalUnidades";
 import "./ListadoGeneral.css";
@@ -12,6 +11,7 @@ const ListadoGeneral = ({
   tipoFilter: tipoFilterProp,
   estadoFilter: estadoFilterProp,
   busquedaProp,
+  onRegistrarUnidadClick,
 }) => {
   const [equipos, setEquipos] = useState([]);
   const [busqueda, setBusqueda] = useState("");
@@ -25,8 +25,6 @@ const ListadoGeneral = ({
 
   const [paginaActual, setPaginaActual] = useState(1);
   const [porPagina, setPorPagina] = useState(6);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const actualizarCantidad = () => {
@@ -78,7 +76,9 @@ const ListadoGeneral = ({
   }, []);
 
   useEffect(() => {
-    if (typeof refreshKey !== "undefined") fetchEquipos();
+    if (refreshKey > 0) {
+      fetchEquipos();
+    }
   }, [refreshKey]);
 
   const effectiveTipo =
@@ -138,7 +138,9 @@ const ListadoGeneral = ({
   const equiposPaginados = equiposFiltrados.slice(indiceInicio, indiceFin);
 
   const registrarUnidad = (equipoId) => {
-    navigate("/registrarUnidad", { state: { equipoId } });
+    if (onRegistrarUnidadClick) {
+      onRegistrarUnidadClick(equipoId);
+    }
   };
 
   const columns = [
@@ -159,7 +161,7 @@ const ListadoGeneral = ({
           <button
             className="icon-btn add"
             title="Registrar unidad"
-            onClick={() => registrarUnidad(row._id)}
+            onClick={() => registrarUnidad(row._id || row.id)}
           >
             <FaPlus />
           </button>

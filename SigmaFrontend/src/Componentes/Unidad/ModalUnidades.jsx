@@ -80,9 +80,9 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   useEffect(() => {
     const actualizarCantidad = () => {
       const width = window.innerWidth;
-      if (width <= 768) setItemsPorPagina(5);
-      else if (width <= 1024) setItemsPorPagina(6);
-      else setItemsPorPagina(7);
+      if (width <= 768) setItemsPorPagina(2);
+      else if (width <= 1024) setItemsPorPagina(7);
+      else setItemsPorPagina(10);
     };
     actualizarCantidad();
     window.addEventListener("resize", actualizarCantidad);
@@ -193,13 +193,11 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
         <button className="btn-cerrar" onClick={onClose}>Cerrar</button>
       </div>
 
-      {/* --- MODALES HIJOS --- */}
       {unidadMantenimiento && <AsignarMantenimientoUnidad unidad={unidadMantenimiento} onClose={() => setUnidadMantenimiento(null)} onUpdated={handleUpdated} />}
       {unidadBaja && <BajaUnidadModal unidad={unidadBaja} onClose={() => setUnidadBaja(null)} onUpdated={handleUpdated} />}
       {unidadAsignar && <AsignarUnidadModal unidad={unidadAsignar} onClose={() => setUnidadAsignar(null)} onUpdated={handleUpdated} />}
       {unidadFecha && <AgregarFechaCompraModal unidad={unidadFecha} onClose={() => setUnidadFecha(null)} onUpdated={handleUpdated} />}
 
-      {/* --- MODAL CONFIRMACIÓN (Fuera del content) --- */}
       {confirmMantenimientoUnidad && (
         <div className="modal-confirm-wrapper">
           <div className="modal-card">

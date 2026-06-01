@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./RegistroObra.css";
+import { useState } from "react";
+import "../Equipo/registrar-form.css";
 import toast from "react-hot-toast";
 
-const RegistroObra = () => {
-  const navigate = useNavigate();
+const RegistroObra = ({ isOpen, onClose, onSuccess }) => {
   const [nombre, setNombre] = useState("");
   const [latitud, setLatitud] = useState("");
   const [longitud, setLongitud] = useState("");
@@ -15,6 +13,10 @@ const RegistroObra = () => {
   const [ubicacion, setUbicacion] = useState("");
   const [errors, setErrors] = useState({});
   const [geocodingStatus, setGeocodingStatus] = useState("");
+
+  // Si el modal está cerrado, no se dibuja nada en la interfaz
+  if (!isOpen) return null;
+
   const geocodificar = async () => {
     if (!ubicacion.trim()) return;
 
@@ -22,14 +24,14 @@ const RegistroObra = () => {
     try {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-          ubicacion,
+          ubicacion
         )}&format=json&limit=1&countrycodes=uy`,
         {
           headers: {
             "Accept-Language": "es",
             "User-Agent": "SIGMA-App/1.0",
           },
-        },
+        }
       );
       const data = await res.json();
 
@@ -39,9 +41,6 @@ const RegistroObra = () => {
         setGeocodingStatus("⚠️ No se encontró la dirección, verificá el texto");
         return;
       }
-
-      console.log("Geocoding result:", data[0]);
-      console.log(latitud, longitud);
 
       setLatitud(parseFloat(data[0].lat));
       setLongitud(parseFloat(data[0].lon));
@@ -86,13 +85,13 @@ const RegistroObra = () => {
 
       if (!res.ok) {
         setErrors(result.errors || {});
-        toast.error(
-          result.error || result.message || "Error al registrar la obra",
-        );
+        toast.error(result.error || result.message || "Error al registrar la obra");
         return;
       }
 
       toast.success("Obra registrada correctamente");
+      
+      // Limpieza total del formulario
       setNombre("");
       setLatitud("");
       setLongitud("");
@@ -102,7 +101,10 @@ const RegistroObra = () => {
       setEstado("Activa");
       setUbicacion("");
       setGeocodingStatus("");
-      navigate("/dashboard");
+
+      // Notificar éxito al Dashboard y cerrar
+      if (onSuccess) onSuccess();
+      onClose();
     } catch (error) {
       console.error("Error al registrar la obra:", error);
       toast.error("Error de conexión al registrar la obra");
@@ -110,82 +112,67 @@ const RegistroObra = () => {
   };
 
   return (
-    <div className="obra-content">
-      <h2>Registro de Obra</h2>
-      <form onSubmit={registrarObra} className="registrar-obra">
-        {Object.keys(errors).length > 0 && (
-          <p className="error">Por favor completa todos los campos</p>
-        )}
-        <input
-          type="text"
-          placeholder="Nombre de la obra (obligatorio)"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-          className={errors.nombre ? "input-error" : ""}
-        />
-        <input
-          type="text"
-          placeholder="Ubicación (ej: Av. 18 de Julio 1234, Montevideo) (obligatorio)"
-          value={ubicacion}
-          onChange={(e) => {
-            setUbicacion(e.target.value);
-            setLatitud(""); // 👈 resetear si cambia la dirección
-            setLongitud("");
-            setGeocodingStatus("");
-          }}
-          onBlur={geocodificar} // 👈 geocodifica al salir del campo
-          className={errors.ubicacion ? "input-error" : ""}
-        />
-        {/* Feedback visual de geocodificación */}
-        {geocodingStatus && (
-          <small
-            style={{
-              color: geocodingStatus.startsWith("✅") ? "green" : "orange",
-            }}
-          >
-            {geocodingStatus}
-          </small>
-        )}
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="registrar-form" onClick={(e) => e.stopPropagation()}>
+        <h2>Registro de Obra</h2>
+        
+        <form onSubmit={registrarObra}>
+          {Object.keys(errors).length > 0 && (
+            <p className="error">Por favor completa todos los campos</p>
+          )}
+          
+          <div className="form-group">
+            <input
+              type="text"
+              placeholder="Nombre de la obra (obligatorio)"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              className={errors.nombre ? "input-error" : ""}
+            />
+          </div>
+          
+          <div className="form-group">
+            <input
+              type="text"
+              placeholder="Ubicación (ej: Av. 18 de Julio 1234, Montevideo) (obligatorio)"
+              value={ubicacion}
+              onChange={(e) => {
+                setUbicacion(e.target.value);
+                setLatitud(""); 
+                setLongitud("");
+                setGeocodingStatus("");
+              }}
+              onBlur={geocodificar}
+              className={errors.ubicacion ? "input-error" : ""}
+            />
+            {geocodingStatus && (
+              <small style={{ color: geocodingStatus.startsWith("✅") ? "green" : "orange", paddingLeft: "4px", fontSize: "12px" }}>
+                {geocodingStatus}
+              </small>
+            )}
+          </div>
 
-        <input
-          type="text"
-          placeholder="Fecha de inicio (YYYY-MM-DD)"
-          value={fechaInicio}
-          onFocus={(e) => (e.target.type = "date")}
-          onBlur={(e) => {
-            if (!e.target.value) e.target.type = "text";
-          }}
-          onChange={(e) => setFechaInicio(e.target.value)}
-        />
-        {/* <input
-          type="text"
-          placeholder="Fecha de fin (YYYY-MM-DD)"
-          value={fechaFin}
-          onFocus={(e) => (e.target.type = "date")}
-          onBlur={(e) => {
-            if (!e.target.value) e.target.type = "text";
-          }}
-          onChange={(e) => setFechaFin(e.target.value)}
-          className={errors.fechaFin ? "input-error" : ""}
-        /> */}
-        {/* <textarea
-          placeholder="Descripción"
-          value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
-          className={errors.descripcion ? "input-error" : ""}
-        /> */}
+          <div className="form-group">
+            <input
+              type="text"
+              placeholder="Fecha de inicio (YYYY-MM-DD)"
+              value={fechaInicio}
+              onFocus={(e) => (e.target.type = "date")}
+              onBlur={(e) => { if (!e.target.value) e.target.type = "text"; }}
+              onChange={(e) => setFechaInicio(e.target.value)}
+            />
+          </div>
 
-        <button type="submit" className="btn-primary">
-          Registrar Obra
-        </button>
-        <button
-          type="button"
-          className="btn-cancel"
-          onClick={() => navigate(-1)}
-        >
-          Cancelar
-        </button>
-      </form>
+          <div className="buttons">
+            <button type="submit" className="btn-primary">
+              Registrar Obra
+            </button>
+            <button type="button" className="btn-cancel" onClick={onClose}>
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
