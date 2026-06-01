@@ -1,22 +1,22 @@
 :root {
-  --color-primary: #1e3a8a; 
-  --color-primary-hover: #1d4ed8; 
+  --color-primary: #1e3a8a;
+  --color-primary-hover: #1d4ed8;
 
-  --color-status-active: #065f46; 
-  --color-status-active-bg: #e6f4ea; 
+  --color-status-active: #065f46;
+  --color-status-active-bg: #e6f4ea;
 
-  --color-status-canceled: #991b1b; 
+  --color-status-canceled: #991b1b;
   --color-status-canceled-bg: #fce8e6;
-  
+
   --color-status-finished: #1e40af;
   --color-status-finished-bg: #e8f0fe;
 
-  --color-bg-main: #f8fafc; 
-  --color-surface: #ffffff; 
-  --color-border: #e2e8f0; 
+  --color-bg-main: #f8fafc;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
 
-  --color-text-main: #1e293b; 
-  --color-text-muted: #64748b; 
+  --color-text-main: #1e293b;
+  --color-text-muted: #64748b;
   --color-brand-red: #c90036;
 }
 
@@ -246,7 +246,7 @@
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   display: flex !important;
   flex-direction: column !important;
-  align-items: flex-start !important; 
+  align-items: flex-start !important;
   text-align: left !important;
   width: 100%;
   box-sizing: border-box;
@@ -300,9 +300,18 @@
   font-weight: 600;
 }
 
-.estado-badge.estado-activa { background-color: var(--color-status-active-bg); color: var(--color-status-active); }
-.estado-badge.estado-cancelada { background-color: var(--color-status-canceled-bg); color: var(--color-status-canceled); }
-.estado-badge.estado-finalizada { background-color: var(--color-status-finished-bg); color: var(--color-status-finished); }
+.estado-badge.estado-activa {
+  background-color: var(--color-status-active-bg);
+  color: var(--color-status-active);
+}
+.estado-badge.estado-cancelada {
+  background-color: var(--color-status-canceled-bg);
+  color: var(--color-status-canceled);
+}
+.estado-badge.estado-finalizada {
+  background-color: var(--color-status-finished-bg);
+  color: var(--color-status-finished);
+}
 
 .mapa-wrapper {
   flex: 1;
@@ -382,8 +391,12 @@
   align-items: center;
   justify-content: center;
 }
-.stat-icon-circle.m-icon { background: #fee2e2; }
-.stat-icon-circle.h-icon { background: #dcfce7; }
+.stat-icon-circle.m-icon {
+  background: #fee2e2;
+}
+.stat-icon-circle.h-icon {
+  background: #dcfce7;
+}
 
 .stat-meta .numero {
   font-size: 20px;
@@ -490,9 +503,19 @@
   height: fit-content;
 }
 
-.estado-equipo-pill.status-asignado { background-color: #f0f4f8 !important; color: #1e3a8a !important; }
-.estado-equipo-pill.status-en-mantenimiento, .estado-equipo-pill.status-mantenimiento { background-color: #fff7ed !important; color: #ea580c !important; }
-.estado-equipo-pill.status-disponible { background-color: #f0fdf4 !important; color: #16a34a !important; }
+.estado-equipo-pill.status-asignado {
+  background-color: #f0f4f8 !important;
+  color: #1e3a8a !important;
+}
+.estado-equipo-pill.status-en-mantenimiento,
+.estado-equipo-pill.status-mantenimiento {
+  background-color: #fff7ed !important;
+  color: #ea580c !important;
+}
+.estado-equipo-pill.status-disponible {
+  background-color: #f0fdf4 !important;
+  color: #16a34a !important;
+}
 
 .sin-datos {
   color: var(--color-text-muted);
@@ -533,22 +556,37 @@
   align-items: center;
 }
 
-.btn-finalizar-obra:hover { background-color: #0f172a; }
-.btn-finalizar-obra:active { transform: scale(0.98); }
+.btn-finalizar-obra:hover {
+  background-color: #0f172a;
+}
+.btn-finalizar-obra:active {
+  transform: scale(0.98);
+}
 
 .mobile-footer {
   display: none;
 }
 
 @media (max-width: 1024px) {
-  .mapa-container { height: auto; }
-  .content { flex-direction: column; overflow-y: auto; }
-  .lista-obras, .detalle-obra { width: 100%; min-width: 100%; }
-  .mapa-wrapper { min-width: 100%; height: 400px; }
+  .mapa-container {
+    height: auto;
+  }
+  .content {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .lista-obras,
+  .detalle-obra {
+    width: 100%;
+    min-width: 100%;
+  }
+  .mapa-wrapper {
+    min-width: 100%;
+    height: 400px;
+  }
 }
 
 @media (max-width: 768px) {
-
   .logo-container {
     display: none !important;
   }
@@ -610,6 +648,37 @@
   }
 
   .mapa-container {
-    padding-bottom: 75px; 
+    padding-bottom: 75px;
   }
+}
+
+.equipo-svg {
+  transition: color 0.15s ease;
+  background: transparent;
+  border: none;
+  color: #a21f1f;
+}
+
+/* Botón de eliminar dentro de las tarjetas de equipo: limpio, sin borde ni fondo gris */
+.equipo-card > button {
+  background: transparent;
+  border: none;
+  padding: 6px;
+  margin-left: 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.12s ease, transform 0.08s ease;
+}
+.equipo-card > button:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+.equipo-card > button:active {
+  transform: translateY(1px);
+}
+.equipo-card > button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

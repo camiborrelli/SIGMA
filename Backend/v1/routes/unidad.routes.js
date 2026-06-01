@@ -12,6 +12,7 @@ import {
   eliminarUnidadController,
   actualizarFechaCompraController,
 } from "../controllers/unidad.controller.js";
+import { quitarUnidadDeObraController } from "../controllers/unidad.controller.js";
 import { verificarToken } from "../middlewares/auth.js";
 
 const router = express.Router();
@@ -47,7 +48,12 @@ router.get(
 router.put(
   "/fecha-compra/:id",
   verificarToken,
-  actualizarFechaCompraController
+  actualizarFechaCompraController,
 );
+router.post(
+  "/quitar-de-obra/:idUnidad/:idObra",
+  verificarToken,
+  quitarUnidadDeObraController,
+); //la ruta completa es
 
 export default router;

@@ -8,6 +8,8 @@ import { LuWrench, LuEye, LuEyeOff } from "react-icons/lu";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import FinalizarObraModal from "../Obra/FinalizarObraModal";
+import toast from "react-hot-toast";
+import { CiCircleRemove } from "react-icons/ci";
 
 const Mapa = () => {
   const [busqueda, setBusqueda] = useState("");
@@ -17,6 +19,7 @@ const Mapa = () => {
   const [mostrarLista, setMostrarLista] = useState(true);
   const [obras, setObras] = useState([]);
   const [verModalFinalizar, setVerModalFinalizar] = useState(false);
+  const [removingIds, setRemovingIds] = useState([]);
 
   const fetchObras = async () => {
     const token = localStorage.getItem("token");
@@ -63,7 +66,7 @@ const Mapa = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (!res.ok) return;
@@ -78,15 +81,59 @@ const Mapa = () => {
 
   const renderIconoEstadoEquipo = (estado) => {
     const est = estado?.toLowerCase();
-    if (est === "asignado") return <HiOutlineLocationMarker className="pill-icon" />;
-    if (est === "mantenimiento" || est === "en mantenimiento") return <LuWrench className="pill-icon" />;
-    if (est === "disponible") return <AiOutlineCheckCircle className="pill-icon" />;
+    if (est === "asignado")
+      return <HiOutlineLocationMarker className="pill-icon" />;
+    if (est === "mantenimiento" || est === "en mantenimiento")
+      return <LuWrench className="pill-icon" />;
+    if (est === "disponible")
+      return <AiOutlineCheckCircle className="pill-icon" />;
     return <HiOutlineLocationMarker className="pill-icon" />;
   };
 
   const limpiarTextoUbicacion = (texto) => {
     if (!texto) return "";
     return texto.replace(/[📍📌]/g, "").trim();
+  };
+
+  const quitarUnidad = async (unidadId) => {
+    // marcar como removiendo para deshabilitar botón
+    setRemovingIds((p) => (p.includes(unidadId) ? p : [...p, unidadId]));
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(
+        `http://localhost:5001/unidades/quitar-de-obra/${unidadId}/${detalleObra._id}`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      if (!res.ok) {
+        const bodyErr = await res.json().catch(() => ({}));
+        toast.error(bodyErr.error || "Error al quitar unidad de la obra");
+        return;
+      }
+
+      // Ignorar lo que devuelve el POST — siempre refrescar desde el detalle
+      toast.success("Unidad quitada de la obra");
+
+      const detalleRes = await fetch(
+        `http://localhost:5001/obras/detalle/${detalleObra._id}`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      if (detalleRes.ok) {
+        const detalleData = await detalleRes.json();
+        setDetalleObra(detalleData);
+      }
+
+      await fetchObras();
+    } catch (error) {
+      toast.error("Error al quitar unidad de la obra");
+      console.error("Error al quitar unidad:", error);
+    } finally {
+      // limpiar bandera de removiendo
+      setRemovingIds((p) => p.filter((id) => id !== unidadId));
+    }
   };
 
   return (
@@ -100,7 +147,9 @@ const Mapa = () => {
               onClick={() => setMostrarLista(!mostrarLista)}
             >
               {mostrarLista ? <LuEyeOff /> : <LuEye />}
-              {mostrarLista ? "Ocultar lista" : "Mostrar lista"}
+              {mostrarLista
+                ? "Ocultar lista de obras"
+                : "Mostrar lista de obras"}
             </button>
           </div>
         </header>
@@ -121,19 +170,25 @@ const Mapa = () => {
               Todos
             </button>
             <button
-              className={`filtro-btn ${estadoFilter === "Activa" ? "active" : ""}`}
+              className={`filtro-btn ${
+                estadoFilter === "Activa" ? "active" : ""
+              }`}
               onClick={() => setEstadoFilter("Activa")}
             >
               Activa
             </button>
             <button
-              className={`filtro-btn ${estadoFilter === "Finalizada" ? "active" : ""}`}
+              className={`filtro-btn ${
+                estadoFilter === "Finalizada" ? "active" : ""
+              }`}
               onClick={() => setEstadoFilter("Finalizada")}
             >
               Finalizada
             </button>
             <button
-              className={`filtro-btn ${estadoFilter === "Cancelada" ? "active" : ""}`}
+              className={`filtro-btn ${
+                estadoFilter === "Cancelada" ? "active" : ""
+              }`}
               onClick={() => setEstadoFilter("Cancelada")}
             >
               Cancelada
@@ -145,23 +200,33 @@ const Mapa = () => {
           {mostrarLista && (
             <section className="lista-obras">
               <h2>Obras en el mapa</h2>
-              <p className="conteo-obras-sub">{obrasFiltradas.length} obras encontradas</p>
-              
+              <p className="conteo-obras-sub">
+                {obrasFiltradas.length} obras encontradas
+              </p>
+
               <div className="lista-scroll-contenedor">
                 {obrasFiltradas.map((obra) => {
                   const esSeleccionada = obraSeleccionada?._id === obra._id;
-                  const claseEstado = obra.estado?.toLowerCase().replace(/\s+/g, "-");
+                  const claseEstado = obra.estado
+                    ?.toLowerCase()
+                    .replace(/\s+/g, "-");
                   return (
-                    <div 
-                      className={`obra-card ${esSeleccionada ? "selected" : ""}`} 
-                      key={obra._id} 
+                    <div
+                      className={`obra-card ${
+                        esSeleccionada ? "selected" : ""
+                      }`}
+                      key={obra._id}
                       onClick={() => seleccionarObra(obra)}
                     >
                       <h3>{obra.nombre}</h3>
-                      <p className="ubicacion">{limpiarTextoUbicacion(obra.ubicacion)}</p>
+                      <p className="ubicacion">
+                        {limpiarTextoUbicacion(obra.ubicacion)}
+                      </p>
                       <p className="fechas">
                         {obra.fechaInicio
-                          ? new Date(obra.fechaInicio).toLocaleDateString("es-ES")
+                          ? new Date(obra.fechaInicio).toLocaleDateString(
+                              "es-ES",
+                            )
                           : "Sin fecha"}{" "}
                         -{" "}
                         {obra.fechaFin
@@ -211,7 +276,9 @@ const Mapa = () => {
               <div className="detalle-top">
                 <div className="detalle-info">
                   <h2>{detalleObra.nombre}</h2>
-                  <p className="detalle-ubicacion">{limpiarTextoUbicacion(detalleObra.ubicacion)}</p>
+                  <p className="detalle-ubicacion">
+                    {limpiarTextoUbicacion(detalleObra.ubicacion)}
+                  </p>
                   <span
                     className={`estado-badge estado-${detalleObra.estado
                       ?.toLowerCase()
@@ -236,7 +303,9 @@ const Mapa = () => {
                 <div className="stat-card">
                   <span className="stat-icon-circle m-icon">🔧</span>
                   <div className="stat-meta">
-                    <span className="numero">{detalleObra.maquinas?.length ?? 0}</span>
+                    <span className="numero">
+                      {detalleObra.maquinas?.length ?? 0}
+                    </span>
                     <span className="label-stat"> Máquinas</span>
                   </div>
                 </div>
@@ -244,7 +313,9 @@ const Mapa = () => {
                 <div className="stat-card">
                   <span className="stat-icon-circle h-icon">🧰</span>
                   <div className="stat-meta">
-                    <span className="numero">{detalleObra.herramientas?.length ?? 0}</span>
+                    <span className="numero">
+                      {detalleObra.herramientas?.length ?? 0}
+                    </span>
                     <span className="label-stat"> Herramientas</span>
                   </div>
                 </div>
@@ -256,7 +327,9 @@ const Mapa = () => {
                   <span className="label-fecha">Inicio:</span>
                   <span className="valor-fecha">
                     {detalleObra.fechaInicio
-                      ? new Date(detalleObra.fechaInicio).toLocaleDateString("es-ES")
+                      ? new Date(detalleObra.fechaInicio).toLocaleDateString(
+                          "es-ES",
+                        )
                       : "-"}
                   </span>
                 </div>
@@ -266,7 +339,9 @@ const Mapa = () => {
                   <span className="label-fecha">Fin estimado:</span>
                   <span className="valor-fecha">
                     {detalleObra.fechaFin
-                      ? new Date(detalleObra.fechaFin).toLocaleDateString("es-ES")
+                      ? new Date(detalleObra.fechaFin).toLocaleDateString(
+                          "es-ES",
+                        )
                       : "-"}
                   </span>
                 </div>
@@ -276,7 +351,9 @@ const Mapa = () => {
                 <h3>Máquinas Asignadas</h3>
                 {detalleObra.maquinas?.length > 0 ? (
                   detalleObra.maquinas.map((unidad) => {
-                    const claseEstado = (unidad.estado || "asignado").toLowerCase().replace(/\s+/g, "-");
+                    const claseEstado = (unidad.estado || "asignado")
+                      .toLowerCase()
+                      .replace(/\s+/g, "-");
                     return (
                       <div className="equipo-card" key={unidad._id}>
                         <div className="equipo-circle-avatar">
@@ -284,12 +361,24 @@ const Mapa = () => {
                         </div>
                         <div className="equipo-detalles-texto">
                           <strong>{unidad.nombreEquipo || "Máquina"}</strong>
-                          <p>{unidad.identificador || unidad.modelo || "Sin código"}</p>
+                          <p>
+                            {unidad.identificador ||
+                              unidad.modelo ||
+                              "Sin código"}
+                          </p>
                         </div>
-                        <span className={`estado-equipo-pill status-${claseEstado}`}>
+                        <span
+                          className={`estado-equipo-pill status-${claseEstado}`}
+                        >
                           {renderIconoEstadoEquipo(unidad.estado || "Asignado")}
                           {unidad.estado || "Asignado"}
                         </span>
+                        <button onClick={() => quitarUnidad(unidad._id)}>
+                          <CiCircleRemove
+                            style={{ fontSize: "1.25rem", color: "#c0392b" }}
+                            alt="Quitar máquina"
+                          />
+                        </button>
                       </div>
                     );
                   })
@@ -302,20 +391,37 @@ const Mapa = () => {
                 <h3>Herramientas Asignadas</h3>
                 {detalleObra.herramientas?.length > 0 ? (
                   detalleObra.herramientas.map((unidad) => {
-                    const claseEstado = (unidad.estado || "asignado").toLowerCase().replace(/\s+/g, "-");
+                    const claseEstado = (unidad.estado || "asignado")
+                      .toLowerCase()
+                      .replace(/\s+/g, "-");
                     return (
                       <div className="equipo-card" key={unidad._id}>
                         <div className="equipo-circle-avatar">
                           <LuWrench className="equipo-svg" />
                         </div>
                         <div className="equipo-detalles-texto">
-                          <strong>{unidad.nombreEquipo || "Herramienta"}</strong>
-                          <p>{unidad.identificador || unidad.modelo || "Sin código"}</p>
+                          <strong>
+                            {unidad.nombreEquipo || "Herramienta"}
+                          </strong>
+                          <p>
+                            {unidad.identificador ||
+                              unidad.modelo ||
+                              "Sin código"}
+                          </p>
                         </div>
-                        <span className={`estado-equipo-pill status-${claseEstado}`}>
+                        <span
+                          className={`estado-equipo-pill status-${claseEstado}`}
+                        >
                           {renderIconoEstadoEquipo(unidad.estado || "Asignado")}
                           {unidad.estado || "Asignado"}
                         </span>
+                        <button onClick={() => quitarUnidad(unidad._id)}>
+                          <CiCircleRemove
+                            className="equipo-svg"
+                            style={{ fontSize: "1.25rem", color: "#c0392b" }}
+                            alt="Quitar herramienta"
+                          />
+                        </button>
                       </div>
                     );
                   })
@@ -325,8 +431,8 @@ const Mapa = () => {
               </div>
 
               <div className="detalle-acciones">
-                <button 
-                  className="btn-finalizar-obra" 
+                <button
+                  className="btn-finalizar-obra"
                   onClick={() => setVerModalFinalizar(true)}
                 >
                   Finalizar Obra

@@ -10,6 +10,7 @@ import {
   asignarUnidad,
   eliminarUnidad,
   actualizarFechaCompra,
+  quitarUnidadDeObra,
 } from "../services/unidad.services.js";
 
 export const getUnidadesPorEquipoController = async (req, res) => {
@@ -219,5 +220,17 @@ export const actualizarFechaCompraController = async (req, res) => {
     }
 
     res.status(500).json({ error: "Error al actualizar fecha de compra" });
+  }
+};
+
+export const quitarUnidadDeObraController = async (req, res) => {
+  try {
+    const { idUnidad, idObra } = req.params;
+    const unidad = await quitarUnidadDeObra(idUnidad, idObra);
+    console.log("Unidad quitada de obra:", unidad);
+    res.status(200).json(unidad);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al quitar unidad de obra" });
   }
 };

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Unidad from "../models/unidad.model.js";
 import Equipo from "../models/equipo.model.js";
+import Obra from "../models/obra.model.js";
 
 export const getUnidadesPorEquipo = async (equipoId) => {
   return await Unidad.find({ equipo: equipoId }).populate("ubicacion");
@@ -238,6 +239,27 @@ export const actualizarFechaCompra = async (id, fechaCompra) => {
 
   unidad.fechaCompra = fechaCompra;
   await unidad.save();
+
+  return unidad;
+};
+
+export const quitarUnidadDeObra = async (idUnidad, idObra) => {
+  const unidad = await Unidad.findById(idUnidad);
+  if (!unidad) throw new Error("Unidad no encontrada");
+  unidad.ubicacion = null;
+  unidad.estado = "Disponible";
+  await unidad.save();
+
+  // Si el modelo Obra tuviera un array `unidades`, lo actualizamos de forma segura.
+  if (idObra) {
+    const obra = await Obra.findById(idObra);
+    if (obra && Array.isArray(obra.unidades)) {
+      obra.unidades = obra.unidades.filter(
+        (u) => u.toString() !== idUnidad.toString(),
+      );
+      await obra.save();
+    }
+  }
 
   return unidad;
 };
