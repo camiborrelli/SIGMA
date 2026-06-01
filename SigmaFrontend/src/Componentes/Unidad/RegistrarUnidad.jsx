@@ -4,8 +4,7 @@ import toast from "react-hot-toast";
 
 const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
   const [equipoId, setEquipoId] = useState("");
-  const [identificador, setIdentificador] = useState("");
-  const [placeholderIdentificador, setPlaceholderIdentificador] = useState("Ej: EXC-001");
+  const [placeholderIdentificador, setPlaceholderIdentificador] = useState("Ej: EQ-XXXXXX-1");
   const [unidadesCount, setUnidadesCount] = useState(0);
   const [fechaCompra, setFechaCompra] = useState("");
   const [equipos, setEquipos] = useState([]);
@@ -46,7 +45,7 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
 
   useEffect(() => {
     if (!isOpen || !equipoId) {
-      setPlaceholderIdentificador("Ej: EXC-001");
+      setPlaceholderIdentificador("Ej: EQ-XXXXXX-1");
       setUnidadesCount(0);
       return;
     }
@@ -65,15 +64,14 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
         const equipoObj = equipos.find(
           (eq) => String(eq._id || eq.id) === String(equipoId)
         );
-        const nombre =
-          equipoObj && equipoObj.nombre
-            ? String(equipoObj.nombre).split(/\s+/)[0]
-            : "UN";
+
+        const codigoEquipo = equipoObj && equipoObj.codigo ? equipoObj.codigo : "EQ-XXXXXX";
         const nextNum = count + 1;
-        setPlaceholderIdentificador(`${nombre.toUpperCase()}-${nextNum}`);
+        
+        setPlaceholderIdentificador(`${codigoEquipo}-${nextNum}`);
       } catch (err) {
         setUnidadesCount(0);
-        setPlaceholderIdentificador("Ej: EXC-001");
+        setPlaceholderIdentificador("Ej: EQ-XXXXXX-1");
       }
     };
 
@@ -96,11 +94,6 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
     }
 
     try {
-      const finalIdentificador =
-        identificador && String(identificador).trim()
-          ? identificador
-          : placeholderIdentificador;
-
       const res = await fetch(
         `http://localhost:5001/unidades/agregar/${equipoId}`,
         {
@@ -110,7 +103,6 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
             Authorization: token ? `Bearer ${token}` : "",
           },
           body: JSON.stringify({
-            identificador: finalIdentificador,
             fechaCompra,
           }),
         }
@@ -126,7 +118,6 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
       toast.success("Unidad registrada correctamente");
 
       setEquipoId("");
-      setIdentificador("");
       setFechaCompra("");
       setMensaje("");
 
@@ -164,9 +155,11 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
             <label style={{ display: "block", marginBottom: "4px", fontSize: "14px", fontWeight: "600", color: "#475569" }}>Identificador</label>
             <input
               type="text"
-              value={identificador}
-              onChange={(e) => setIdentificador(e.target.value)}
-              placeholder={placeholderIdentificador}
+              value={equipoId ? placeholderIdentificador : ""}
+              readOnly
+              disabled
+              placeholder="Selecciona un equipo primero"
+              style={{ backgroundColor: "#f1f5f9", color: "#64748b", cursor: "not-allowed" }}
             />
           </div>
 

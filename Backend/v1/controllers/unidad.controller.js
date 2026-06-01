@@ -46,7 +46,6 @@ export const bajaUnidadController = async (req, res) => {
 export const agregarUnidadController = async (req, res) => {
   try {
     const { equipoId } = req.params;
-    // Permitir enviar `fechaCompra` (opcional) desde el body al crear la unidad
     const { fechaCompra } = req.body;
 
     const nuevaUnidad = await agregarUnidad(equipoId, { fechaCompra });
@@ -54,6 +53,14 @@ export const agregarUnidadController = async (req, res) => {
     res.status(201).json(nuevaUnidad);
   } catch (error) {
     console.error(error);
+
+    if (error.message.includes("no encontrado")) {
+      return res.status(404).json({ error: error.message });
+    }
+    if (error.message.includes("código asignado")) {
+      return res.status(400).json({ error: error.message });
+    }
+
     res.status(500).json({ error: "Error al agregar unidad" });
   }
 };

@@ -17,24 +17,20 @@ export const bajaUnidad = async (id) => {
 };
 
 export const agregarUnidad = async (equipoId, data = {}) => {
-  // Obtener equipo para usar su nombre como prefijo
   const equipo = await Equipo.findById(equipoId);
-  const existentes = await Unidad.countDocuments({ equipo: equipoId });
+  if (!equipo) throw new Error("Equipo no encontrado");
 
-  const pref =
-    equipo && equipo.nombre
-      ? String(equipo.nombre)
-          .split(/\s+/)[0]
-          .replace(/[^A-Za-z0-9]/g, "")
-          .toUpperCase()
-      : `EQ${String(equipoId).slice(-4)}`;
+  if (!equipo.codigo) {
+    throw new Error("El equipo no tiene código asignado");
+  }
+
+  const existentes = await Unidad.countDocuments({ equipo: equipoId });
 
   const createObj = {
     equipo: equipoId,
-    identificador: `${pref}-${existentes + 1}`,
+    identificador: `${equipo.codigo}-${existentes + 1}`,
   };
 
-  // Incluir fechaCompra si fue provista
   if (data && data.fechaCompra) {
     createObj.fechaCompra = data.fechaCompra;
   }
@@ -87,7 +83,6 @@ export const getGarantiaUnidad = async (id) => {
 
   if (!unidad) throw new Error("Unidad no encontrada");
 
-  // Si no hay fecha de compra, devolver objeto válido pero sin garantía
   if (!unidad.fechaCompra) {
     return {
       _id: unidad._id,
