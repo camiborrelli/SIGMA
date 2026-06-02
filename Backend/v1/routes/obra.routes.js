@@ -6,6 +6,7 @@ import {
   eliminarObraController,
   getDetalleObraController,
   finalizarObraController,
+  reactivarObraController,
 } from "../controllers/obra.controller.js";
 import { verificarToken } from "../middlewares/auth.js";
 import { validateBody } from "../middlewares/validation.middleware.js";
@@ -24,5 +25,6 @@ router.get("/detalle/:id", verificarToken, getDetalleObraController);
 router.patch("/finalizar/:id", verificarToken, finalizarObraController);
 router.get("/:id", verificarToken, getObraPorIdController);
 router.delete("/:id", verificarToken, eliminarObraController);
+router.patch("/reactivar/:id", verificarToken, reactivarObraController);
 
 export default router;

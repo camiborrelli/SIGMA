@@ -103,3 +103,26 @@ export const finalizarObraServices = async (id) => {
 
   return obra;
 };
+
+export const reactivarObraServices = async (id) => {
+  const obra = await Obra.findById(id);
+
+  if (!obra) {
+    const err = new Error("Obra no encontrada");
+    err.statusCode = 404;
+    throw err;
+  }
+
+  if (obra.estado === "Activa") {
+    const err = new Error("La obra ya se encuentra activa");
+    err.statusCode = 400;
+    throw err;
+  }
+
+  obra.estado = "Activa";
+  obra.fechaFin = null; 
+  obra.cantReactivaciones = (obra.cantReactivaciones || 0) + 1;
+
+  await obra.save();
+  return obra;
+};

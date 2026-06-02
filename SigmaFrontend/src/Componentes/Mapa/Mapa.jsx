@@ -3,12 +3,13 @@ import "leaflet/dist/leaflet.css";
 import "./Mapa.css";
 import { useState, useEffect } from "react";
 import { BsCalendarCheck, BsCalendarX } from "react-icons/bs";
-import { FiTruck } from "react-icons/fi";
+import { FiTruck, FiRefreshCcw, FiCheck } from "react-icons/fi"; // Agregado FiCheck
 import { LuWrench, LuEye, LuEyeOff } from "react-icons/lu";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import FinalizarObraModal from "../Obra/FinalizarObraModal";
 import TrasladarUnidadesModal from "../Obra/TrasladarUnidadesModal"; 
+import ReactivarObraModal from "../Obra/ReactivarObraModal";
 import toast from "react-hot-toast";
 import { CiCircleRemove } from "react-icons/ci";
 
@@ -22,6 +23,8 @@ const Mapa = () => {
   const [verModalFinalizar, setVerModalFinalizar] = useState(false);
   const [removingIds, setRemovingIds] = useState([]);
   const [trasladarEquiposModal, setTrasladarEquiposModal] = useState(false);
+  const [verModalReactivar, setVerModalReactivar] = useState(false);
+  const [obraAReactivar, setObraAReactivar] = useState(null);
 
   const fetchObras = async () => {
     const token = localStorage.getItem("token");
@@ -55,7 +58,8 @@ const Mapa = () => {
 
   const seleccionarObra = async (obra) => {
     if (obra.estado?.toLowerCase() === "finalizada") {
-      setObraSeleccionada(null);
+      // Mantenemos la lógica actual para que se seleccione visualmente pero limpie el panel derecho si aplica
+      setObraSeleccionada(obra);
       setDetalleObra(null);
       return;
     }
@@ -146,9 +150,7 @@ const Mapa = () => {
               onClick={() => setMostrarLista(!mostrarLista)}
             >
               {mostrarLista ? <LuEyeOff /> : <LuEye />}
-              {mostrarLista
-                ? "Ocultar lista de obras"
-                : "Mostrar lista de obras"}
+              {mostrarLista ? "Ocultar obras" : "Mostrar obras"}
             </button>
           </div>
         </header>
@@ -169,25 +171,19 @@ const Mapa = () => {
               Todos
             </button>
             <button
-              className={`filtro-btn ${
-                estadoFilter === "Activa" ? "active" : ""
-              }`}
+              className={`filtro-btn ${estadoFilter === "Activa" ? "active" : ""}`}
               onClick={() => setEstadoFilter("Activa")}
             >
               Activa
             </button>
             <button
-              className={`filtro-btn ${
-                estadoFilter === "Finalizada" ? "active" : ""
-              }`}
+              className={`filtro-btn ${estadoFilter === "Finalizada" ? "active" : ""}`}
               onClick={() => setEstadoFilter("Finalizada")}
             >
               Finalizada
             </button>
             <button
-              className={`filtro-btn ${
-                estadoFilter === "Cancelada" ? "active" : ""
-              }`}
+              className={`filtro-btn ${estadoFilter === "Cancelada" ? "active" : ""}`}
               onClick={() => setEstadoFilter("Cancelada")}
             >
               Cancelada
@@ -206,36 +202,60 @@ const Mapa = () => {
               <div className="lista-scroll-contenedor">
                 {obrasFiltradas.map((obra) => {
                   const esSeleccionada = obraSeleccionada?._id === obra._id;
-                  const claseEstado = obra.estado
-                    ?.toLowerCase()
-                    .replace(/\s+/g, "-");
+                  const claseEstado = obra.estado?.toLowerCase().replace(/\s+/g, "-");
+                  const esInactivaCard = obra.estado?.toLowerCase() === "finalizada" || obra.estado?.toLowerCase() === "cancelada";
+
                   return (
                     <div
-                      className={`obra-card ${
-                        esSeleccionada ? "selected" : ""
-                      }`}
+                      className={`obra-card ${esSeleccionada ? "selected" : ""}`}
                       key={obra._id}
                       onClick={() => seleccionarObra(obra)}
                     >
                       <h3>{obra.nombre}</h3>
+                      
+                      {/* Fila de Ubicación con Icono */}
                       <p className="ubicacion">
+                        <HiOutlineLocationMarker className="card-icon-svg loc-icon" />
                         {limpiarTextoUbicacion(obra.ubicacion)}
                       </p>
+                      
+                      {/* Fila de Fechas con Icono */}
                       <p className="fechas">
+                        <BsCalendarCheck className="card-icon-svg date-icon" />
                         {obra.fechaInicio
-                          ? new Date(obra.fechaInicio).toLocaleDateString(
-                              "es-ES",
-                            )
+                          ? new Date(obra.fechaInicio).toLocaleDateString("es-ES")
                           : "Sin fecha"}{" "}
-                        -{" "}
+                        •{" "}
                         {obra.fechaFin
                           ? new Date(obra.fechaFin).toLocaleDateString("es-ES")
                           : "Sin fecha"}
                       </p>
+                      
                       <div className="estado-badge-wrapper">
+                        {/* Badge dinámico con Check icon si está Finalizada */}
                         <span className={`estado-badge estado-${claseEstado}`}>
+                          {obra.estado?.toLowerCase() === "finalizada" && (
+                            <span className="badge-tick-circle">
+                              <FiCheck />
+                            </span>
+                          )}
                           {obra.estado}
                         </span>
+
+                        {/* Botón Reactivar Estilizado como la Imagen */}
+                        {esInactivaCard && (
+                          <button
+                            className="btn-reactivar-sutil-box"
+                            title="Reactivar obra"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setObraAReactivar(obra);
+                              setVerModalReactivar(true);
+                            }}
+                          >
+                            <FiRefreshCcw />
+                          </button>
+                        )}
                       </div>
                     </div>
                   );
@@ -326,9 +346,7 @@ const Mapa = () => {
                   <span className="label-fecha">Inicio:</span>
                   <span className="valor-fecha">
                     {detalleObra.fechaInicio
-                      ? new Date(detalleObra.fechaInicio).toLocaleDateString(
-                          "es-ES",
-                        )
+                      ? new Date(detalleObra.fechaInicio).toLocaleDateString("es-ES")
                       : "-"}
                   </span>
                 </div>
@@ -338,9 +356,7 @@ const Mapa = () => {
                   <span className="label-fecha">Fin estimado:</span>
                   <span className="valor-fecha">
                     {detalleObra.fechaFin
-                      ? new Date(detalleObra.fechaFin).toLocaleDateString(
-                          "es-ES",
-                        )
+                      ? new Date(detalleObra.fechaFin).toLocaleDateString("es-ES")
                       : "-"}
                   </span>
                 </div>
@@ -361,14 +377,10 @@ const Mapa = () => {
                         <div className="equipo-detalles-texto">
                           <strong>{unidad.nombreEquipo || "Máquina"}</strong>
                           <p>
-                            {unidad.identificador ||
-                              unidad.modelo ||
-                              "Sin código"}
+                            {unidad.identificador || unidad.modelo || "Sin código"}
                           </p>
                         </div>
-                        <span
-                          className={`estado-equipo-pill status-${claseEstado}`}
-                        >
+                        <span className={`estado-equipo-pill status-${claseEstado}`}>
                           {renderIconoEstadoEquipo(unidad.estado || "Asignado")}
                           {unidad.estado || "Asignado"}
                         </span>
@@ -403,14 +415,10 @@ const Mapa = () => {
                             {unidad.nombreEquipo || "Herramienta"}
                           </strong>
                           <p>
-                            {unidad.identificador ||
-                              unidad.modelo ||
-                              "Sin código"}
+                            {unidad.identificador || unidad.modelo || "Sin código"}
                           </p>
                         </div>
-                        <span
-                          className={`estado-equipo-pill status-${claseEstado}`}
-                        >
+                        <span className={`estado-equipo-pill status-${claseEstado}`}>
                           {renderIconoEstadoEquipo(unidad.estado || "Asignado")}
                           {unidad.estado || "Asignado"}
                         </span>
@@ -470,6 +478,20 @@ const Mapa = () => {
           setTrasladarEquiposModal(false);
           setObraSeleccionada(null);
           setDetalleObra(null);
+          await fetchObras();
+        }}
+      />
+
+      <ReactivarObraModal
+        isOpen={verModalReactivar}
+        obra={obraAReactivar}
+        onClose={() => {
+          setVerModalReactivar(false);
+          setObraAReactivar(null);
+        }}
+        onUpdated={async () => {
+          setDetalleObra(null);
+          setObraSeleccionada(null);
           await fetchObras();
         }}
       />

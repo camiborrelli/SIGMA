@@ -6,7 +6,7 @@ export const ObraSchema = new Schema({
   fechaFin: { type: Date, required: false },
   estado: {
     type: String,
-    enum: ["Activa", "Finalizada", "Cancelada"],
+    enum: ["Activa", "Finalizada", "Pausada"],
     default: "Activa",
   },
   latitud: { type: Number, required: false },
@@ -17,7 +17,6 @@ export const ObraSchema = new Schema({
     unique: true,
     trim: true,
   },
-  // descripcion: { type: String, required: false, trim: true },
   cantReactivaciones: { type: Number, default: 0 },
 });
 
