@@ -32,8 +32,6 @@ const BajaUnidadModal = ({ unidad, onClose, onUpdated }) => {
       toast.success("Unidad dada de baja");
 
       onUpdated();
-
-      // cerrar modal con delay para que se vea el toast
       setTimeout(() => {
         onClose();
       }, 1200);

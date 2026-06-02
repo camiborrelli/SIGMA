@@ -3,7 +3,6 @@ import {
   getEquiposConStock,
   getStatsEquipos,
   editarEquipo,
-  trasladarEquiposAotraObra,
 } from "../services/equipo.services.js";
 
 export const crearEquipoController = async (req, res) => {
@@ -56,17 +55,3 @@ export const editarEquipoController = async (req, res) => {
   }
 };
 
-export const trasladarEquiposAotraObraController = async (req, res) => {
-  try {
-    const { obraId, obraDestinoId } = req.params;
-
-    if (!obraDestinoId)
-      return res.status(400).json({ error: "Debe indicar la obra destino" });
-
-    const result = await trasladarEquiposAotraObra(obraId, obraDestinoId);
-    res.status(200).json(result);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al trasladar equipos" });
-  }
-};

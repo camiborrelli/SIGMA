@@ -11,13 +11,13 @@ import {
   asignarUnidadController,
   eliminarUnidadController,
   actualizarFechaCompraController,
+  trasladarUnidadesController,
+  quitarUnidadDeObraController,
 } from "../controllers/unidad.controller.js";
-import { quitarUnidadDeObraController } from "../controllers/unidad.controller.js";
 import { verificarToken } from "../middlewares/auth.js";
 
 const router = express.Router();
 
-// Rutas específicas primero
 router.get("/equipo/:equipoId", verificarToken, getUnidadesPorEquipoController);
 
 router.post("/baja/:id", verificarToken, bajaUnidadController);
@@ -33,11 +33,9 @@ router.post(
 );
 router.post("/agregar/:equipoId", verificarToken, agregarUnidadController);
 
-// ✅ Ruta de asignar antes de las rutas genéricas
 router.post("/asignar/:id", verificarToken, asignarUnidadController);
 router.delete("/:id", verificarToken, eliminarUnidadController);
 
-// Otras rutas
 router.get("/garantia/:id", verificarToken, getGarantiaUnidadController);
 router.get("/stats", verificarToken, getStatsUnidadesController);
 router.get(
@@ -54,6 +52,7 @@ router.post(
   "/quitar-de-obra/:idUnidad/:idObra",
   verificarToken,
   quitarUnidadDeObraController,
-); //la ruta completa es
+);
+router.post("/trasladar",verificarToken, trasladarUnidadesController);
 
 export default router;

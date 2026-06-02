@@ -8,6 +8,7 @@ import { LuWrench, LuEye, LuEyeOff } from "react-icons/lu";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import FinalizarObraModal from "../Obra/FinalizarObraModal";
+import TrasladarUnidadesModal from "../Obra/TrasladarUnidadesModal"; 
 import toast from "react-hot-toast";
 import { CiCircleRemove } from "react-icons/ci";
 
@@ -21,8 +22,6 @@ const Mapa = () => {
   const [verModalFinalizar, setVerModalFinalizar] = useState(false);
   const [removingIds, setRemovingIds] = useState([]);
   const [trasladarEquiposModal, setTrasladarEquiposModal] = useState(false);
-  const [obraDestinoId, setObraDestinoId] = useState("");
-  const [trasladandoEquipos, setTrasladandoEquipos] = useState(false);
 
   const fetchObras = async () => {
     const token = localStorage.getItem("token");
@@ -99,7 +98,6 @@ const Mapa = () => {
   };
 
   const quitarUnidad = async (unidadId) => {
-    // marcar como removiendo para deshabilitar botón
     setRemovingIds((p) => (p.includes(unidadId) ? p : [...p, unidadId]));
     const token = localStorage.getItem("token");
     try {
@@ -117,7 +115,6 @@ const Mapa = () => {
         return;
       }
 
-      // Ignorar lo que devuelve el POST — siempre refrescar desde el detalle
       toast.success("Unidad quitada de la obra");
 
       const detalleRes = await fetch(
@@ -134,49 +131,7 @@ const Mapa = () => {
       toast.error("Error al quitar unidad de la obra");
       console.error("Error al quitar unidad:", error);
     } finally {
-      // limpiar bandera de removiendo
       setRemovingIds((p) => p.filter((id) => id !== unidadId));
-    }
-  };
-
-  const trasladarEquipos = async (obraDestinoId) => {
-    if (!obraDestinoId) {
-      toast.error("Seleccione una obra destino");
-      return;
-    }
-
-    if (obraDestinoId === detalleObra?._id) {
-      toast.error("La obra destino no puede ser la misma obra");
-      return;
-    }
-
-    try {
-      setTrasladandoEquipos(true);
-      const token = localStorage.getItem("token");
-      const res = await fetch(
-        `http://localhost:5001/equipos/trasladar/${detalleObra._id}/${obraDestinoId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          method: "POST",
-        },
-      );
-
-      if (!res.ok) {
-        const bodyErr = await res.json().catch(() => ({}));
-        toast.error(bodyErr.error || "Error al trasladar equipos");
-        return;
-      }
-      toast.success("Equipos trasladados correctamente");
-      setTrasladarEquiposModal(false);
-      setObraDestinoId("");
-      setObraSeleccionada(null);
-      setDetalleObra(null);
-      await fetchObras();
-    } catch (error) {
-      toast.error("Error al trasladar equipos");
-      console.error("Error al trasladar equipos:", error);
-    } finally {
-      setTrasladandoEquipos(false);
     }
   };
 
@@ -506,113 +461,18 @@ const Mapa = () => {
         />
       )}
 
-      {trasladarEquiposModal && detalleObra && (
-        <div
-          className="modal-traslado-overlay"
-          onClick={() => setTrasladarEquiposModal(false)}
-        >
-          <div
-            className="modal-traslado-card"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="modal-traslado-header">
-              <div>
-                <p className="modal-traslado-kicker">Movimiento de equipos</p>
-
-                <h2>
-                  {detalleObra.maquinas?.length === 0 &&
-                  detalleObra.herramientas?.length === 0
-                    ? "Sin equipos para trasladar"
-                    : "Trasladar equipos"}
-                </h2>
-              </div>
-
-              <button
-                type="button"
-                className="modal-traslado-close"
-                onClick={() => setTrasladarEquiposModal(false)}
-                aria-label="Cerrar modal"
-              >
-                ✕
-              </button>
-            </div>
-
-            {detalleObra.maquinas?.length === 0 &&
-            detalleObra.herramientas?.length === 0 ? (
-              <>
-                <p className="modal-traslado-description">
-                  Esta obra no tiene máquinas ni herramientas asignadas para
-                  trasladar.
-                </p>
-
-                <div className="modal-traslado-actions">
-                  <button
-                    type="button"
-                    className="modal-traslado-cancel"
-                    onClick={() => setTrasladarEquiposModal(false)}
-                  >
-                    Cerrar
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="modal-traslado-description">
-                  Selecciona la obra destino para mover todas las máquinas y
-                  herramientas asignadas desde{" "}
-                  <strong>{detalleObra.nombre}</strong>.
-                </p>
-
-                <div className="modal-traslado-info">
-                  Se trasladarán los equipos activos y se actualizará el listado
-                  de equipos de ambas obras.
-                </div>
-
-                <label className="modal-traslado-label" htmlFor="obraDestinoId">
-                  Obra destino
-                </label>
-
-                <select
-                  id="obraDestinoId"
-                  className="modal-traslado-select"
-                  value={obraDestinoId}
-                  onChange={(e) => setObraDestinoId(e.target.value)}
-                >
-                  <option value="">-- Seleccione una obra --</option>
-
-                  {obras
-                    .filter((obra) => obra._id !== detalleObra._id)
-                    .map((obra) => (
-                      <option key={obra._id} value={obra._id}>
-                        {obra.nombre}
-                      </option>
-                    ))}
-                </select>
-
-                <div className="modal-traslado-actions">
-                  <button
-                    type="button"
-                    className="modal-traslado-cancel"
-                    onClick={() => setTrasladarEquiposModal(false)}
-                    disabled={trasladandoEquipos}
-                  >
-                    Cancelar
-                  </button>
-
-                  <button
-                    type="button"
-                    className="modal-traslado-confirm"
-                    onClick={() => trasladarEquipos(obraDestinoId)}
-                    disabled={trasladandoEquipos || !obraDestinoId}
-                  >
-                    {trasladandoEquipos ? "Trasladando..." : "Trasladar"}
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+      <TrasladarUnidadesModal
+        isOpen={trasladarEquiposModal}
+        onClose={() => setTrasladarEquiposModal(false)}
+        obraOrigen={detalleObra}
+        obras={obras}
+        onSuccess={async () => {
+          setTrasladarEquiposModal(false);
+          setObraSeleccionada(null);
+          setDetalleObra(null);
+          await fetchObras();
+        }}
+      />
     </>
   );
 };

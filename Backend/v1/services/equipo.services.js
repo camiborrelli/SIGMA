@@ -128,23 +128,3 @@ export const editarEquipo = async (id, { nombre, modelo, tipo }) => {
 
   return equipoGuardado;
 };
-
-export const trasladarEquiposAotraObra = async (obraId, obraDestinoId) => {
-  // validar obras
-  const origen = await Obra.findById(obraId);
-  if (!origen) throw new Error("Obra origen no encontrada");
-
-  const destino = await Obra.findById(obraDestinoId);
-  if (!destino) throw new Error("Obra destino no encontrada");
-
-  // Trasladar todas las unidades que estén en la obra origen hacia la obra destino
-  const result = await Unidad.updateMany(
-    { ubicacion: obraId },
-    { $set: { ubicacion: obraDestinoId } },
-  );
-
-  return {
-    matchedCount: result.matchedCount || 0,
-    modifiedCount: result.modifiedCount || 0,
-  };
-};

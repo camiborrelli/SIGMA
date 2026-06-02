@@ -263,3 +263,49 @@ export const quitarUnidadDeObra = async (idUnidad, idObra) => {
 
   return unidad;
 };
+
+export const trasladarUnidadesAotraObra = async ({ obraOrigenId, obraDestinoId, unidadesIds }) => {
+  const obraDestino = await Obra.findById(obraDestinoId);
+  if (!obraDestino) throw new Error("La obra destino no existe");
+
+  let query = {};
+
+  if (unidadesIds && Array.isArray(unidadesIds) && unidadesIds.length > 0) {
+    query = { _id: { $in: unidadesIds }, ubicacion: obraOrigenId };
+  } else {
+    query = { ubicacion: obraOrigenId };
+  }
+
+  const unidadesAMover = await Unidad.find(query);
+  if (unidadesAMover.length === 0) {
+    throw new Error("No se encontraron unidades válidas para trasladar en la obra de origen");
+  }
+
+  const idsAMover = unidadesAMover.map(u => u._id);
+
+  await Unidad.updateMany(
+    { _id: { $in: idsAMover } },
+    { $set: { ubicacion: obraDestinoId, estado: "Asignada" } }
+  );
+
+  const obraOrigen = await Obra.findById(obraOrigenId);
+  if (obraOrigen && Array.isArray(obraOrigen.unidades)) {
+    obraOrigen.unidades = obraOrigen.unidades.filter(
+      (u) => !idsAMover.some(id => id.toString() === u.toString())
+    );
+    await obraOrigen.save();
+  }
+
+  if (obraDestino && Array.isArray(obraDestino.unidades)) {
+    const nuevasFiltro = idsAMover.filter(
+      id => !obraDestino.unidades.some(u => u.toString() === id.toString())
+    );
+    obraDestino.unidades.push(...nuevasFiltro);
+    await obraDestino.save();
+  }
+
+  return {
+    message: "Traslado realizado con éxito",
+    cantidadTrasladada: idsAMover.length,
+  };
+};
