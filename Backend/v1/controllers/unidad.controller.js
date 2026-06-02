@@ -11,6 +11,7 @@ import {
   eliminarUnidad,
   actualizarFechaCompra,
   quitarUnidadDeObra,
+  trasladarUnidadesAotraObra,
 } from "../services/unidad.services.js";
 
 export const getUnidadesPorEquipoController = async (req, res) => {
@@ -232,5 +233,26 @@ export const quitarUnidadDeObraController = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al quitar unidad de obra" });
+  }
+};
+
+export const trasladarUnidadesController = async (req, res) => {
+  try {
+    const { obraOrigenId, obraDestinoId, unidadesIds } = req.body;
+
+    if (!obraOrigenId || !obraDestinoId) {
+      return res.status(400).json({ error: "Debe indicar la obra de origen y la obra de destino" });
+    }
+
+    const result = await trasladarUnidadesAotraObra({
+      obraOrigenId,
+      obraDestinoId,
+      unidadesIds
+    });
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: error.message || "Error al trasladar unidades" });
   }
 };
