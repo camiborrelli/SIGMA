@@ -4,6 +4,7 @@ import {
   getObrasServices,
   getDetalleObraServices,
   finalizarObraServices,
+  reactivarObraServices,
 } from "../services/obra.services.js";
 import mongoose from "mongoose";
 import Obra from "../models/obra.model.js";
@@ -146,5 +147,28 @@ export const finalizarObraController = async (req, res) => {
     }
 
     res.status(500).json({ error: "Error al finalizar la obra" });
+  }
+};
+
+export const reactivarObraController = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "ID de obra inválido" });
+    }
+
+    const obraReactivada = await reactivarObraServices(id);
+
+    res.status(200).json({
+      message: "Obra reactivada correctamente",
+      obra: obraReactivada
+    });
+  } catch (error) {
+    console.error("Error en reactivarObraController:", error);
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
+    res.status(500).json({ error: "Error al reactivar la obra" });
   }
 };
