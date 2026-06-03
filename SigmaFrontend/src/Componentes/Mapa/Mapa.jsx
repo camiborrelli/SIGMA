@@ -8,7 +8,7 @@ import { LuWrench, LuEye, LuEyeOff } from "react-icons/lu";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import FinalizarObraModal from "../Obra/FinalizarObraModal";
-import TrasladarUnidadesModal from "../Obra/TrasladarUnidadesModal"; 
+import TrasladarUnidadesModal from "../Obra/TrasladarUnidadesModal";
 import ReactivarObraModal from "../Obra/ReactivarObraModal";
 import toast from "react-hot-toast";
 import { CiCircleRemove } from "react-icons/ci";
@@ -50,10 +50,9 @@ const Mapa = () => {
     const coincideEstado = !estadoFilter || obra.estado === estadoFilter;
     return coincideBusqueda && coincideEstado;
   });
-
   const bounds = [
-    [-35.1, -56.5],
-    [-34.3, -55.8],
+    [-35.9, -58.5],
+    [-30.0, -53.0],
   ];
 
   const seleccionarObra = async (obra) => {
@@ -171,19 +170,25 @@ const Mapa = () => {
               Todos
             </button>
             <button
-              className={`filtro-btn ${estadoFilter === "Activa" ? "active" : ""}`}
+              className={`filtro-btn ${
+                estadoFilter === "Activa" ? "active" : ""
+              }`}
               onClick={() => setEstadoFilter("Activa")}
             >
               Activa
             </button>
             <button
-              className={`filtro-btn ${estadoFilter === "Finalizada" ? "active" : ""}`}
+              className={`filtro-btn ${
+                estadoFilter === "Finalizada" ? "active" : ""
+              }`}
               onClick={() => setEstadoFilter("Finalizada")}
             >
               Finalizada
             </button>
             <button
-              className={`filtro-btn ${estadoFilter === "Cancelada" ? "active" : ""}`}
+              className={`filtro-btn ${
+                estadoFilter === "Cancelada" ? "active" : ""
+              }`}
               onClick={() => setEstadoFilter("Cancelada")}
             >
               Cancelada
@@ -202,35 +207,43 @@ const Mapa = () => {
               <div className="lista-scroll-contenedor">
                 {obrasFiltradas.map((obra) => {
                   const esSeleccionada = obraSeleccionada?._id === obra._id;
-                  const claseEstado = obra.estado?.toLowerCase().replace(/\s+/g, "-");
-                  const esInactivaCard = obra.estado?.toLowerCase() === "finalizada" || obra.estado?.toLowerCase() === "cancelada";
+                  const claseEstado = obra.estado
+                    ?.toLowerCase()
+                    .replace(/\s+/g, "-");
+                  const esInactivaCard =
+                    obra.estado?.toLowerCase() === "finalizada" ||
+                    obra.estado?.toLowerCase() === "cancelada";
 
                   return (
                     <div
-                      className={`obra-card ${esSeleccionada ? "selected" : ""}`}
+                      className={`obra-card ${
+                        esSeleccionada ? "selected" : ""
+                      }`}
                       key={obra._id}
                       onClick={() => seleccionarObra(obra)}
                     >
                       <h3>{obra.nombre}</h3>
-                      
+
                       {/* Fila de Ubicación con Icono */}
                       <p className="ubicacion">
                         <HiOutlineLocationMarker className="card-icon-svg loc-icon" />
                         {limpiarTextoUbicacion(obra.ubicacion)}
                       </p>
-                      
+
                       {/* Fila de Fechas con Icono */}
                       <p className="fechas">
                         <BsCalendarCheck className="card-icon-svg date-icon" />
                         {obra.fechaInicio
-                          ? new Date(obra.fechaInicio).toLocaleDateString("es-ES")
+                          ? new Date(obra.fechaInicio).toLocaleDateString(
+                              "es-ES",
+                            )
                           : "Sin fecha"}{" "}
                         •{" "}
                         {obra.fechaFin
                           ? new Date(obra.fechaFin).toLocaleDateString("es-ES")
                           : "Sin fecha"}
                       </p>
-                      
+
                       <div className="estado-badge-wrapper">
                         {/* Badge dinámico con Check icon si está Finalizada */}
                         <span className={`estado-badge estado-${claseEstado}`}>
@@ -277,15 +290,11 @@ const Mapa = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               />
               {obrasFiltradas.map((obra) => (
-                <Marker key={obra._id} position={[obra.latitud, obra.longitud]}>
-                  <Popup>
-                    <strong>{obra.nombre}</strong>
-                    <br />
-                    <span>{limpiarTextoUbicacion(obra.ubicacion)}</span>
-                    <br />
-                    <span>{obra.estado}</span>
-                  </Popup>
-                </Marker>
+                <Marker
+                  key={obra._id}
+                  position={[obra.latitud, obra.longitud]}
+                  eventHandlers={{ click: () => seleccionarObra(obra) }}
+                />
               ))}
             </MapContainer>
           </div>
@@ -346,7 +355,9 @@ const Mapa = () => {
                   <span className="label-fecha">Inicio:</span>
                   <span className="valor-fecha">
                     {detalleObra.fechaInicio
-                      ? new Date(detalleObra.fechaInicio).toLocaleDateString("es-ES")
+                      ? new Date(detalleObra.fechaInicio).toLocaleDateString(
+                          "es-ES",
+                        )
                       : "-"}
                   </span>
                 </div>
@@ -356,7 +367,9 @@ const Mapa = () => {
                   <span className="label-fecha">Fin estimado:</span>
                   <span className="valor-fecha">
                     {detalleObra.fechaFin
-                      ? new Date(detalleObra.fechaFin).toLocaleDateString("es-ES")
+                      ? new Date(detalleObra.fechaFin).toLocaleDateString(
+                          "es-ES",
+                        )
                       : "-"}
                   </span>
                 </div>
@@ -377,10 +390,14 @@ const Mapa = () => {
                         <div className="equipo-detalles-texto">
                           <strong>{unidad.nombreEquipo || "Máquina"}</strong>
                           <p>
-                            {unidad.identificador || unidad.modelo || "Sin código"}
+                            {unidad.identificador ||
+                              unidad.modelo ||
+                              "Sin código"}
                           </p>
                         </div>
-                        <span className={`estado-equipo-pill status-${claseEstado}`}>
+                        <span
+                          className={`estado-equipo-pill status-${claseEstado}`}
+                        >
                           {renderIconoEstadoEquipo(unidad.estado || "Asignado")}
                           {unidad.estado || "Asignado"}
                         </span>
@@ -415,10 +432,14 @@ const Mapa = () => {
                             {unidad.nombreEquipo || "Herramienta"}
                           </strong>
                           <p>
-                            {unidad.identificador || unidad.modelo || "Sin código"}
+                            {unidad.identificador ||
+                              unidad.modelo ||
+                              "Sin código"}
                           </p>
                         </div>
-                        <span className={`estado-equipo-pill status-${claseEstado}`}>
+                        <span
+                          className={`estado-equipo-pill status-${claseEstado}`}
+                        >
                           {renderIconoEstadoEquipo(unidad.estado || "Asignado")}
                           {unidad.estado || "Asignado"}
                         </span>

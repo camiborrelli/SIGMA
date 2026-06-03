@@ -318,9 +318,9 @@
     height: auto;
   }
 
-  .topbar-left, 
-  .logo-container, 
-  .nav, 
+  .topbar-left,
+  .logo-container,
+  .nav,
   .btn-nav.usuario {
     display: none !important;
   }

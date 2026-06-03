@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginRegistro.css";
+import toast from "react-hot-toast";
 
 const Registro = ({ setIsLogin }) => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const Registro = ({ setIsLogin }) => {
     setMensaje("");
 
     if (registerData.password !== registerData.confirmPassword) {
-      setMensaje("Las contraseñas no coinciden");
+      toast.error("Las contraseñas no coinciden");
       return;
     }
 
@@ -41,12 +42,13 @@ const Registro = ({ setIsLogin }) => {
     const result = await res.json();
 
     if (!res.ok) {
-      setMensaje(result.error || "Error en registro");
+      toast.error(result.error || "Error en registro");
       return;
     }
 
-    setMensaje("Usuario registrado correctamente");
+    toast.success("Usuario registrado correctamente");
     setIsLogin(true);
+    navigate("/dashboard");
 
     setRegisterData({
       nombre: "",
@@ -61,7 +63,7 @@ const Registro = ({ setIsLogin }) => {
     <div className="container">
       <div className="card">
         <h2>Registro de usuario</h2>
-        <p className="subtitle">Crea tu cuenta</p>
+        {/* <p className="subtitle">Crea tu cuenta</p> */}
 
         <form onSubmit={handleRegister}>
           <label>Nombre</label>

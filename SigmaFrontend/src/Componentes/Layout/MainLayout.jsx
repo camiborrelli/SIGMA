@@ -28,16 +28,25 @@ const MainLayout = () => {
         </div>
 
         <nav className="nav">
-          <button className="btn-nav" onClick={() => navigate("/dashboard")}>
-            <VscTools /> Gestión de equipos
+          <button
+            className="btn-nav equipos"
+            onClick={() => navigate("/dashboard")}
+          >
+            <VscTools />{" "}
+            {usuario?.rol === "Admin"
+              ? "Gestión de equipos y usuarios"
+              : "Gestión de equipos"}
           </button>
-          <button className="btn-nav" onClick={() => navigate("/mapa")}>
+          <button className="btn-nav mapa" onClick={() => navigate("/mapa")}>
             <TfiMapAlt /> Ver mapa
           </button>
         </nav>
 
         <div className="topbar-right">
-          <button className="btn-nav usuario" onClick={() => navigate("/perfil")}>
+          <button
+            className="btn-nav usuario"
+            onClick={() => navigate("/perfil")}
+          >
             <FaRegUser />
             {usuario ? `${usuario.nombre} ${usuario.apellido}` : "Usuario"}
           </button>
@@ -52,15 +61,21 @@ const MainLayout = () => {
       </main>
 
       <footer className="mobile-footer">
-        <button className="mobile-footer-btn" onClick={() => navigate("/dashboard")}>
+        <button
+          className="mobile-footer-btn"
+          onClick={() => navigate("/dashboard")}
+        >
           <VscTools />
-          <span>Gestión</span>
+          <span>Gestion</span>
         </button>
         <button className="mobile-footer-btn" onClick={() => navigate("/mapa")}>
           <TfiMapAlt />
           <span>Mapa</span>
         </button>
-        <button className="mobile-footer-btn" onClick={() => navigate("/perfil")}>
+        <button
+          className="mobile-footer-btn"
+          onClick={() => navigate("/perfil")}
+        >
           <FaRegUser />
           <span>Perfil</span>
         </button>
