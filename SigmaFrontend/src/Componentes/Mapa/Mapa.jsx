@@ -1,30 +1,47 @@
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import "./Mapa.css";
 import { useState, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+import toast from "react-hot-toast";
 import { BsCalendarCheck, BsCalendarX } from "react-icons/bs";
-import { FiTruck, FiRefreshCcw, FiCheck } from "react-icons/fi"; // Agregado FiCheck
+import { FiTruck, FiRefreshCcw, FiCheck } from "react-icons/fi";
 import { LuWrench, LuEye, LuEyeOff } from "react-icons/lu";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { AiOutlineCheckCircle } from "react-icons/ai";
+import { CiCircleRemove } from "react-icons/ci";
 import FinalizarObraModal from "../Obra/FinalizarObraModal";
 import TrasladarUnidadesModal from "../Obra/TrasladarUnidadesModal";
 import ReactivarObraModal from "../Obra/ReactivarObraModal";
-import toast from "react-hot-toast";
-import { CiCircleRemove } from "react-icons/ci";
+import "leaflet/dist/leaflet.css";
+import "./Mapa.css";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+let DefaultIcon = L.icon({
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+});
+L.Marker.prototype.options.icon = DefaultIcon;
 
 const Mapa = () => {
   const [busqueda, setBusqueda] = useState("");
   const [estadoFilter, setEstadoFilter] = useState("");
-  const [obraSeleccionada, setObraSeleccionada] = useState(null);
-  const [detalleObra, setDetalleObra] = useState(null);
   const [mostrarLista, setMostrarLista] = useState(true);
   const [obras, setObras] = useState([]);
+  const [obraSeleccionada, setObraSeleccionada] = useState(null);
+  const [detalleObra, setDetalleObra] = useState(null);
   const [verModalFinalizar, setVerModalFinalizar] = useState(false);
-  const [removingIds, setRemovingIds] = useState([]);
   const [trasladarEquiposModal, setTrasladarEquiposModal] = useState(false);
   const [verModalReactivar, setVerModalReactivar] = useState(false);
   const [obraAReactivar, setObraAReactivar] = useState(null);
+  const [removingIds, setRemovingIds] = useState([]);
+
+  const bounds = [
+    [-35.9, -58.5],
+    [-30.0, -53.0],
+  ];
 
   const fetchObras = async () => {
     const token = localStorage.getItem("token");
@@ -36,6 +53,7 @@ const Mapa = () => {
       setObras(data);
     } catch (err) {
       console.error("Error al obtener obras:", err);
+      toast.error("No se pudo cargar el listado de obras");
     }
   };
 
@@ -44,20 +62,17 @@ const Mapa = () => {
   }, []);
 
   const obrasFiltradas = obras.filter((obra) => {
-    const coincideBusqueda = obra.nombre
-      .toLowerCase()
-      .includes(busqueda.toLowerCase());
+    const termino = busqueda.toLowerCase();
+    const coincideNombre = obra.nombre?.toLowerCase().includes(termino);
+    const coincideUbicacion = obra.ubicacion?.toLowerCase().includes(termino);
+    const coincideBusqueda = coincideNombre || coincideUbicacion;
+
     const coincideEstado = !estadoFilter || obra.estado === estadoFilter;
     return coincideBusqueda && coincideEstado;
   });
-  const bounds = [
-    [-35.9, -58.5],
-    [-30.0, -53.0],
-  ];
 
   const seleccionarObra = async (obra) => {
     if (obra.estado?.toLowerCase() === "finalizada") {
-      // Mantenemos la lógica actual para que se seleccione visualmente pero limpie el panel derecho si aplica
       setObraSeleccionada(obra);
       setDetalleObra(null);
       return;
@@ -65,14 +80,9 @@ const Mapa = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(
-        `http://localhost:5001/obras/detalle/${obra._id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      const res = await fetch(`http://localhost:5001/obras/detalle/${obra._id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (!res.ok) return;
       const data = await res.json();
@@ -80,28 +90,14 @@ const Mapa = () => {
       setObraSeleccionada(obra);
       setDetalleObra(data);
     } catch (error) {
-      console.error(error);
+      console.error("Error al obtener detalle de obra:", error);
     }
   };
 
-  const renderIconoEstadoEquipo = (estado) => {
-    const est = estado?.toLowerCase();
-    if (est === "asignado")
-      return <HiOutlineLocationMarker className="pill-icon" />;
-    if (est === "mantenimiento" || est === "en mantenimiento")
-      return <LuWrench className="pill-icon" />;
-    if (est === "disponible")
-      return <AiOutlineCheckCircle className="pill-icon" />;
-    return <HiOutlineLocationMarker className="pill-icon" />;
-  };
-
-  const limpiarTextoUbicacion = (texto) => {
-    if (!texto) return "";
-    return texto.replace(/[📍📌]/g, "").trim();
-  };
-
   const quitarUnidad = async (unidadId) => {
-    setRemovingIds((p) => (p.includes(unidadId) ? p : [...p, unidadId]));
+    if (removingIds.includes(unidadId)) return;
+    setRemovingIds((prev) => [...prev, unidadId]);
+
     const token = localStorage.getItem("token");
     try {
       const res = await fetch(
@@ -109,7 +105,7 @@ const Mapa = () => {
         {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
-        },
+        }
       );
 
       if (!res.ok) {
@@ -122,7 +118,7 @@ const Mapa = () => {
 
       const detalleRes = await fetch(
         `http://localhost:5001/obras/detalle/${detalleObra._id}`,
-        { headers: { Authorization: `Bearer ${token}` } },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       if (detalleRes.ok) {
         const detalleData = await detalleRes.json();
@@ -134,8 +130,21 @@ const Mapa = () => {
       toast.error("Error al quitar unidad de la obra");
       console.error("Error al quitar unidad:", error);
     } finally {
-      setRemovingIds((p) => p.filter((id) => id !== unidadId));
+      setRemovingIds((prev) => prev.filter((id) => id !== unidadId));
     }
+  };
+
+  const renderIconoEstadoEquipo = (estado) => {
+    const est = estado?.toLowerCase();
+    if (est === "asignado") return <HiOutlineLocationMarker className="pill-icon" />;
+    if (est === "mantenimiento" || est === "en mantenimiento") return <LuWrench className="pill-icon" />;
+    if (est === "disponible") return <AiOutlineCheckCircle className="pill-icon" />;
+    return <HiOutlineLocationMarker className="pill-icon" />;
+  };
+
+  const limpiarTextoUbicacion = (texto) => {
+    if (!texto) return "";
+    return texto.replace(/[📍📌]/g, "").trim();
   };
 
   return (
@@ -163,36 +172,15 @@ const Mapa = () => {
           />
 
           <div className="filtros-estado">
-            <button
-              className={`filtro-btn ${!estadoFilter ? "active" : ""}`}
-              onClick={() => setEstadoFilter("")}
-            >
-              Todos
-            </button>
-            <button
-              className={`filtro-btn ${
-                estadoFilter === "Activa" ? "active" : ""
-              }`}
-              onClick={() => setEstadoFilter("Activa")}
-            >
-              Activa
-            </button>
-            <button
-              className={`filtro-btn ${
-                estadoFilter === "Finalizada" ? "active" : ""
-              }`}
-              onClick={() => setEstadoFilter("Finalizada")}
-            >
-              Finalizada
-            </button>
-            <button
-              className={`filtro-btn ${
-                estadoFilter === "Cancelada" ? "active" : ""
-              }`}
-              onClick={() => setEstadoFilter("Cancelada")}
-            >
-              Cancelada
-            </button>
+            {["", "Activa", "Finalizada", "Cancelada"].map((estado) => (
+              <button
+                key={estado}
+                className={`filtro-btn ${estadoFilter === estado ? "active" : ""}`}
+                onClick={() => setEstadoFilter(estado)}
+              >
+                {estado === "" ? "Todos" : estado}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -207,36 +195,28 @@ const Mapa = () => {
               <div className="lista-scroll-contenedor">
                 {obrasFiltradas.map((obra) => {
                   const esSeleccionada = obraSeleccionada?._id === obra._id;
-                  const claseEstado = obra.estado
-                    ?.toLowerCase()
-                    .replace(/\s+/g, "-");
+                  const claseEstado = obra.estado?.toLowerCase().replace(/\s+/g, "-");
                   const esInactivaCard =
                     obra.estado?.toLowerCase() === "finalizada" ||
                     obra.estado?.toLowerCase() === "cancelada";
 
                   return (
                     <div
-                      className={`obra-card ${
-                        esSeleccionada ? "selected" : ""
-                      }`}
+                      className={`obra-card ${esSeleccionada ? "selected" : ""}`}
                       key={obra._id}
                       onClick={() => seleccionarObra(obra)}
                     >
                       <h3>{obra.nombre}</h3>
 
-                      {/* Fila de Ubicación con Icono */}
                       <p className="ubicacion">
                         <HiOutlineLocationMarker className="card-icon-svg loc-icon" />
                         {limpiarTextoUbicacion(obra.ubicacion)}
                       </p>
 
-                      {/* Fila de Fechas con Icono */}
                       <p className="fechas">
                         <BsCalendarCheck className="card-icon-svg date-icon" />
                         {obra.fechaInicio
-                          ? new Date(obra.fechaInicio).toLocaleDateString(
-                              "es-ES",
-                            )
+                          ? new Date(obra.fechaInicio).toLocaleDateString("es-ES")
                           : "Sin fecha"}{" "}
                         •{" "}
                         {obra.fechaFin
@@ -245,7 +225,6 @@ const Mapa = () => {
                       </p>
 
                       <div className="estado-badge-wrapper">
-                        {/* Badge dinámico con Check icon si está Finalizada */}
                         <span className={`estado-badge estado-${claseEstado}`}>
                           {obra.estado?.toLowerCase() === "finalizada" && (
                             <span className="badge-tick-circle">
@@ -255,7 +234,6 @@ const Mapa = () => {
                           {obra.estado}
                         </span>
 
-                        {/* Botón Reactivar Estilizado como la Imagen */}
                         {esInactivaCard && (
                           <button
                             className="btn-reactivar-sutil-box"
@@ -289,13 +267,22 @@ const Mapa = () => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               />
-              {obrasFiltradas.map((obra) => (
-                <Marker
-                  key={obra._id}
-                  position={[obra.latitud, obra.longitud]}
-                  eventHandlers={{ click: () => seleccionarObra(obra) }}
-                />
-              ))}
+              {obrasFiltradas
+                .filter((o) => o.latitud && o.longitud)
+                .map((obra) => (
+                  <Marker
+                    key={obra._id}
+                    position={[obra.latitud, obra.longitud]}
+                    eventHandlers={{ click: () => seleccionarObra(obra) }}
+                  >
+                    <Popup>
+                      <div style={{ fontSize: "14px" }}>
+                        <strong>{obra.nombre}</strong> <br />
+                        <span>Estado: {obra.estado}</span>
+                      </div>
+                    </Popup>
+                  </Marker>
+                ))}
             </MapContainer>
           </div>
 
@@ -355,9 +342,7 @@ const Mapa = () => {
                   <span className="label-fecha">Inicio:</span>
                   <span className="valor-fecha">
                     {detalleObra.fechaInicio
-                      ? new Date(detalleObra.fechaInicio).toLocaleDateString(
-                          "es-ES",
-                        )
+                      ? new Date(detalleObra.fechaInicio).toLocaleDateString("es-ES")
                       : "-"}
                   </span>
                 </div>
@@ -367,9 +352,7 @@ const Mapa = () => {
                   <span className="label-fecha">Fin estimado:</span>
                   <span className="valor-fecha">
                     {detalleObra.fechaFin
-                      ? new Date(detalleObra.fechaFin).toLocaleDateString(
-                          "es-ES",
-                        )
+                      ? new Date(detalleObra.fechaFin).toLocaleDateString("es-ES")
                       : "-"}
                   </span>
                 </div>
@@ -379,9 +362,9 @@ const Mapa = () => {
                 <h3>Máquinas Asignadas</h3>
                 {detalleObra.maquinas?.length > 0 ? (
                   detalleObra.maquinas.map((unidad) => {
-                    const claseEstado = (unidad.estado || "asignado")
-                      .toLowerCase()
-                      .replace(/\s+/g, "-");
+                    const claseEstado = (unidad.estado || "asignado").toLowerCase().replace(/\s+/g, "-");
+                    const estaEliminando = removingIds.includes(unidad._id);
+
                     return (
                       <div className="equipo-card" key={unidad._id}>
                         <div className="equipo-circle-avatar">
@@ -389,23 +372,22 @@ const Mapa = () => {
                         </div>
                         <div className="equipo-detalles-texto">
                           <strong>{unidad.nombreEquipo || "Máquina"}</strong>
-                          <p>
-                            {unidad.identificador ||
-                              unidad.modelo ||
-                              "Sin código"}
-                          </p>
+                          <p>{unidad.identificador || unidad.modelo || "Sin código"}</p>
                         </div>
-                        <span
-                          className={`estado-equipo-pill status-${claseEstado}`}
-                        >
+                        <span className={`estado-equipo-pill status-${claseEstado}`}>
                           {renderIconoEstadoEquipo(unidad.estado || "Asignado")}
                           {unidad.estado || "Asignado"}
                         </span>
-                        <button onClick={() => quitarUnidad(unidad._id)}>
-                          <CiCircleRemove
-                            style={{ fontSize: "1.25rem", color: "#c0392b" }}
-                            alt="Quitar máquina"
-                          />
+                        <button 
+                          onClick={() => quitarUnidad(unidad._id)}
+                          disabled={estaEliminando}
+                          className="btn-quitar-unidad"
+                        >
+                          {estaEliminando ? (
+                            <FiRefreshCcw className="spinner" style={{ animation: "spin 1s linear infinite" }} />
+                          ) : (
+                            <CiCircleRemove style={{ fontSize: "1.25rem", color: "#c0392b" }} title="Quitar máquina" />
+                          )}
                         </button>
                       </div>
                     );
@@ -419,36 +401,32 @@ const Mapa = () => {
                 <h3>Herramientas Asignadas</h3>
                 {detalleObra.herramientas?.length > 0 ? (
                   detalleObra.herramientas.map((unidad) => {
-                    const claseEstado = (unidad.estado || "asignado")
-                      .toLowerCase()
-                      .replace(/\s+/g, "-");
+                    const claseEstado = (unidad.estado || "asignado").toLowerCase().replace(/\s+/g, "-");
+                    const estaEliminando = removingIds.includes(unidad._id);
+
                     return (
                       <div className="equipo-card" key={unidad._id}>
                         <div className="equipo-circle-avatar">
                           <LuWrench className="equipo-svg" />
                         </div>
                         <div className="equipo-detalles-texto">
-                          <strong>
-                            {unidad.nombreEquipo || "Herramienta"}
-                          </strong>
-                          <p>
-                            {unidad.identificador ||
-                              unidad.modelo ||
-                              "Sin código"}
-                          </p>
+                          <strong>{unidad.nombreEquipo || "Herramienta"}</strong>
+                          <p>{unidad.identificador || unidad.modelo || "Sin código"}</p>
                         </div>
-                        <span
-                          className={`estado-equipo-pill status-${claseEstado}`}
-                        >
+                        <span className={`estado-equipo-pill status-${claseEstado}`}>
                           {renderIconoEstadoEquipo(unidad.estado || "Asignado")}
                           {unidad.estado || "Asignado"}
                         </span>
-                        <button onClick={() => quitarUnidad(unidad._id)}>
-                          <CiCircleRemove
-                            className="equipo-svg"
-                            style={{ fontSize: "1.25rem", color: "#c0392b" }}
-                            alt="Quitar herramienta"
-                          />
+                        <button 
+                          onClick={() => quitarUnidad(unidad._id)}
+                          disabled={estaEliminando}
+                          className="btn-quitar-unidad"
+                        >
+                          {estaEliminando ? (
+                            <FiRefreshCcw className="spinner" style={{ animation: "spin 1s linear infinite" }} />
+                          ) : (
+                            <CiCircleRemove style={{ fontSize: "1.25rem", color: "#c0392b" }} title="Quitar herramienta" />
+                          )}
                         </button>
                       </div>
                     );

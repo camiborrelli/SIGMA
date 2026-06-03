@@ -1,4 +1,4 @@
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import logo from "../../assets/LogoSinFondo.png";
 import { TfiMapAlt } from "react-icons/tfi";
 import { VscTools } from "react-icons/vsc";
@@ -6,6 +6,7 @@ import { FaRegUser } from "react-icons/fa";
 
 const MainLayout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -29,7 +30,7 @@ const MainLayout = () => {
 
         <nav className="nav">
           <button
-            className="btn-nav equipos"
+            className={`btn-nav equipos ${location.pathname === "/dashboard" ? "active" : ""}`}
             onClick={() => navigate("/dashboard")}
           >
             <VscTools />{" "}
@@ -37,14 +38,18 @@ const MainLayout = () => {
               ? "Gestión de equipos y usuarios"
               : "Gestión de equipos"}
           </button>
-          <button className="btn-nav mapa" onClick={() => navigate("/mapa")}>
+          
+          <button 
+            className={`btn-nav mapa ${location.pathname === "/mapa" ? "active" : ""}`} 
+            onClick={() => navigate("/mapa")}
+          >
             <TfiMapAlt /> Ver mapa
           </button>
         </nav>
 
         <div className="topbar-right">
           <button
-            className="btn-nav usuario"
+            className={`btn-nav usuario ${location.pathname === "/perfil" ? "active" : ""}`}
             onClick={() => navigate("/perfil")}
           >
             <FaRegUser />
@@ -62,18 +67,23 @@ const MainLayout = () => {
 
       <footer className="mobile-footer">
         <button
-          className="mobile-footer-btn"
+          className={`mobile-footer-btn ${location.pathname === "/dashboard" ? "active" : ""}`}
           onClick={() => navigate("/dashboard")}
         >
           <VscTools />
           <span>Gestion</span>
         </button>
-        <button className="mobile-footer-btn" onClick={() => navigate("/mapa")}>
+        
+        <button 
+          className={`mobile-footer-btn ${location.pathname === "/mapa" ? "active" : ""}`} 
+          onClick={() => navigate("/mapa")}
+        >
           <TfiMapAlt />
           <span>Mapa</span>
         </button>
+        
         <button
-          className="mobile-footer-btn"
+          className={`mobile-footer-btn ${location.pathname === "/perfil" ? "active" : ""}`}
           onClick={() => navigate("/perfil")}
         >
           <FaRegUser />

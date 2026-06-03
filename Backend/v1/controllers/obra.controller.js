@@ -11,14 +11,16 @@ import Obra from "../models/obra.model.js";
 
 export const registrarObraController = async (req, res) => {
   try {
-    const { nombre, latitud, longitud, ubicacion, fechaInicio, estado } =
+    const { nombre, latitud, longitud, ubicacion, fechaInicio, fechaFin, estado } =
       req.body;
+      
     const nuevaObra = await registrarObraServices({
       nombre,
       latitud,
       longitud,
       ubicacion,
       fechaInicio,
+      fechaFin,
       estado,
     });
     res.status(201).json(nuevaObra);
@@ -26,7 +28,7 @@ export const registrarObraController = async (req, res) => {
     if (error.message === "La obra ya existe" || error.code === 11000) {
       return res.status(409).json({ error: "La obra ya existe" });
     }
-    // Mongoose validation errors -> return 400 with details
+
     if (error.name === "ValidationError") {
       const errors = {};
       for (const [key, val] of Object.entries(error.errors || {})) {
@@ -56,7 +58,6 @@ export const registrarObraController = async (req, res) => {
 export const getObraPorIdController = async (req, res) => {
   try {
     const { id } = req.params;
-    // validar formato de ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "ID de obra inválido" });
     }

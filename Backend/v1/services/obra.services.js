@@ -7,6 +7,7 @@ export const registrarObraServices = async ({
   longitud,
   ubicacion,
   fechaInicio,
+  fechaFin,
   estado,
 }) => {
   const existe = await Obra.findOne({ nombre, latitud, longitud }).collation({
@@ -25,6 +26,7 @@ export const registrarObraServices = async ({
     longitud,
     ubicacion,
     fechaInicio,
+    fechaFin,
     estado,
   });
   await nuevaObra.save();

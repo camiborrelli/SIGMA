@@ -14,7 +14,6 @@ const RegistroObra = ({ isOpen, onClose, onSuccess }) => {
   const [errors, setErrors] = useState({});
   const [geocodingStatus, setGeocodingStatus] = useState("");
 
-  // Si el modal está cerrado, no se dibuja nada en la interfaz
   if (!isOpen) return null;
 
   const geocodificar = async () => {
@@ -78,6 +77,7 @@ const RegistroObra = ({ isOpen, onClose, onSuccess }) => {
           latitud,
           longitud,
           fechaInicio: fechaInicio || null,
+          fechaFin: fechaFin || null, 
           estado,
         }),
       });
@@ -90,8 +90,7 @@ const RegistroObra = ({ isOpen, onClose, onSuccess }) => {
       }
 
       toast.success("Obra registrada correctamente");
-      
-      // Limpieza total del formulario
+
       setNombre("");
       setLatitud("");
       setLongitud("");
@@ -102,7 +101,6 @@ const RegistroObra = ({ isOpen, onClose, onSuccess }) => {
       setUbicacion("");
       setGeocodingStatus("");
 
-      // Notificar éxito al Dashboard y cerrar
       if (onSuccess) onSuccess();
       onClose();
     } catch (error) {
@@ -160,6 +158,17 @@ const RegistroObra = ({ isOpen, onClose, onSuccess }) => {
               onFocus={(e) => (e.target.type = "date")}
               onBlur={(e) => { if (!e.target.value) e.target.type = "text"; }}
               onChange={(e) => setFechaInicio(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <input
+              type="text"
+              placeholder="Fecha fin estimada (YYYY-MM-DD)"
+              value={fechaFin}
+              onFocus={(e) => (e.target.type = "date")}
+              onBlur={(e) => { if (!e.target.value) e.target.type = "text"; }}
+              onChange={(e) => setFechaFin(e.target.value)}
             />
           </div>
 
