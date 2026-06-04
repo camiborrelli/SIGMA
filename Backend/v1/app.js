@@ -6,6 +6,8 @@ import unidadRoutes from "./routes/unidad.routes.js";
 import equipoRoutes from "./routes/equipo.routes.js";
 import usuarioRoutes from "./routes/usuario.routes.js";
 import obraRoutes from "./routes/obra.routes.js";
+import notificacionRoutes from "./routes/notificacion.routes.js";
+import solicitudRoutes from "./routes/solicitudTraslado.routes.js";
 
 import { connectDB } from "./db.js";
 
@@ -23,8 +25,11 @@ app.use("/unidades", unidadRoutes);
 app.use("/equipos", equipoRoutes);
 app.use("/usuarios", usuarioRoutes);
 app.use("/obras", obraRoutes);
+app.use("/notificaciones", notificacionRoutes);
+app.use("/solicitudes", solicitudRoutes);
 
 //Puerto
 app.listen(process.env.PORT || 5001, () => {
   console.log(`Servidor corriendo en puerto ${process.env.PORT || 5001}`);
 });
+

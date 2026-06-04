@@ -18,6 +18,7 @@ import Garantia from "./Componentes/Unidad/Garantia";
 import Mapa from "./Componentes/Mapa/Mapa";
 import PerfilUsuario from "./Componentes/Usuario/PerfilUsuario";
 
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [usuario, setUsuario] = useState(null);

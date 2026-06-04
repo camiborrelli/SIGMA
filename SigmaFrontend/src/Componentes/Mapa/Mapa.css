@@ -804,16 +804,3 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
-
-.btn-nav.active {
-  color: var(--color-brand-red);
-  font-weight: 600;
-}
-
-.btn-nav.active svg {
-  color: var(--color-brand-red);
-}
-
-.mobile-footer-btn.active {
-  color: var(--color-brand-red);
-}

@@ -95,9 +95,6 @@ const Dashboard = () => {
             <button className="btn btn-acciones">Registro de acciones</button>
             <button className="btn btn-register" onClick={registrarEquipo}>+ Nuevo equipo</button>
             <button className="btn btn-register" onClick={registrarObra}>+ Nueva obra</button>
-            <button className="btn btn-register btn-ver-mapa-hidden" onClick={verMapa}>
-              Ver mapa
-            </button>
           </div>
         )}
       </div>

@@ -37,6 +37,7 @@ const Mapa = () => {
   const [verModalReactivar, setVerModalReactivar] = useState(false);
   const [obraAReactivar, setObraAReactivar] = useState(null);
   const [removingIds, setRemovingIds] = useState([]);
+  const [rolUsuario, setRolUsuario] = useState("");
 
   const bounds = [
     [-35.9, -58.5],
@@ -59,6 +60,10 @@ const Mapa = () => {
 
   useEffect(() => {
     fetchObras();
+    const rol = localStorage.getItem("rol");
+    if (rol) {
+      setRolUsuario(rol);
+    }
   }, []);
 
   const obrasFiltradas = obras.filter((obra) => {
@@ -448,7 +453,9 @@ const Mapa = () => {
                   onClick={() => setTrasladarEquiposModal(true)}
                   className="btn-exportar-equipos"
                 >
-                  Trasladar equipos
+                  {rolUsuario === "Admin"
+                    ? "Trasladar equipos"
+                    : "Solicitar traslado"}
                 </button>
               </div>
             </section>
@@ -469,11 +476,12 @@ const Mapa = () => {
       )}
 
       <TrasladarUnidadesModal
-        isOpen={trasladarEquiposModal}
-        onClose={() => setTrasladarEquiposModal(false)}
-        obraOrigen={detalleObra}
-        obras={obras}
-        onSuccess={async () => {
+          isOpen={trasladarEquiposModal}
+          onClose={() => setTrasladarEquiposModal(false)}
+          obraOrigen={detalleObra}
+          obras={obras}
+          rolUsuario={rolUsuario}
+          onSuccess={async () => {
           setTrasladarEquiposModal(false);
           setObraSeleccionada(null);
           setDetalleObra(null);

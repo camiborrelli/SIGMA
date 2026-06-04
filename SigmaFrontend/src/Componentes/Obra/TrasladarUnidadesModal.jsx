@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import "./TrasladarUnidadesModal.css";
 
-const TrasladarUnidadesModal = ({ isOpen, onClose, obraOrigen, obras, onSuccess }) => {
+const TrasladarUnidadesModal = ({ isOpen, onClose, obraOrigen, obras, onSuccess, rolUsuario }) => {
   const [obraDestinoId, setObraDestinoId] = useState("");
   const [tipoTraslado, setTipoTraslado] = useState("todo");
   const [unidadesSeleccionadas, setUnidadesSeleccionadas] = useState([]);
   const [loading, setLoading] = useState(false);
 
   if (!isOpen || !obraOrigen) return null;
+
+  const esAdmin = rolUsuario === "Admin";
 
   const todasLasUnidades = [
     ...(obraOrigen.maquinas || []).map(u => ({ ...u, tipoClase: "Máquina" })),
@@ -29,47 +31,70 @@ const TrasladarUnidadesModal = ({ isOpen, onClose, obraOrigen, obras, onSuccess 
     }
   };
 
-  const handleTrasladar = async () => {
+  const handleAccionPrincipal = async () => {
     if (!obraDestinoId) {
       toast.error("Seleccione una obra destino");
       return;
     }
 
     if (tipoTraslado === "especifico" && unidadesSeleccionadas.length === 0) {
-      toast.error("Seleccione al menos una unidad para trasladar");
+      toast.error("Seleccione al menos una unidad");
       return;
     }
 
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
+      
+      const unidadesAEnviar = tipoTraslado === "todo" 
+        ? todasLasUnidades.map(u => u._id) 
+        : unidadesSeleccionadas;
 
-      const payload = {
-        obraOrigenId: obraOrigen._id,
-        obraDestinoId,
-        unidadesIds: tipoTraslado === "todo" ? [] : unidadesSeleccionadas,
-      };
+      if (esAdmin) {
 
-      const res = await fetch("http://localhost:5001/unidades/trasladar", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+        const payloadAdmin = {
+          obraOrigenId: obraOrigen._id,
+          obraDestinoId,
+          unidadesIds: unidadesAEnviar,
+        };
 
-      const data = await res.json();
+        const res = await fetch("http://localhost:5001/unidades/trasladar", { 
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payloadAdmin),
+        });
 
-      if (!res.ok) {
-        toast.error(data.error || "Error al trasladar unidades");
-        return;
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Error al ejecutar el traslado");
+        toast.success("Equipos trasladados exitosamente");
+
+      } else {
+        const payloadFuncionario = {
+          obraOrigen: obraOrigen._id,
+          obraDestino: obraDestinoId,
+          unidades: unidadesAEnviar,
+        };
+
+        const res = await fetch("http://localhost:5001/solicitudes/traslado", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payloadFuncionario),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Error al enviar la solicitud");
+        toast.success(data.message || "Solicitud enviada al administrador exitosamente");
       }
 
-      toast.success(data.message || "Traslado realizado correctamente");
       onSuccess();
     } catch (error) {
-      toast.error("Error en la conexión con el servidor");
+      toast.error(error.message || "Error en la conexión con el servidor");
       console.error(error);
     } finally {
       setLoading(false);
@@ -94,7 +119,11 @@ const TrasladarUnidadesModal = ({ isOpen, onClose, obraOrigen, obras, onSuccess 
             </div>
             <div>
               <p className="modal-traslado-kicker">Movimiento de unidades</p>
-              <h2>{tieneEquipos ? "Trasladar Unidades" : "Sin unidades para trasladar"}</h2>
+              <h2>
+                {!tieneEquipos 
+                  ? "Sin unidades para trasladar" 
+                  : esAdmin ? "Trasladar Equipos" : "Solicitar Traslado"}
+              </h2>
             </div>
           </div>
           <button type="button" className="modal-traslado-close" onClick={onClose}>
@@ -119,7 +148,9 @@ const TrasladarUnidadesModal = ({ isOpen, onClose, obraOrigen, obras, onSuccess 
         ) : (
           <>
             <p className="modal-traslado-description">
-              Mueve el inventario asignado desde <strong>{obraOrigen.nombre}</strong> hacia otra obra activa.
+              {esAdmin 
+                ? <>Mueve el inventario desde <strong>{obraOrigen.nombre}</strong> hacia otra obra activa.</>
+                : <>Solicita el movimiento del inventario desde <strong>{obraOrigen.nombre}</strong> hacia otra obra activa.</>}
             </p>
 
             <div className="modal-traslado-tabs-container">
@@ -139,7 +170,9 @@ const TrasladarUnidadesModal = ({ isOpen, onClose, obraOrigen, obras, onSuccess 
                       <path d="M12 22V12" />
                     </svg>
                   </div>
-                  <span className="modal-traslado-tab-text">Trasladar TODO el inventario</span>
+                  <span className="modal-traslado-tab-text">
+                    {esAdmin ? "Mover TODO el inventario" : "Solicitar TODO el inventario"}
+                  </span>
                   <div className="modal-traslado-custom-radio"></div>
                 </div>
               </label>
@@ -236,10 +269,12 @@ const TrasladarUnidadesModal = ({ isOpen, onClose, obraOrigen, obras, onSuccess 
               <button
                 type="button"
                 className="modal-traslado-confirm"
-                onClick={handleTrasladar}
+                onClick={handleAccionPrincipal}
                 disabled={loading || !obraDestinoId || (tipoTraslado === "especifico" && unidadesSeleccionadas.length === 0)}
               >
-                {loading ? "Trasladando..." : "Trasladar"}
+                {loading 
+                  ? (esAdmin ? "Trasladando..." : "Enviando solicitud...") 
+                  : (esAdmin ? "Trasladar Equipos" : "Solicitar Traslado")}
               </button>
             </div>
           </>
