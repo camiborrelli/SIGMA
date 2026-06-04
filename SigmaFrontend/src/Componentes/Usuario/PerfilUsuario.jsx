@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-// import Modal from "react-modal";
 import toast from "react-hot-toast";
 import "./CambiarContrasenia.css";
 import "./PerfilUsuario.css";
