@@ -7,6 +7,9 @@ import { FaRegCalendarCheck } from "react-icons/fa";
 import { FaRegCalendarXmark } from "react-icons/fa6";
 import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
 import { FaTools } from "react-icons/fa";
+import dayjs from "dayjs";
+import "dayjs/locale/es"; // para español
+dayjs.locale("es");
 
 const Garantia = ({ id: propId }) => {
   const params = useParams();
@@ -21,18 +24,10 @@ const Garantia = ({ id: propId }) => {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  const formatDate = (iso) => {
-    if (!iso) return "-";
-    try {
-      const d = new Date(iso);
-      return new Intl.DateTimeFormat("es-ES", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }).format(d);
-    } catch {
-      return iso;
-    }
+  const formatDate = (date) => {
+    if (!date) return "—";
+    return dayjs(date).format("DD/MM/YYYY");
+    console.log(date);
   };
 
   useEffect(() => {
@@ -66,11 +61,9 @@ const Garantia = ({ id: propId }) => {
 
       // reparaciones
       try {
-        const token2 = localStorage.getItem("token");
-        const headers2 = token2 ? { Authorization: `Bearer ${token2}` } : {};
         const r2 = await fetch(
           `http://localhost:5001/unidades/${id}/reparaciones`,
-          { headers: headers2 },
+          { headers },
         );
         if (r2.ok) {
           const d2 = await r2.json();
@@ -84,20 +77,22 @@ const Garantia = ({ id: propId }) => {
     fetchAll();
   }, [id]);
 
-  const porcentajeVidaUtil = garantia
-    ? Math.max(
-        0,
-        Math.min(
-          100,
-          Math.round(
-            ((new Date(garantia.fechaFinGarantia) - new Date()) /
-              (new Date(garantia.fechaFinGarantia) -
-                new Date(garantia.fechaCompra))) *
-              100,
+  const porcentajeVidaUtil =
+    garantia?.fechaCompra && garantia?.fechaFinGarantia
+      ? Math.max(
+          0,
+          Math.min(
+            100,
+            Math.round(
+              (dayjs(garantia.fechaFinGarantia).diff(dayjs()) /
+                dayjs(garantia.fechaFinGarantia).diff(
+                  dayjs(garantia.fechaCompra),
+                )) *
+                100,
+            ),
           ),
-        ),
-      )
-    : 0;
+        )
+      : 0;
 
   return (
     <div className="garantia-wrapper">

@@ -234,10 +234,15 @@ export const finalizarMantenimiento = async (id, usuario = null) => {
 
 export const actualizarFechaCompra = async (id, fechaCompra) => {
   const unidad = await Unidad.findById(id);
-
   if (!unidad) throw new Error("Unidad no encontrada");
 
-  unidad.fechaCompra = fechaCompra;
+  let fecha = new Date(fechaCompra);
+  fecha.setUTCHours(0, 0, 0, 0);
+
+  // ✔ sumar un día para compensar desfase
+  fecha.setDate(fecha.getDate() + 1);
+
+  unidad.fechaCompra = fecha;
   await unidad.save();
 
   return unidad;
@@ -264,7 +269,11 @@ export const quitarUnidadDeObra = async (idUnidad, idObra) => {
   return unidad;
 };
 
-export const trasladarUnidadesAotraObra = async ({ obraOrigenId, obraDestinoId, unidadesIds }) => {
+export const trasladarUnidadesAotraObra = async ({
+  obraOrigenId,
+  obraDestinoId,
+  unidadesIds,
+}) => {
   const obraDestino = await Obra.findById(obraDestinoId);
   if (!obraDestino) throw new Error("La obra destino no existe");
 
@@ -278,27 +287,29 @@ export const trasladarUnidadesAotraObra = async ({ obraOrigenId, obraDestinoId, 
 
   const unidadesAMover = await Unidad.find(query);
   if (unidadesAMover.length === 0) {
-    throw new Error("No se encontraron unidades válidas para trasladar en la obra de origen");
+    throw new Error(
+      "No se encontraron unidades válidas para trasladar en la obra de origen",
+    );
   }
 
-  const idsAMover = unidadesAMover.map(u => u._id);
+  const idsAMover = unidadesAMover.map((u) => u._id);
 
   await Unidad.updateMany(
     { _id: { $in: idsAMover } },
-    { $set: { ubicacion: obraDestinoId, estado: "Asignada" } }
+    { $set: { ubicacion: obraDestinoId, estado: "Asignada" } },
   );
 
   const obraOrigen = await Obra.findById(obraOrigenId);
   if (obraOrigen && Array.isArray(obraOrigen.unidades)) {
     obraOrigen.unidades = obraOrigen.unidades.filter(
-      (u) => !idsAMover.some(id => id.toString() === u.toString())
+      (u) => !idsAMover.some((id) => id.toString() === u.toString()),
     );
     await obraOrigen.save();
   }
 
   if (obraDestino && Array.isArray(obraDestino.unidades)) {
     const nuevasFiltro = idsAMover.filter(
-      id => !obraDestino.unidades.some(u => u.toString() === id.toString())
+      (id) => !obraDestino.unidades.some((u) => u.toString() === id.toString()),
     );
     obraDestino.unidades.push(...nuevasFiltro);
     await obraDestino.save();

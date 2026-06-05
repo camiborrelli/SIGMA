@@ -290,21 +290,26 @@ export const bajaMultiplesUnidadesController = async (req, res) => {
     res.status(500).json({ error: "Error al procesar bajas múltiples" });
   }
 };
-
 export const asignarFechaCompraMultiplesUnidadesController = async (
   req,
   res,
 ) => {
   try {
-    const { unidades } = req.body; // colección [{id, fechaCompra}]
-    if (!unidades || !Array.isArray(unidades) || unidades.length === 0) {
-      return res.status(400).json({
-        error: "Debe proporcionar un array de objetos con id y fechaCompra",
-      });
+    const { ids, fechaCompra } = req.body;
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res
+        .status(400)
+        .json({ error: "Debe proporcionar un array de IDs" });
+    }
+    if (!fechaCompra) {
+      return res
+        .status(400)
+        .json({ error: "Debe proporcionar una fecha de compra válida" });
     }
 
     const resultados = await Promise.all(
-      unidades.map(async ({ id, fechaCompra }) => {
+      ids.map(async (id) => {
         try {
           const resultado = await actualizarFechaCompra(id, fechaCompra);
           return { id, success: true, resultado };
