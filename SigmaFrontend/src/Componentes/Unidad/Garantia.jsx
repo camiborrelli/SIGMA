@@ -77,6 +77,35 @@ const Garantia = ({ id: propId }) => {
     fetchAll();
   }, [id]);
 
+  const finalizarMantenimiento = async () => {
+    if (!maquinaId) return;
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(
+        `http://localhost:5001/unidades/mantenimiento/finalizar/${maquinaId}`,
+        {
+          method: "POST",
+          headers: { Authorization: token ? `Bearer ${token}` : "" },
+        },
+      );
+      if (!res.ok) throw new Error();
+      toast.success("Mantenimiento finalizado");
+      // refrescar datos
+      const res2 = await fetch(
+        `http://localhost:5001/unidades/garantia/${maquinaId}`,
+        {
+          headers: { Authorization: token ? `Bearer ${token}` : "" },
+        },
+      );
+      if (res2.ok) {
+        const data = await res2.json();
+        setGarantia(data);
+      }
+    } catch {
+      toast.error("Error al finalizar mantenimiento");
+    }
+  };
+
   const porcentajeVidaUtil =
     garantia?.fechaCompra && garantia?.fechaFinGarantia
       ? Math.max(
@@ -248,19 +277,32 @@ const Garantia = ({ id: propId }) => {
         )}
       </div>
       <div className="garantia-acciones">
-        <button
-          className="btn-asign"
-          onClick={() => {
-            const est = String(garantia?.estado || "").toLowerCase();
-            if (est.includes("mantenimiento")) {
-              toast.error("La unidad ya está en mantenimiento.");
-              return;
-            }
-            setShowModal(true);
-          }}
-        >
-          ENVIAR A MANTENIMIENTO
-        </button>
+        {String(garantia?.estado || "")
+          .toLowerCase()
+          .includes("mantenimiento") ? (
+          <button
+            className="btn-asign"
+            onClick={() => {
+              finalizarMantenimiento();
+            }}
+          >
+            FINALIZAR MANTENIMIENTO
+          </button>
+        ) : (
+          <button
+            className="btn-asign"
+            onClick={() => {
+              const est = String(garantia?.estado || "").toLowerCase();
+              if (est.includes("mantenimiento")) {
+                toast.error("La unidad ya está en mantenimiento.");
+                return;
+              }
+              setShowModal(true);
+            }}
+          >
+            ENVIAR A MANTENIMIENTO
+          </button>
+        )}
 
         <button className="btn-cancel" onClick={() => navigate(-1)}>
           CANCELAR
