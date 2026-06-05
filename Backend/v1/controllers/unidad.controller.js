@@ -14,19 +14,22 @@ import {
   trasladarUnidadesAotraObra,
 } from "../services/unidad.services.js";
 
+import Obra from "../models/obra.model.js";
+import Unidad from "../models/unidad.model.js";
+
 export const getUnidadesPorEquipoController = async (req, res) => {
   try {
     const { equipoId } = req.params;
 
-    const unidades = await getUnidadesPorEquipo(equipoId);
-
+    const unidades = await Unidad.find({ equipo: equipoId }).populate(
+      "ubicacion",
+    );
     res.status(200).json(unidades);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al obtener unidades" });
   }
 };
-
 export const bajaUnidadController = async (req, res) => {
   try {
     const { id } = req.params;
@@ -241,18 +244,119 @@ export const trasladarUnidadesController = async (req, res) => {
     const { obraOrigenId, obraDestinoId, unidadesIds } = req.body;
 
     if (!obraOrigenId || !obraDestinoId) {
-      return res.status(400).json({ error: "Debe indicar la obra de origen y la obra de destino" });
+      return res
+        .status(400)
+        .json({ error: "Debe indicar la obra de origen y la obra de destino" });
     }
 
     const result = await trasladarUnidadesAotraObra({
       obraOrigenId,
       obraDestinoId,
-      unidadesIds
+      unidadesIds,
     });
 
     return res.status(200).json(result);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: error.message || "Error al trasladar unidades" });
+    return res
+      .status(500)
+      .json({ error: error.message || "Error al trasladar unidades" });
+  }
+};
+
+export const bajaMultiplesUnidadesController = async (req, res) => {
+  try {
+    const { ids } = req.body; // colección de IDs
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({
+        error: "Debe proporcionar un array de IDs de unidades a dar de baja",
+      });
+    }
+
+    const resultados = await Promise.all(
+      ids.map(async (id) => {
+        try {
+          const resultado = await bajaUnidad(id);
+          return { id, success: true, resultado };
+        } catch (error) {
+          return { id, success: false, error: error.message };
+        }
+      }),
+    );
+
+    res.status(200).json({ resultados });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al procesar bajas múltiples" });
+  }
+};
+
+export const asignarFechaCompraMultiplesUnidadesController = async (
+  req,
+  res,
+) => {
+  try {
+    const { unidades } = req.body; // colección [{id, fechaCompra}]
+    if (!unidades || !Array.isArray(unidades) || unidades.length === 0) {
+      return res.status(400).json({
+        error: "Debe proporcionar un array de objetos con id y fechaCompra",
+      });
+    }
+
+    const resultados = await Promise.all(
+      unidades.map(async ({ id, fechaCompra }) => {
+        try {
+          const resultado = await actualizarFechaCompra(id, fechaCompra);
+          return { id, success: true, resultado };
+        } catch (error) {
+          return { id, success: false, error: error.message };
+        }
+      }),
+    );
+
+    res.status(200).json({ resultados });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "Error al procesar actualización de fechas" });
+  }
+};
+
+export const asignarMultiplesUnidadesController = async (req, res) => {
+  try {
+    const { ids, obraId } = req.body;
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res
+        .status(400)
+        .json({ error: "Debe proporcionar un array de IDs" });
+    }
+    if (!obraId) {
+      return res.status(400).json({ error: "Debe indicar la obra de destino" });
+    }
+
+    // Verificamos que la obra exista
+    const obra = await Obra.findById(obraId);
+    if (!obra) {
+      return res.status(404).json({ error: "Obra no encontrada" });
+    }
+
+    // Guardamos directamente el ID de la obra en cada unidad
+    const resultados = await Promise.all(
+      ids.map(async (id) => {
+        try {
+          const resultado = await asignarUnidad(id, obraId); // ✔ pasás el ObjectId de la obra
+          return { id, success: true, resultado };
+        } catch (error) {
+          return { id, success: false, error: error.message };
+        }
+      }),
+    );
+
+    res.status(200).json({ resultados });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al procesar asignación múltiple" });
   }
 };

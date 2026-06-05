@@ -8,18 +8,29 @@ import "./ModalUnidades.css";
 import toast from "react-hot-toast";
 import { FaRegCalendarPlus } from "react-icons/fa";
 import AgregarFechaCompraModal from "./AgregarFechaCompraModal";
+import ModalFechaMasiva from "./ModalFechaMasiva";
+import ModalObraMasiva from "./ModalObraMasiva";
 
 const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const [unidades, setUnidades] = useState([]);
   const [unidadMantenimiento, setUnidadMantenimiento] = useState(null);
   const [unidadBaja, setUnidadBaja] = useState(null);
   const [unidadAsignar, setUnidadAsignar] = useState(null);
-  const [confirmMantenimientoUnidad, setConfirmMantenimientoUnidad] = useState(null);
+  const [confirmMantenimientoUnidad, setConfirmMantenimientoUnidad] =
+    useState(null);
   const [estadoFiltro, setEstadoFiltro] = useState("");
   const [obraFiltro, setObraFiltro] = useState("");
   const [unidadFecha, setUnidadFecha] = useState(null);
   const [paginaActual, setPaginaActual] = useState(1);
   const [itemsPorPagina, setItemsPorPagina] = useState(5);
+  const [seleccionMultiple, setSeleccionMultiple] = useState(false);
+  const [unidadesSeleccionadas, setUnidadesSeleccionadas] = useState([]);
+  const [accionMasiva, setAccionMasiva] = useState("");
+  const [bulkLoading, setBulkLoading] = useState(false);
+
+  // modales para acciones masivas con datos extra
+  const [modalFechaMasiva, setModalFechaMasiva] = useState(false);
+  const [modalObraMasiva, setModalObraMasiva] = useState(false);
 
   const cerrarTodos = () => {
     setUnidadMantenimiento(null);
@@ -35,13 +46,16 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     const token = localStorage.getItem("token");
     if (!equipo?._id) return;
     try {
-      const res = await fetch(`http://localhost:5001/unidades/equipo/${equipo._id}`, {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
-      });
+      const res = await fetch(
+        `http://localhost:5001/unidades/equipo/${equipo._id}`,
+        {
+          headers: { Authorization: token ? `Bearer ${token}` : "" },
+        },
+      );
       if (!res.ok) throw new Error("Error al obtener unidades");
       const data = await res.json();
       const unidadesArray = Array.isArray(data) ? data : [];
-      
+
       const parseKey = (ident) => {
         if (!ident) return { num: null, str: "" };
         const s = String(ident).trim();
@@ -72,11 +86,9 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   useEffect(() => {
     if (equipo?._id) fetchUnidades();
   }, [equipo]);
-
   useEffect(() => {
     setPaginaActual(1);
   }, [equipo, unidades.length]);
-
   useEffect(() => {
     const actualizarCantidad = () => {
       const width = window.innerWidth;
@@ -91,13 +103,13 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
 
   const finalizarMantenimiento = (u) => {
     const token = localStorage.getItem("token");
-    if (!u || !u._id) return;
+    if (!u?._id) return;
     fetch(`http://localhost:5001/unidades/mantenimiento/finalizar/${u._id}`, {
       method: "POST",
       headers: { Authorization: token ? `Bearer ${token}` : "" },
     })
       .then((res) => {
-        if (!res.ok) throw new Error("Error");
+        if (!res.ok) throw new Error();
         toast.success("Mantenimiento finalizado");
         setConfirmMantenimientoUnidad(null);
         handleUpdated();
@@ -111,7 +123,8 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     if (est.includes("mantenimiento")) {
       setConfirmMantenimientoUnidad(u);
       return false;
-    } else if (est === "dada de baja" || est === "baja") {
+    }
+    if (est === "dada de baja" || est === "baja") {
       toast.error("La unidad está dada de baja.");
       return false;
     }
@@ -119,24 +132,173 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     return true;
   };
 
+  // ── Acciones masivas ──
+  const darDeBajaMultiplesUnidades = async (ids) => {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`http://localhost:5001/unidades/baja-multiple`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+      body: JSON.stringify({ ids }),
+    });
+    if (!res.ok) throw new Error("Error al dar de baja");
+    toast.success("Unidades dadas de baja");
+    handleUpdated();
+  };
+
+  const asignarObraMultiplesUnidades = async (ids, obraId) => {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(
+      "http://localhost:5001/unidades/asignar-obra-multiples",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({ ids, obraId }),
+      },
+    );
+    const body = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      toast.error(body.error || "Error al asignar unidad");
+      return;
+    }
+    toast.success("Unidades asignadas correctamente");
+    handleUpdated();
+  };
+
+  const agregarFechaCompraMultiplesUnidades = async (ids, fechaCompra) => {
+    const token = localStorage.getItem("token");
+    const res = await fetch(
+      `http://localhost:5001/unidades/actualizar-multiples`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({ ids, fechaCompra }), // ← ahora manda fechaCompra
+      },
+    );
+    if (!res.ok) throw new Error("Error al agregar fecha de compra");
+    toast.success("Fechas de compra agregadas");
+    handleUpdated();
+  };
+
+  // Cuando el usuario hace click en "Aplicar", abrir el modal correspondiente
+  const ejecutarAccionMasiva = () => {
+    if (!accionMasiva) {
+      toast.error("Seleccioná una acción");
+      return;
+    }
+    if (unidadesSeleccionadas.length === 0) {
+      toast.error("Seleccioná al menos una unidad");
+      return;
+    }
+
+    if (accionMasiva === "baja") {
+      // Esta no necesita datos extra, ejecutar directo
+      setBulkLoading(true);
+      darDeBajaMultiplesUnidades(unidadesSeleccionadas)
+        .then(() => {
+          setUnidadesSeleccionadas([]);
+          setAccionMasiva("");
+        })
+        .catch(() => toast.error("No se pudo dar de baja"))
+        .finally(() => setBulkLoading(false));
+    } else if (accionMasiva === "asignar") {
+      setModalObraMasiva(true); // ← abrir modal para elegir obra
+    } else if (accionMasiva === "fecha") {
+      setModalFechaMasiva(true); // ← abrir modal para elegir fecha
+    }
+  };
+
+  const confirmarObraMasiva = async (obraId) => {
+    setModalObraMasiva(false);
+    setBulkLoading(true);
+    try {
+      await asignarObraMultiplesUnidades(unidadesSeleccionadas, obraId);
+      setUnidadesSeleccionadas([]);
+      setAccionMasiva("");
+    } catch {
+      toast.error("No se pudo asignar la obra");
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
+  const confirmarFechaMasiva = async (fecha) => {
+    setModalFechaMasiva(false);
+    setBulkLoading(true);
+    try {
+      await agregarFechaCompraMultiplesUnidades(unidadesSeleccionadas, fecha);
+      setUnidadesSeleccionadas([]);
+      setAccionMasiva("");
+    } catch {
+      toast.error("No se pudo agregar la fecha");
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
+  // ── Filtros y paginación ──
   const obrasMap = new Map();
   unidades.forEach((u) => {
     const o = u.ubicacion;
     if (!o) return;
-    if (typeof o === "object") obrasMap.set(String(o._id), o.nombre || String(o._id));
+    if (typeof o === "object")
+      obrasMap.set(String(o._id), o.nombre || String(o._id));
     else obrasMap.set(String(o), String(o));
   });
 
   const unidadesFiltradas = unidades.filter((u) => {
-    const okEstado = estadoFiltro ? String(u.estado || "").toLowerCase() === String(estadoFiltro || "").toLowerCase() : true;
-    const okObra = obraFiltro ? (u.ubicacion && typeof u.ubicacion === "object" ? String(u.ubicacion._id) === String(obraFiltro) : String(u.ubicacion) === String(obraFiltro)) : true;
+    const okEstado = estadoFiltro
+      ? String(u.estado || "").toLowerCase() === estadoFiltro.toLowerCase()
+      : true;
+    const okObra = obraFiltro
+      ? typeof u.ubicacion === "object"
+        ? String(u.ubicacion._id) === obraFiltro
+        : String(u.ubicacion) === obraFiltro
+      : true;
     return okEstado && okObra;
   });
 
   const indexUltimo = paginaActual * itemsPorPagina;
   const indexPrimero = indexUltimo - itemsPorPagina;
   const unidadesPaginadas = unidadesFiltradas.slice(indexPrimero, indexUltimo);
-  const totalPaginas = Math.ceil(unidadesFiltradas.length / itemsPorPagina) || 1;
+  const totalPaginas =
+    Math.ceil(unidadesFiltradas.length / itemsPorPagina) || 1;
+  const idsFiltradas = unidadesFiltradas.map((u) => String(u._id));
+
+  const toggleSeleccionUnidad = (id) => {
+    const idStr = String(id);
+    setUnidadesSeleccionadas((prev) =>
+      prev.includes(idStr) ? prev.filter((x) => x !== idStr) : [...prev, idStr],
+    );
+  };
+
+  const seleccionarTodasFiltradas = () => {
+    setUnidadesSeleccionadas((prev) => [
+      ...new Set([...prev, ...idsFiltradas]),
+    ]);
+  };
+
+  const limpiarSeleccion = () => setUnidadesSeleccionadas([]);
+
+  const toggleModoSeleccion = () => {
+    setSeleccionMultiple((prev) => {
+      if (prev) {
+        setUnidadesSeleccionadas([]);
+        setAccionMasiva("");
+      }
+      return !prev;
+    });
+  };
 
   const columns = [
     { header: "ID", accessor: "identificador" },
@@ -144,74 +306,256 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
       header: "Estado",
       accessor: (row) => {
         const est = String(row.estado || "").toLowerCase();
-        const cls = est === "disponible" ? "estado-disponible" : est === "asignada" ? "estado-asignado" : est.includes("mantenimiento") ? "estado-mantenimiento" : "estado-baja";
-        const label = row.estado || (est ? est.charAt(0).toUpperCase() + est.slice(1) : "");
-        return <span className={`estado-badge ${cls}`}>{label}</span>;
+        const cls =
+          est === "disponible"
+            ? "estado-disponible"
+            : est === "asignada"
+            ? "estado-asignado"
+            : est.includes("mantenimiento")
+            ? "estado-mantenimiento"
+            : "estado-baja";
+        return <span className={`estado-badge ${cls}`}>{row.estado}</span>;
       },
     },
-    { header: "Obra", accessor: (row) => (row.ubicacion && typeof row.ubicacion === "object" ? row.ubicacion.nombre || "Sin asignar" : row.ubicacion || "Sin asignar") },
+    {
+      header: "Obra",
+      accessor: (row) =>
+        row.ubicacion && typeof row.ubicacion === "object"
+          ? row.ubicacion.nombre || "Sin asignar"
+          : row.ubicacion || "Sin asignar",
+    },
     {
       header: "Acciones",
       accessor: (row) => (
         <div className="actions">
-          <button onClick={() => { cerrarTodos(); setUnidadAsignar(row); }}>📍</button>
-          <button onClick={() => { cerrarTodos(); const ok = enviarAMantenimiento(row); if (ok) { onClose(); navigate(`/garantia/${row._id}`); } }}>🛠</button>
-          <button onClick={() => { cerrarTodos(); setUnidadBaja(row); }}>🚫</button>
-          <button onClick={() => { cerrarTodos(); row.fechaCompra ? (onClose(), navigate(`/garantia/${row._id}`)) : setUnidadFecha(row); }}>
-            <FaRegCalendarPlus />
-          </button>
+          {seleccionMultiple ? (
+            <label className="check-multiple">
+              <input
+                type="checkbox"
+                checked={unidadesSeleccionadas.includes(String(row._id))}
+                onChange={() => toggleSeleccionUnidad(row._id)}
+              />
+              Seleccionar
+            </label>
+          ) : (
+            <>
+              <button
+                onClick={() => {
+                  cerrarTodos();
+                  setUnidadAsignar(row);
+                }}
+              >
+                📍
+              </button>
+              <button
+                onClick={() => {
+                  cerrarTodos();
+                  const ok = enviarAMantenimiento(row);
+                  if (ok) {
+                    onClose();
+                    navigate(`/garantia/${row._id}`);
+                  }
+                }}
+              >
+                🛠
+              </button>
+              <button
+                onClick={() => {
+                  cerrarTodos();
+                  setUnidadBaja(row);
+                }}
+              >
+                🚫
+              </button>
+              <button
+                onClick={() => {
+                  cerrarTodos();
+                  row.fechaCompra
+                    ? (onClose(), navigate(`/garantia/${row._id}`))
+                    : setUnidadFecha(row);
+                }}
+              >
+                <FaRegCalendarPlus />
+              </button>
+            </>
+          )}
         </div>
       ),
     },
   ];
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h2>Unidades de {equipo.nombre}</h2>
-        <div className="filtros">
-          <select value={estadoFiltro} onChange={(e) => setEstadoFiltro(e.target.value)}>
-            <option value="">Todos los estados</option>
-            <option value="Disponible">Disponible</option>
-            <option value="Asignada">Asignada</option>
-            <option value="En mantenimiento">En mantenimiento</option>
-            <option value="Dada de Baja">Dada de Baja</option>
-          </select>
-          <select value={obraFiltro} onChange={(e) => setObraFiltro(e.target.value)}>
-            <option value="">Todas las obras</option>
-            {[...obrasMap.entries()].map(([id, name]) => <option key={id} value={id}>{name}</option>)}
-          </select>
-        </div>
-        <Tabla columns={columns} data={unidadesPaginadas} />
-        {totalPaginas > 1 && (
-          <div className="paginacion">
-            <button disabled={paginaActual === 1} onClick={() => setPaginaActual(paginaActual - 1)}>⬅</button>
-            <span>Página {paginaActual} de {totalPaginas}</span>
-            <button disabled={paginaActual === totalPaginas} onClick={() => setPaginaActual(paginaActual + 1)}>➡</button>
+    <>
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <h2>Unidades de {equipo.nombre}</h2>
+
+          <div className="filtros">
+            <select
+              value={estadoFiltro}
+              onChange={(e) => setEstadoFiltro(e.target.value)}
+            >
+              <option value="">Todos los estados</option>
+              <option value="Disponible">Disponible</option>
+              <option value="Asignada">Asignada</option>
+              <option value="En mantenimiento">En mantenimiento</option>
+              <option value="Dada de Baja">Dada de Baja</option>
+            </select>
+            <select
+              value={obraFiltro}
+              onChange={(e) => setObraFiltro(e.target.value)}
+            >
+              <option value="">Todas las obras</option>
+              {[...obrasMap.entries()].map(([id, name]) => (
+                <option key={id} value={id}>
+                  {name}
+                </option>
+              ))}
+            </select>
+            <button className="btn-seleccion" onClick={toggleModoSeleccion}>
+              {seleccionMultiple ? "Cancelar selección" : "Selección múltiple"}
+            </button>
           </div>
-        )}
-        <button className="btn-cerrar" onClick={onClose}>Cerrar</button>
+
+          {seleccionMultiple && (
+            <div className="acciones-masivas">
+              <div className="acciones-masivas-info">
+                Seleccionadas: <strong>{unidadesSeleccionadas.length}</strong>
+              </div>
+              <select
+                value={accionMasiva}
+                onChange={(e) => setAccionMasiva(e.target.value)}
+              >
+                <option value="">Elegí una acción</option>
+                <option value="baja">Dar de baja</option>
+                <option value="asignar">Asignar a obra</option>
+                <option value="fecha">Agregar fecha de compra</option>
+              </select>
+              <div className="acciones-masivas-botones">
+                <button type="button" onClick={seleccionarTodasFiltradas}>
+                  Seleccionar todo
+                </button>
+                <button type="button" onClick={limpiarSeleccion}>
+                  Limpiar selección
+                </button>
+                <button
+                  type="button"
+                  className="btn-aplicar-masiva"
+                  onClick={ejecutarAccionMasiva}
+                  disabled={bulkLoading}
+                >
+                  {bulkLoading ? "Aplicando..." : "Aplicar"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          <Tabla
+            columns={columns}
+            data={unidadesPaginadas}
+            paginaActual={paginaActual}
+            totalPaginas={totalPaginas}
+            onPaginaAnterior={() => setPaginaActual((p) => Math.max(p - 1, 1))}
+            onPaginaSiguiente={() =>
+              setPaginaActual((p) => Math.min(p + 1, totalPaginas))
+            }
+          />
+
+          <button className="btn-cerrar" onClick={onClose}>
+            Cerrar
+          </button>
+        </div>
       </div>
 
-      {unidadMantenimiento && <AsignarMantenimientoUnidad unidad={unidadMantenimiento} onClose={() => setUnidadMantenimiento(null)} onUpdated={handleUpdated} />}
-      {unidadBaja && <BajaUnidadModal unidad={unidadBaja} onClose={() => setUnidadBaja(null)} onUpdated={handleUpdated} />}
-      {unidadAsignar && <AsignarUnidadModal unidad={unidadAsignar} onClose={() => setUnidadAsignar(null)} onUpdated={handleUpdated} />}
-      {unidadFecha && <AgregarFechaCompraModal unidad={unidadFecha} onClose={() => setUnidadFecha(null)} onUpdated={handleUpdated} />}
-
+      {/* Modales individuales */}
+      {unidadMantenimiento && (
+        <AsignarMantenimientoUnidad
+          unidad={unidadMantenimiento}
+          onClose={cerrarTodos}
+          onUpdated={handleUpdated}
+        />
+      )}
+      {unidadBaja && (
+        <BajaUnidadModal
+          unidad={unidadBaja}
+          onClose={cerrarTodos}
+          onUpdated={handleUpdated}
+        />
+      )}
+      {unidadAsignar && (
+        <AsignarUnidadModal
+          unidad={unidadAsignar}
+          onClose={cerrarTodos}
+          onUpdated={handleUpdated}
+        />
+      )}
+      {unidadFecha && (
+        <AgregarFechaCompraModal
+          unidad={unidadFecha}
+          onClose={cerrarTodos}
+          onUpdated={handleUpdated}
+        />
+      )}
       {confirmMantenimientoUnidad && (
-        <div className="modal-confirm-wrapper">
-          <div className="modal-card">
-            <h3>Unidad en mantenimiento</h3>
-            <p>La unidad <strong>{confirmMantenimientoUnidad.identificador}</strong> está actualmente en mantenimiento.</p>
-            <div className="acciones">
-              <button className="btn-cancel" onClick={() => setConfirmMantenimientoUnidad(null)}>Cancelar</button>
-              <button className="btn-asign" onClick={() => finalizarMantenimiento(confirmMantenimientoUnidad)}>Finalizar mantenimiento</button>
-              <button className="btn-asign" onClick={() => { const id = confirmMantenimientoUnidad._id; setConfirmMantenimientoUnidad(null); onClose(); navigate(`/garantia/${id}`); }}>Ver garantía</button>
+        <div
+          className="modal-overlay"
+          onClick={() => setConfirmMantenimientoUnidad(null)}
+        >
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: 380 }}
+          >
+            <h2>Finalizar mantenimiento</h2>
+            <p style={{ margin: "12px 0", color: "#64748b", fontSize: 14 }}>
+              ¿Confirmar que el mantenimiento de{" "}
+              <strong>{confirmMantenimientoUnidad.identificador}</strong> está
+              finalizado?
+            </p>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button
+                className="btn-aplicar-masiva"
+                onClick={() =>
+                  finalizarMantenimiento(confirmMantenimientoUnidad)
+                }
+                style={{ flex: 1 }}
+              >
+                Confirmar
+              </button>
+              <button
+                onClick={() => setConfirmMantenimientoUnidad(null)}
+                style={{
+                  flex: 1,
+                  padding: 10,
+                  borderRadius: 8,
+                  border: "1px solid #e8e8e8",
+                  background: "#f5f5f5",
+                  cursor: "pointer",
+                }}
+              >
+                Cancelar
+              </button>
             </div>
           </div>
         </div>
       )}
-    </div>
+
+      {/* Modales para acciones masivas */}
+      {modalFechaMasiva && (
+        <ModalFechaMasiva
+          cantidad={unidadesSeleccionadas.length}
+          onConfirm={confirmarFechaMasiva}
+          onClose={() => setModalFechaMasiva(false)}
+        />
+      )}
+      {modalObraMasiva && (
+        <ModalObraMasiva
+          cantidad={unidadesSeleccionadas.length}
+          onConfirm={confirmarObraMasiva}
+          onClose={() => setModalObraMasiva(false)}
+        />
+      )}
+    </>
   );
 };
 

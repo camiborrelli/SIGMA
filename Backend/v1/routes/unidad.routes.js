@@ -13,6 +13,9 @@ import {
   actualizarFechaCompraController,
   trasladarUnidadesController,
   quitarUnidadDeObraController,
+  asignarMultiplesUnidadesController,
+  asignarFechaCompraMultiplesUnidadesController,
+  bajaMultiplesUnidadesController,
 } from "../controllers/unidad.controller.js";
 import { verificarToken } from "../middlewares/auth.js";
 
@@ -53,6 +56,17 @@ router.post(
   verificarToken,
   quitarUnidadDeObraController,
 );
-router.post("/trasladar",verificarToken, trasladarUnidadesController);
+router.post("/trasladar", verificarToken, trasladarUnidadesController);
+router.post(
+  "/asignar-obra-multiples",
+  verificarToken,
+  asignarMultiplesUnidadesController,
+);
+router.post(
+  "/actualizar-multiples",
+  verificarToken,
+  asignarFechaCompraMultiplesUnidadesController,
+);
+router.post("/baja-multiple", verificarToken, bajaMultiplesUnidadesController);
 
 export default router;

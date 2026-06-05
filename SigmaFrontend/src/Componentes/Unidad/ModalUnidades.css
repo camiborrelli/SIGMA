@@ -189,6 +189,81 @@
   padding: 10px 12px;
 }
 
+.btn-seleccion {
+  background: #1f2937;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.acciones-masivas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  padding: 10px;
+}
+
+.acciones-masivas-info {
+  color: #334155;
+  font-size: 14px;
+  min-width: 150px;
+}
+
+.acciones-masivas select {
+  flex: 1;
+  min-width: 200px;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 9px 12px;
+}
+
+.acciones-masivas-botones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.acciones-masivas-botones button {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #334155;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.acciones-masivas-botones .btn-aplicar-masiva {
+  background: #c62828;
+  color: #fff;
+  border-color: #c62828;
+}
+
+.acciones-masivas-botones .btn-aplicar-masiva:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.check-multiple {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #334155;
+}
+
+.check-multiple input {
+  width: 16px;
+  height: 16px;
+}
+
 .modal-card select {
   width: 100%;
   padding: 10px 12px;
@@ -235,7 +310,8 @@
   display: inline-block;
   opacity: 1 !important;
   margin-top: 8px;
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    transform 0.1s ease;
 }
 
 .btn-cerrar:hover {
@@ -271,7 +347,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
 @media (max-width: 768px) {
@@ -283,14 +359,14 @@
     overflow-y: hidden !important;
   }
 
-  .sigma-table thead, 
+  .sigma-table thead,
   .modal-content thead {
     display: none;
   }
 
-  .sigma-table, 
-  .sigma-table tbody, 
-  .sigma-tr, 
+  .sigma-table,
+  .sigma-table tbody,
+  .sigma-tr,
   .sigma-td {
     display: block;
     width: 100% !important;
@@ -311,17 +387,35 @@
     padding: 5px 0;
     font-size: 14px;
     display: flex;
-    justify-content: space-between; 
+    justify-content: space-between;
     align-items: center;
-    white-space: normal; 
+    white-space: normal;
     text-align: right !important;
   }
 
-  .sigma-td:nth-of-type(1)::before { content: "ID Unidad:"; font-weight: 700; color: #64748b; text-align: left; }
-  .sigma-td:nth-of-type(2)::before { content: "Estado:"; font-weight: 700; color: #64748b; text-align: left; }
-  .sigma-td:nth-of-type(3)::before { content: "Obra Asignada:"; font-weight: 700; color: #64748b; text-align: left; }
+  .sigma-td:nth-of-type(1)::before {
+    content: "ID Unidad:";
+    font-weight: 700;
+    color: #64748b;
+    text-align: left;
+  }
+  .sigma-td:nth-of-type(2)::before {
+    content: "Estado:";
+    font-weight: 700;
+    color: #64748b;
+    text-align: left;
+  }
+  .sigma-td:nth-of-type(3)::before {
+    content: "Obra Asignada:";
+    font-weight: 700;
+    color: #64748b;
+    text-align: left;
+  }
 
-  .sigma-td:nth-of-type(4)::before { content: ""; display: none; }
+  .sigma-td:nth-of-type(4)::before {
+    content: "";
+    display: none;
+  }
 
   .sigma-td:last-child {
     border-top: 1px dashed #e2e8f0;
@@ -342,7 +436,7 @@
   }
 
   .actions button {
-    font-size: 18px; 
+    font-size: 18px;
     padding: 6px;
     margin: 0;
     background: #f8fafc;
@@ -351,11 +445,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    flex: 1; 
-    min-height: 40px; 
-    max-width: 55px;  
+    flex: 1;
+    min-height: 40px;
+    max-width: 55px;
   }
-  
+
   .actions button:active {
     background-color: #e2e8f0;
   }
@@ -391,10 +485,27 @@
     margin-top: 2px;
     padding: 10px;
   }
-  
+
   .filtros select {
     width: 100%;
     flex: none;
     padding: 8px 10px;
+  }
+
+  .acciones-masivas {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .acciones-masivas select {
+    min-width: 100%;
+  }
+
+  .acciones-masivas-botones {
+    width: 100%;
+  }
+
+  .acciones-masivas-botones button {
+    flex: 1;
   }
 }
