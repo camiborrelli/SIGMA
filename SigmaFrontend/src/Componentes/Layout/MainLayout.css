@@ -119,6 +119,11 @@
   align-items: center;
 }
 
+.notification-item:hover {
+  background-color: #dce0e4;
+  transition: background-color 0.15s ease;
+}
+
 .icon-badge-wrapper {
   position: relative;
   display: flex;
@@ -155,7 +160,7 @@
 
 .notification-dropdown {
   position: absolute;
-  top: 115%; 
+  top: 115%;
   right: 0;
   width: 340px;
   background-color: var(--color-surface);
@@ -223,8 +228,8 @@
 .notification-actions {
   display: flex;
   justify-content: center;
-  align-items: center; 
-  gap: 10px; 
+  align-items: center;
+  gap: 10px;
   margin-top: 12px;
   padding: 4px 0;
 }
@@ -261,11 +266,15 @@
 }
 
 @media (min-width: 769px) {
-  .mobile-only { display: none; }
+  .mobile-only {
+    display: none;
+  }
 }
 
 @media (max-width: 768px) {
-  .desktop-only { display: none; }
+  .desktop-only {
+    display: none;
+  }
   .notification-dropdown {
     position: fixed;
     bottom: 70px;
