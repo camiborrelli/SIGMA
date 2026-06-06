@@ -54,4 +54,3 @@ export const editarEquipoController = async (req, res) => {
     res.status(500).json({ error: "Error al editar equipo" });
   }
 };
-

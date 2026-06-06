@@ -147,6 +147,8 @@ const ListadoGeneral = ({
     { header: "Nombre", accessor: "nombre" },
     { header: "Modelo", accessor: "modelo" },
     { header: "Tipo", accessor: "tipo" },
+    { header: "Stock", accessor: (row) => row.stock + " unidades" },
+
     {
       header: "Acciones",
       accessor: (row) => (
@@ -223,7 +225,15 @@ const ListadoGeneral = ({
               <div key={eq._id || eq.id} className="equipo-card">
                 <div className="equipo-card-header">
                   <span className="equipo-nombre-card">{eq.nombre}</span>
-                  <span className={`equipo-tipo-tag tag-${String(eq.tipo || 'sin-tipo').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-')}`}>
+                  <span
+                    className={`equipo-tipo-tag tag-${String(
+                      eq.tipo || "sin-tipo",
+                    )
+                      .toLowerCase()
+                      .normalize("NFD")
+                      .replace(/[\u0300-\u036f]/g, "")
+                      .replace(/\s+/g, "-")}`}
+                  >
                     {eq.tipo || "Sin tipo"}
                   </span>
                 </div>
