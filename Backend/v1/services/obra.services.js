@@ -100,7 +100,7 @@ export const finalizarObraServices = async (id) => {
 
   await Unidad.updateMany(
     { ubicacion: id },
-    { $set: { ubicacion: null, estado: "Disponible" } }
+    { $set: { ubicacion: null, estado: "Disponible" } },
   );
 
   return obra;
@@ -122,9 +122,24 @@ export const reactivarObraServices = async (id) => {
   }
 
   obra.estado = "Activa";
-  obra.fechaFin = null; 
+  obra.fechaFin = null;
   obra.cantReactivaciones = (obra.cantReactivaciones || 0) + 1;
 
   await obra.save();
+  return obra;
+};
+
+export const editarObraServices = async (id, nombre) => {
+  const obra = await Obra.findById(id);
+
+  if (!obra) {
+    const err = new Error("Obra no encontrada");
+    err.statusCode = 404;
+    throw err;
+  }
+
+  obra.nombre = nombre; // asignás directamente el string
+  await obra.save();
+
   return obra;
 };

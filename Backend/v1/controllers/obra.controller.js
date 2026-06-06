@@ -5,15 +5,23 @@ import {
   getDetalleObraServices,
   finalizarObraServices,
   reactivarObraServices,
+  editarObraServices,
 } from "../services/obra.services.js";
 import mongoose from "mongoose";
 import Obra from "../models/obra.model.js";
 
 export const registrarObraController = async (req, res) => {
   try {
-    const { nombre, latitud, longitud, ubicacion, fechaInicio, fechaFin, estado } =
-      req.body;
-      
+    const {
+      nombre,
+      latitud,
+      longitud,
+      ubicacion,
+      fechaInicio,
+      fechaFin,
+      estado,
+    } = req.body;
+
     const nuevaObra = await registrarObraServices({
       nombre,
       latitud,
@@ -137,9 +145,8 @@ export const finalizarObraController = async (req, res) => {
 
     res.status(200).json({
       message: "Obra finalizada correctamente y unidades liberadas",
-      obra: obraFinalizada
+      obra: obraFinalizada,
     });
-
   } catch (error) {
     console.error("Error en finalizarObraController:", error);
 
@@ -163,7 +170,7 @@ export const reactivarObraController = async (req, res) => {
 
     res.status(200).json({
       message: "Obra reactivada correctamente",
-      obra: obraReactivada
+      obra: obraReactivada,
     });
   } catch (error) {
     console.error("Error en reactivarObraController:", error);
@@ -171,5 +178,28 @@ export const reactivarObraController = async (req, res) => {
       return res.status(error.statusCode).json({ error: error.message });
     }
     res.status(500).json({ error: "Error al reactivar la obra" });
+  }
+};
+
+export const cambiarNombreObraController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre } = req.body;
+
+    if (!nombre || typeof nombre !== "string") {
+      return res
+        .status(400)
+        .json({ error: "Debe proporcionar un nombre válido" });
+    }
+
+    const obraActualizada = await editarObraServices(id, nombre);
+
+    res.status(200).json({
+      message: "Nombre de obra actualizado correctamente",
+      obra: obraActualizada,
+    });
+  } catch (error) {
+    console.error("Error en cambiarNombreObraController:", error);
+    res.status(500).json({ error: "Error al actualizar el nombre de la obra" });
   }
 };

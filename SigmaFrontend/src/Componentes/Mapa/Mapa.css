@@ -804,3 +804,16 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.btn-editar-obra {
+  background: #fad8d8;
+  border: none;
+  padding: 6px;
+  margin-left: 12px;
+  border-radius: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.12s ease, transform 0.08s ease;
+}

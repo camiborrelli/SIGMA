@@ -73,7 +73,7 @@ const ModalDetalleNotificacion = ({
                 {solicitud.funcionario?.nombre}{" "}
                 {solicitud.funcionario?.apellido}
               </h4>
-              <span className="rol-chip">Funcionario de Obra</span>
+              <span className="rol-chip">Funcionario</span>
             </div>
           </div>
         </div>

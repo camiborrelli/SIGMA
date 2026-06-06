@@ -15,6 +15,8 @@ import "leaflet/dist/leaflet.css";
 import "./Mapa.css";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import EditarObraModal from "../Obra/EditarObraModal";
+import { FaEdit } from "react-icons/fa";
 
 let DefaultIcon = L.icon({
   iconUrl: markerIcon,
@@ -38,6 +40,7 @@ const Mapa = () => {
   const [obraAReactivar, setObraAReactivar] = useState(null);
   const [removingIds, setRemovingIds] = useState([]);
   const [rolUsuario, setRolUsuario] = useState("");
+  const [verModalEditarObra, setVerModalEditarObra] = useState(false);
 
   const bounds = [
     [-35.9, -58.5],
@@ -86,9 +89,12 @@ const Mapa = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`http://localhost:5001/obras/detalle/${obra._id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `http://localhost:5001/obras/detalle/${obra._id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
 
       if (!res.ok) return;
       const data = await res.json();
@@ -111,7 +117,7 @@ const Mapa = () => {
         {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -124,7 +130,7 @@ const Mapa = () => {
 
       const detalleRes = await fetch(
         `http://localhost:5001/obras/detalle/${detalleObra._id}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       if (detalleRes.ok) {
         const detalleData = await detalleRes.json();
@@ -142,9 +148,12 @@ const Mapa = () => {
 
   const renderIconoEstadoEquipo = (estado) => {
     const est = estado?.toLowerCase();
-    if (est === "asignado") return <HiOutlineLocationMarker className="pill-icon" />;
-    if (est === "mantenimiento" || est === "en mantenimiento") return <LuWrench className="pill-icon" />;
-    if (est === "disponible") return <AiOutlineCheckCircle className="pill-icon" />;
+    if (est === "asignado")
+      return <HiOutlineLocationMarker className="pill-icon" />;
+    if (est === "mantenimiento" || est === "en mantenimiento")
+      return <LuWrench className="pill-icon" />;
+    if (est === "disponible")
+      return <AiOutlineCheckCircle className="pill-icon" />;
     return <HiOutlineLocationMarker className="pill-icon" />;
   };
 
@@ -181,7 +190,9 @@ const Mapa = () => {
             {["", "Activa", "Finalizada", "Cancelada"].map((estado) => (
               <button
                 key={estado}
-                className={`filtro-btn ${estadoFilter === estado ? "active" : ""}`}
+                className={`filtro-btn ${
+                  estadoFilter === estado ? "active" : ""
+                }`}
                 onClick={() => setEstadoFilter(estado)}
               >
                 {estado === "" ? "Todos" : estado}
@@ -201,14 +212,18 @@ const Mapa = () => {
               <div className="lista-scroll-contenedor">
                 {obrasFiltradas.map((obra) => {
                   const esSeleccionada = obraSeleccionada?._id === obra._id;
-                  const claseEstado = obra.estado?.toLowerCase().replace(/\s+/g, "-");
+                  const claseEstado = obra.estado
+                    ?.toLowerCase()
+                    .replace(/\s+/g, "-");
                   const esInactivaCard =
                     obra.estado?.toLowerCase() === "finalizada" ||
                     obra.estado?.toLowerCase() === "cancelada";
 
                   return (
                     <div
-                      className={`obra-card ${esSeleccionada ? "selected" : ""}`}
+                      className={`obra-card ${
+                        esSeleccionada ? "selected" : ""
+                      }`}
                       key={obra._id}
                       onClick={() => seleccionarObra(obra)}
                     >
@@ -222,7 +237,9 @@ const Mapa = () => {
                       <p className="fechas">
                         <BsCalendarCheck className="card-icon-svg date-icon" />
                         {obra.fechaInicio
-                          ? new Date(obra.fechaInicio).toLocaleDateString("es-ES")
+                          ? new Date(obra.fechaInicio).toLocaleDateString(
+                              "es-ES",
+                            )
                           : "Sin fecha"}{" "}
                         •{" "}
                         {obra.fechaFin
@@ -238,8 +255,17 @@ const Mapa = () => {
                             </span>
                           )}
                           {obra.estado}
-                        </span>
-
+                        </span>{" "}
+                        <button
+                          className="btn-editar-obra"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            seleccionarObra(obra);
+                            setVerModalEditarObra(true);
+                          }}
+                        >
+                          <FaEdit />
+                        </button>
                         {esInactivaCard && (
                           <button
                             className="btn-reactivar-sutil-box"
@@ -348,7 +374,9 @@ const Mapa = () => {
                   <span className="label-fecha">Inicio:</span>
                   <span className="valor-fecha">
                     {detalleObra.fechaInicio
-                      ? new Date(detalleObra.fechaInicio).toLocaleDateString("es-ES")
+                      ? new Date(detalleObra.fechaInicio).toLocaleDateString(
+                          "es-ES",
+                        )
                       : "-"}
                   </span>
                 </div>
@@ -358,7 +386,9 @@ const Mapa = () => {
                   <span className="label-fecha">Fin estimado:</span>
                   <span className="valor-fecha">
                     {detalleObra.fechaFin
-                      ? new Date(detalleObra.fechaFin).toLocaleDateString("es-ES")
+                      ? new Date(detalleObra.fechaFin).toLocaleDateString(
+                          "es-ES",
+                        )
                       : "-"}
                   </span>
                 </div>
@@ -368,7 +398,9 @@ const Mapa = () => {
                 <h3>Máquinas Asignadas</h3>
                 {detalleObra.maquinas?.length > 0 ? (
                   detalleObra.maquinas.map((unidad) => {
-                    const claseEstado = (unidad.estado || "asignado").toLowerCase().replace(/\s+/g, "-");
+                    const claseEstado = (unidad.estado || "asignado")
+                      .toLowerCase()
+                      .replace(/\s+/g, "-");
                     const estaEliminando = removingIds.includes(unidad._id);
 
                     return (
@@ -378,21 +410,33 @@ const Mapa = () => {
                         </div>
                         <div className="equipo-detalles-texto">
                           <strong>{unidad.nombreEquipo || "Máquina"}</strong>
-                          <p>{unidad.identificador || unidad.modelo || "Sin código"}</p>
+                          <p>
+                            {unidad.identificador ||
+                              unidad.modelo ||
+                              "Sin código"}
+                          </p>
                         </div>
-                        <span className={`estado-equipo-pill status-${claseEstado}`}>
+                        <span
+                          className={`estado-equipo-pill status-${claseEstado}`}
+                        >
                           {renderIconoEstadoEquipo(unidad.estado || "Asignado")}
                           {unidad.estado || "Asignado"}
                         </span>
-                        <button 
+                        <button
                           onClick={() => quitarUnidad(unidad._id)}
                           disabled={estaEliminando}
                           className="btn-quitar-unidad"
                         >
                           {estaEliminando ? (
-                            <FiRefreshCcw className="spinner" style={{ animation: "spin 1s linear infinite" }} />
+                            <FiRefreshCcw
+                              className="spinner"
+                              style={{ animation: "spin 1s linear infinite" }}
+                            />
                           ) : (
-                            <CiCircleRemove style={{ fontSize: "1.25rem", color: "#c0392b" }} title="Quitar máquina" />
+                            <CiCircleRemove
+                              style={{ fontSize: "1.25rem", color: "#c0392b" }}
+                              title="Quitar máquina"
+                            />
                           )}
                         </button>
                       </div>
@@ -407,7 +451,9 @@ const Mapa = () => {
                 <h3>Herramientas Asignadas</h3>
                 {detalleObra.herramientas?.length > 0 ? (
                   detalleObra.herramientas.map((unidad) => {
-                    const claseEstado = (unidad.estado || "asignado").toLowerCase().replace(/\s+/g, "-");
+                    const claseEstado = (unidad.estado || "asignado")
+                      .toLowerCase()
+                      .replace(/\s+/g, "-");
                     const estaEliminando = removingIds.includes(unidad._id);
 
                     return (
@@ -416,22 +462,36 @@ const Mapa = () => {
                           <LuWrench className="equipo-svg" />
                         </div>
                         <div className="equipo-detalles-texto">
-                          <strong>{unidad.nombreEquipo || "Herramienta"}</strong>
-                          <p>{unidad.identificador || unidad.modelo || "Sin código"}</p>
+                          <strong>
+                            {unidad.nombreEquipo || "Herramienta"}
+                          </strong>
+                          <p>
+                            {unidad.identificador ||
+                              unidad.modelo ||
+                              "Sin código"}
+                          </p>
                         </div>
-                        <span className={`estado-equipo-pill status-${claseEstado}`}>
+                        <span
+                          className={`estado-equipo-pill status-${claseEstado}`}
+                        >
                           {renderIconoEstadoEquipo(unidad.estado || "Asignado")}
                           {unidad.estado || "Asignado"}
                         </span>
-                        <button 
+                        <button
                           onClick={() => quitarUnidad(unidad._id)}
                           disabled={estaEliminando}
                           className="btn-quitar-unidad"
                         >
                           {estaEliminando ? (
-                            <FiRefreshCcw className="spinner" style={{ animation: "spin 1s linear infinite" }} />
+                            <FiRefreshCcw
+                              className="spinner"
+                              style={{ animation: "spin 1s linear infinite" }}
+                            />
                           ) : (
-                            <CiCircleRemove style={{ fontSize: "1.25rem", color: "#c0392b" }} title="Quitar herramienta" />
+                            <CiCircleRemove
+                              style={{ fontSize: "1.25rem", color: "#c0392b" }}
+                              title="Quitar herramienta"
+                            />
                           )}
                         </button>
                       </div>
@@ -477,18 +537,30 @@ const Mapa = () => {
       )}
 
       <TrasladarUnidadesModal
-          isOpen={trasladarEquiposModal}
-          onClose={() => setTrasladarEquiposModal(false)}
-          obraOrigen={detalleObra}
-          obras={obras}
-          rolUsuario={rolUsuario}
-          onSuccess={async () => {
+        isOpen={trasladarEquiposModal}
+        onClose={() => setTrasladarEquiposModal(false)}
+        obraOrigen={detalleObra}
+        obras={obras}
+        rolUsuario={rolUsuario}
+        onSuccess={async () => {
           setTrasladarEquiposModal(false);
           setObraSeleccionada(null);
           setDetalleObra(null);
           await fetchObras();
         }}
       />
+
+      {verModalEditarObra && detalleObra && (
+        <EditarObraModal
+          obra={detalleObra}
+          onClose={() => setVerModalEditarObra(false)}
+          onUpdated={async () => {
+            setDetalleObra(null);
+            setObraSeleccionada(null);
+            await fetchObras();
+          }}
+        />
+      )}
 
       <ReactivarObraModal
         isOpen={verModalReactivar}
