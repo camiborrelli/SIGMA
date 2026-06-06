@@ -5,6 +5,7 @@ import "./ListadoGeneral.css";
 import { FaEye, FaPlus, FaEdit } from "react-icons/fa";
 import { LuWrench } from "react-icons/lu";
 import { FiTruck } from "react-icons/fi";
+import { FaList } from "react-icons/fa";
 import EditarEquipoModal from "./EditarEquipoModal";
 
 const ListadoGeneral = ({
@@ -27,6 +28,8 @@ const ListadoGeneral = ({
 
   const [paginaActual, setPaginaActual] = useState(1);
   const [porPagina, setPorPagina] = useState(6);
+
+  const [verDetalleStock, setVerDetalleStock] = useState(false);
 
   useEffect(() => {
     const actualizarCantidad = () => {
@@ -145,42 +148,66 @@ const ListadoGeneral = ({
     }
   };
 
-  const columns = [
+  const baseColumns = [
     { header: "Nombre", accessor: "nombre" },
     { header: "Modelo", accessor: "modelo" },
     { header: "Tipo", accessor: "tipo" },
     { header: "Stock", accessor: (row) => row.stock + " unidades" },
-
     {
-      header: "Acciones",
+      header: "Detalle stock",
       accessor: (row) => (
-        <div className="acciones-fila">
-          <button
-            className="icon-btn ver"
-            title="Ver unidades"
-            onClick={() => setEquipoSeleccionado(row)}
-          >
-            <FaEye />
-          </button>
-          <button
-            className="icon-btn add"
-            title="Registrar unidad"
-            onClick={() => registrarUnidad(row._id || row.id)}
-          >
-            <FaPlus />
-          </button>
-          <button
-            className="icon-btn edit"
-            title="Editar equipo"
-            onClick={() => setEquipoEditar(row)}
-          >
-            <FaEdit />
-          </button>
-        </div>
+        <button
+          className="icon-btn detalle-stock-btn"
+          title="Ver detalle de stock"
+          onClick={() => setVerDetalleStock(!verDetalleStock)}
+        >
+          <FaList />
+        </button>
       ),
-      className: "col-acciones",
     },
   ];
+
+  const detalleColumns = [
+    { header: "Disponible", accessor: (row) => row.disponible },
+    { header: "Asignado", accessor: (row) => row.asignado },
+    { header: "Mantenimiento", accessor: (row) => row.mantenimiento },
+    { header: "Baja", accessor: (row) => row.baja },
+  ];
+
+  const accionesColumn = {
+    header: "Acciones",
+    accessor: (row) => (
+      <div className="acciones-fila">
+        <button
+          className="icon-btn ver"
+          title="Ver unidades"
+          onClick={() => setEquipoSeleccionado(row)}
+        >
+          <FaEye />
+        </button>
+        <button
+          className="icon-btn add"
+          title="Registrar unidad"
+          onClick={() => registrarUnidad(row._id || row.id)}
+        >
+          <FaPlus />
+        </button>
+        <button
+          className="icon-btn edit"
+          title="Editar equipo"
+          onClick={() => setEquipoEditar(row)}
+        >
+          <FaEdit />
+        </button>
+      </div>
+    ),
+    className: "col-acciones",
+  };
+
+  // Finalmente, armás el array según el estado
+  const columns = verDetalleStock
+    ? [...baseColumns, ...detalleColumns, accionesColumn]
+    : [...baseColumns, accionesColumn];
 
   return (
     <div className="equipos-container">

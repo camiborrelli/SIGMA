@@ -9,7 +9,13 @@ import RegistroObra from "../Obra/RegistroObra";
 import RegistrarUnidad from "../Unidad/RegistrarUnidad";
 
 import { VscTools } from "react-icons/vsc";
-import { FaBoxes, FaCheckCircle, FaClipboardList, FaTools, FaTrashAlt } from "react-icons/fa";
+import {
+  FaBoxes,
+  FaCheckCircle,
+  FaClipboardList,
+  FaTools,
+  FaTrashAlt,
+} from "react-icons/fa";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -46,7 +52,9 @@ const Dashboard = () => {
     const token = localStorage.getItem("token");
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     try {
-      const res = await fetch("http://localhost:5001/unidades/stats", { headers });
+      const res = await fetch("http://localhost:5001/unidades/stats", {
+        headers,
+      });
       if (!res.ok) return;
       const data = await res.json();
       setStats({
@@ -65,7 +73,9 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem("token");
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const res = await fetch("http://localhost:5001/equipos/stats", { headers });
+      const res = await fetch("http://localhost:5001/equipos/stats", {
+        headers,
+      });
       const data = await res.json();
       if (res.ok) setStatsEquipos({ total: data.total || 0 });
     } catch (err) {
@@ -93,50 +103,66 @@ const Dashboard = () => {
         {rol === "Admin" && (
           <div className="inicio-acciones">
             <button className="btn btn-acciones">Registro de acciones</button>
-            <button className="btn btn-register" onClick={registrarEquipo}>+ Nuevo equipo</button>
-            <button className="btn btn-register" onClick={registrarObra}>+ Nueva obra</button>
+            <button className="btn btn-register" onClick={registrarEquipo}>
+              + Nuevo equipo
+            </button>
+            <button className="btn btn-register" onClick={registrarObra}>
+              + Nueva obra
+            </button>
           </div>
         )}
       </div>
 
       <div className="summary-grid">
         <div className="summary-card summary-card--equipos">
-          <div className="summary-card__icon"><VscTools /></div>
+          <div className="summary-card__icon">
+            <VscTools />
+          </div>
           <div className="summary-card__content">
             <p className="summary-card__number">{statsEquipos.total}</p>
             <h4 className="summary-card__label">Total equipos</h4>
           </div>
         </div>
         <div className="summary-card summary-card--total">
-          <div className="summary-card__icon"><FaBoxes /></div>
+          <div className="summary-card__icon">
+            <FaBoxes />
+          </div>
           <div className="summary-card__content">
             <p className="summary-card__number">{stats.total}</p>
             <h4 className="summary-card__label">Total unidades</h4>
           </div>
         </div>
         <div className="summary-card summary-card--disponibles">
-          <div className="summary-card__icon"><FaCheckCircle /></div>
+          <div className="summary-card__icon">
+            <FaCheckCircle />
+          </div>
           <div className="summary-card__content">
             <p className="summary-card__number">{stats.disponibles}</p>
             <h4 className="summary-card__label">Disponibles</h4>
           </div>
         </div>
         <div className="summary-card summary-card--asignadas">
-          <div className="summary-card__icon"><FaClipboardList /></div>
+          <div className="summary-card__icon">
+            <FaClipboardList />
+          </div>
           <div className="summary-card__content">
             <p className="summary-card__number">{stats.asignadas}</p>
             <h4 className="summary-card__label">Asignadas</h4>
           </div>
         </div>
         <div className="summary-card summary-card--mantenimiento">
-          <div className="summary-card__icon"><FaTools /></div>
+          <div className="summary-card__icon">
+            <FaTools />
+          </div>
           <div className="summary-card__content">
             <p className="summary-card__number">{stats.mantenimiento}</p>
             <h4 className="summary-card__label">Mantenimiento</h4>
           </div>
         </div>
         <div className="summary-card summary-card--debaja">
-          <div className="summary-card__icon"><FaTrashAlt /></div>
+          <div className="summary-card__icon">
+            <FaTrashAlt />
+          </div>
           <div className="summary-card__content">
             <p className="summary-card__number">{stats.bajas}</p>
             <h4 className="summary-card__label">Dados de baja</h4>
@@ -190,25 +216,25 @@ const Dashboard = () => {
         </>
       )}
 
-      <RegistrarEquipo 
-        isOpen={isEquipoModalOpen} 
-        onClose={() => setIsEquipoModalOpen(false)} 
+      <RegistrarEquipo
+        isOpen={isEquipoModalOpen}
+        onClose={() => setIsEquipoModalOpen(false)}
         onSuccess={() => {
           fetchStatsEquipos();
           fetchStatsUnidades();
-          setRefreshKey(prev => prev + 1);
+          setRefreshKey((prev) => prev + 1);
         }}
       />
 
-      <RegistroObra 
-        isOpen={isObraModalOpen} 
-        onClose={() => setIsObraModalOpen(false)} 
+      <RegistroObra
+        isOpen={isObraModalOpen}
+        onClose={() => setIsObraModalOpen(false)}
         onSuccess={() => {
           fetchStatsUnidades();
         }}
       />
 
-      <RegistrarUnidad 
+      <RegistrarUnidad
         isOpen={isUnidadModalOpen}
         onClose={() => {
           setIsUnidadModalOpen(false);
@@ -217,7 +243,7 @@ const Dashboard = () => {
         initialEquipoId={selectedEquipoId}
         onSuccess={() => {
           fetchStatsUnidades();
-          setRefreshKey(prev => prev + 1);
+          setRefreshKey((prev) => prev + 1);
         }}
       />
     </div>
