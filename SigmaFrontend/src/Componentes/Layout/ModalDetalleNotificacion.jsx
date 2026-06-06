@@ -45,34 +45,36 @@ const ModalDetalleNotificacion = ({
           </button>
         </div>
 
-        <div className="estado-row">
-            <small>Estado:</small>
-          <div className="estado-badge pendiente">
-            {solicitud.estado}
-          </div>
-
-          <div className="fecha-box">
-            <FaRegCalendarAlt />
-            <span>
-              {new Date(solicitud.createdAt).toLocaleString()}
+        <div className="modal-body-notif">
+          <div className="estado-col">
+            <small>Estado</small>
+            <span className={`estado-badge ${solicitud.estado?.toLowerCase()}`}>
+              {solicitud.estado}
             </span>
           </div>
-        </div>
 
-        <div className="solicitante-card">
-          <div className="avatar-circle">
-            <FaUser />
+          <div className="separador-vertical" />
+
+          <div className="fecha-col">
+            <small>Fecha de registro</small>
+            <span>{new Date(solicitud.createdAt).toLocaleString()}</span>
           </div>
 
-          <div>
-            <small>Solicitado por</small>
+          <div className="separador-vertical" />
 
-            <h4>
-              {solicitud.funcionario?.nombre}{" "}
-              {solicitud.funcionario?.apellido}
-            </h4>
-
-            <span className="rol-chip">Funcionario</span>
+          <div className="solicitante-card">
+            <div className="avatar-circle">
+              {solicitud.funcionario?.nombre?.charAt(0)}
+              {solicitud.funcionario?.apellido?.charAt(0)}
+            </div>
+            <div>
+              <small>Solicitado por</small>
+              <h4>
+                {solicitud.funcionario?.nombre}{" "}
+                {solicitud.funcionario?.apellido}
+              </h4>
+              <span className="rol-chip">Funcionario de Obra</span>
+            </div>
           </div>
         </div>
 
@@ -80,8 +82,7 @@ const ModalDetalleNotificacion = ({
           <div className="obra-card origen">
             <small>Obra origen</small>
 
-            <h4>{solicitud.obraOrigen?.nombre}</h4>
-
+            <h4 className="obra-origen">{solicitud.obraOrigen?.nombre}</h4>
           </div>
 
           <div className="flecha-traslado">→</div>
@@ -89,15 +90,12 @@ const ModalDetalleNotificacion = ({
           <div className="obra-card destino">
             <small>Obra destino</small>
 
-            <h4>{solicitud.obraDestino?.nombre}</h4>
-
+            <h4 className="obra-destino">{solicitud.obraDestino?.nombre}</h4>
           </div>
         </div>
 
         <div className="equipos-section">
-          <h3>
-            Equipos a trasladar ({solicitud.unidades?.length || 0})
-          </h3>
+          <h3>Equipos a trasladar ({solicitud.unidades?.length || 0})</h3>
 
           <table className="equipos-table">
             <thead>
@@ -117,9 +115,7 @@ const ModalDetalleNotificacion = ({
                   <td>{unidad.equipo.tipo}</td>
 
                   <td>
-                    <span className="estado-chip">
-                      {unidad.estado}
-                    </span>
+                    <span className="estado-chip">{unidad.estado}</span>
                   </td>
                 </tr>
               ))}
@@ -145,27 +141,20 @@ const ModalDetalleNotificacion = ({
           <div className="acciones">
             {esAdmin ? (
               <>
-                <button
-                  className="btn-rechazar"
-                  onClick={onRechazar}
-                >
-                  <FaTimes />
-                  Rechazar solicitud
-                </button>
+                <div className="btn-group">
+                  <button className="btn-rechazar" onClick={onRechazar}>
+                    <FaTimes />
+                    Rechazar solicitud
+                  </button>
 
-                <button
-                  className="btn-aprobar"
-                  onClick={onAprobar}
-                >
-                  <FaCheck />
-                  Aprobar traslado
-                </button>
+                  <button className="btn-aprobar" onClick={onAprobar}>
+                    <FaCheck />
+                    Aprobar traslado
+                  </button>
+                </div>
               </>
             ) : (
-              <button
-                className="btn-aprobar"
-                onClick={onConfirmarEntrega}
-              >
+              <button className="btn-aprobar" onClick={onConfirmarEntrega}>
                 <FaCheck />
                 Confirmar entrega
               </button>
