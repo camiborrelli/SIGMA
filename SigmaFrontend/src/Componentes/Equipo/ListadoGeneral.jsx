@@ -3,6 +3,8 @@ import Tabla from "../Tabla";
 import ModalUnidades from "../Unidad/ModalUnidades";
 import "./ListadoGeneral.css";
 import { FaEye, FaPlus, FaEdit } from "react-icons/fa";
+import { LuWrench } from "react-icons/lu";
+import { FiTruck } from "react-icons/fi";
 import EditarEquipoModal from "./EditarEquipoModal";
 
 const ListadoGeneral = ({
@@ -224,6 +226,11 @@ const ListadoGeneral = ({
             {equiposPaginados.map((eq) => (
               <div key={eq._id || eq.id} className="equipo-card">
                 <div className="equipo-card-header">
+                  {eq.tipo == "Maquina" ? (
+                    <FiTruck className="equipo-svg" />
+                  ) : (
+                    <LuWrench className="equipo-svg" />
+                  )}
                   <span className="equipo-nombre-card">{eq.nombre}</span>
                   <span
                     className={`equipo-tipo-tag tag-${String(
@@ -241,6 +248,11 @@ const ListadoGeneral = ({
                 <div className="equipo-info">
                   <p>
                     <strong>Modelo:</strong> {eq.modelo || "N/A"}
+                  </p>
+
+                  <p>
+                    <strong>Stock:</strong> {eq.stock} unidad
+                    {eq.stock !== 1 ? "es" : ""}
                   </p>
                 </div>
 

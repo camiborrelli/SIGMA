@@ -67,8 +67,8 @@
   vertical-align: middle;
   max-width: 200px;
   overflow: hidden;
-  white-space: nowrap;       
-  text-overflow: ellipsis;    
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 /* =========================
@@ -302,14 +302,14 @@
   }
 
   .equipo-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap; /* Permite que el tag salte abajo si no entra */
-  gap: 8px;        /* Evita que se toquen al envolver */
-  border-bottom: 1px solid #f8fafc;
-  padding-bottom: 8px;
-}
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Permite que el tag salte abajo si no entra */
+    gap: 8px; /* Evita que se toquen al envolver */
+    border-bottom: 1px solid #f8fafc;
+    padding-bottom: 8px;
+  }
 
   .equipo-nombre-card {
     font-weight: 700;
@@ -408,6 +408,12 @@
   .equipo-card {
     padding: 16px;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  }
+
+  .equipo-svg {
+    font-size: 24px;
+    color: #6b7280;
+    margin-right: 8px;
   }
 
   .equipo-card-acciones .icon-btn {
