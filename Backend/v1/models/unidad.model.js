@@ -6,7 +6,7 @@ const UnidadSchema = new Schema({
     ref: "Equipo",
     required: true,
   },
-  identificador: { type: String, required: true }, //ej: EXC-001
+  identificador: { type: String, required: true },
   estado: {
     type: String,
     enum: ["Disponible", "Asignada", "En mantenimiento", "Dada de Baja"],

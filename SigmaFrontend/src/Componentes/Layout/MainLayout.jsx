@@ -1,16 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import toast from "react-hot-toast";
 import logo from "../../assets/LogoSinFondo.png";
 import { TfiMapAlt } from "react-icons/tfi";
 import { VscTools } from "react-icons/vsc";
 import { FaRegUser, FaBell } from "react-icons/fa";
 import "./MainLayout.css";
+import ModalDetalleNotificacion from "./ModalDetalleNotificacion"; 
 
 const MainLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [notificaciones, setNotificaciones] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [notificacionSeleccionada, setNotificacionSeleccionada] = useState(null);
+  const [verModalNotificacion, setVerModalNotificacion] = useState(false);
 
   const headerRef = useRef(null);
   const footerRef = useRef(null);
@@ -32,10 +36,14 @@ const MainLayout = () => {
         body: JSON.stringify({ aprobado }),
       });
       if (!res.ok) throw new Error((await res.json()).error);
+      
+      toast.success(`Solicitud ${aprobado ? "aprobada" : "rechazada"} con éxito`);
+      
+      setVerModalNotificacion(false);
       await cargarNotificaciones();
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      toast.error(error.message || "Error al procesar la solicitud");
     }
   };
 
@@ -48,10 +56,14 @@ const MainLayout = () => {
         body: JSON.stringify({ solicitudId }),
       });
       if (!res.ok) throw new Error("Error al confirmar entrega");
+      
+      toast.success("Entrega confirmada con éxito");
+      
+      setVerModalNotificacion(false);
       await cargarNotificaciones();
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      toast.error(error.message || "Error al confirmar la entrega");
     }
   };
 
@@ -90,6 +102,17 @@ const MainLayout = () => {
     }
   };
 
+  const handleNotificacionClick = (n) => {
+    const esSolicitudAdmin = usuario?.rol === "Admin" && n.tipo === "solicitud";
+    const esSolicitudUsuario = usuario?.rol !== "Admin" && n.tipo === "solicitud_aprobada";
+
+    if ((esSolicitudAdmin || esSolicitudUsuario) && n.solicitudId) {
+      setNotificacionSeleccionada(n);
+      setVerModalNotificacion(true);
+      setShowDropdown(false);
+    }
+  };
+
   useEffect(() => {
     cargarNotificaciones();
     const handleClickOutside = (event) => {
@@ -113,23 +136,26 @@ const MainLayout = () => {
         <button className="close-dropdown-btn" onClick={() => setShowDropdown(false)}>&times;</button>
       </div>
       <div className="notification-list">
-        {notificaciones.length === 0 ? <p className="no-notifications">No hay notificaciones.</p> : notificaciones.map((n) => (
-          <div key={n._id} className={`notification-item ${!n.leida ? "unread" : ""}`}>
-            <p>{n.mensaje}</p>
-            <span className="notification-time">{new Date(n.createdAt).toLocaleString()}</span>
-            {usuario?.rol === "Admin" && n.tipo === "solicitud" && (
-              <div className="notification-actions">
-                <button onClick={() => procesarSolicitud(n.solicitudId, true)}>Aprobar</button>
-                <button onClick={() => procesarSolicitud(n.solicitudId, false)}>Rechazar</button>
+        {notificaciones.length === 0 ? (
+          <p className="no-notifications">No hay notificaciones.</p>
+        ) : (
+          notificaciones.map((n) => {
+            const requiereAccion = 
+              (usuario?.rol === "Admin" && n.tipo === "solicitud") || 
+              (usuario?.rol !== "Admin" && n.tipo === "solicitud_aprobada");
+
+            return (
+              <div 
+                key={n._id} 
+                className={`notification-item ${!n.leida ? "unread" : ""} ${requiereAccion ? "clickable" : ""}`}
+                onClick={() => handleNotificacionClick(n)}
+              >
+                <p>{n.mensaje}</p>
+                <span className="notification-time">{new Date(n.createdAt).toLocaleString()}</span>
               </div>
-            )}
-            {usuario?.rol !== "Admin" && n.tipo === "solicitud_aprobada" && (
-              <div className="notification-actions">
-                <button onClick={() => confirmarEntrega(n.solicitudId)}>Confirmar entrega</button>
-              </div>
-            )}
-          </div>
-        ))}
+            );
+          })
+        )}
       </div>
     </div>
   );
@@ -162,7 +188,9 @@ const MainLayout = () => {
           <button className="btn-logout" onClick={logout}>Cerrar sesión</button>
         </div>
       </div>
+      
       <main className="main-content-wrapper"><Outlet /></main>
+      
       <footer className="mobile-footer" ref={footerRef}>
         <button className={`mobile-footer-btn ${location.pathname === "/dashboard" ? "active" : ""}`} onClick={() => navigate("/dashboard")}><VscTools /> <span>Gestión</span></button>
         <button className={`mobile-footer-btn ${location.pathname === "/mapa" ? "active" : ""}`} onClick={() => navigate("/mapa")}><TfiMapAlt /> <span>Mapa</span></button>
@@ -177,6 +205,19 @@ const MainLayout = () => {
         </div>
         <button className={`mobile-footer-btn ${location.pathname === "/perfil" ? "active" : ""}`} onClick={() => navigate("/perfil")}><FaRegUser /> <span>Perfil</span></button>
       </footer>
+
+      {verModalNotificacion && notificacionSeleccionada && (
+        <ModalDetalleNotificacion
+          isOpen={verModalNotificacion}
+          onClose={() => setVerModalNotificacion(false)}
+          notificacion={notificacionSeleccionada}
+          solicitud={notificacionSeleccionada.solicitudId}
+          onAprobar={() => procesarSolicitud(notificacionSeleccionada.solicitudId._id, true)}
+          onRechazar={() => procesarSolicitud(notificacionSeleccionada.solicitudId._id, false)}
+          onConfirmarEntrega={() => confirmarEntrega(notificacionSeleccionada.solicitudId._id)}
+          rolUsuario={usuario?.rol}
+        />
+      )}
     </div>
   );
 };

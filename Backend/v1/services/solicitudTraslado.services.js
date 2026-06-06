@@ -5,6 +5,8 @@ import Usuario from "../models/usuario.model.js";
 import AccionUsuario from "../models/accionUsuario.model.js";
 
 export const crearSolicitudTrasladoService = async ({ funcionarioId, obraOrigen, obraDestino, unidades }) => {
+  const funcionario = await Usuario.findById(funcionarioId);
+  
   const nuevaSolicitud = new SolicitudTraslado({
     funcionario: funcionarioId,
     obraOrigen,
@@ -14,14 +16,14 @@ export const crearSolicitudTrasladoService = async ({ funcionarioId, obraOrigen,
   
   await nuevaSolicitud.save();
 
-  const admins = await Usuario.find({ rol: "Admin", estado: "Activo" });
+  const admins = await Usuario.find({ rol: "Admin"});
   
   const promesasNotificaciones = admins.map((admin) => {
     return new Notificacion({
-    usuario: admin._id,
-    mensaje: "Un funcionario ha solicitado un traslado de equipos hacia una nueva obra.",
-    tipo: "solicitud",
-    solicitudId: nuevaSolicitud._id,
+      usuario: admin._id,
+      mensaje: `El funcionario ${funcionario.nombre} ${funcionario.apellido} ha solicitado un traslado de equipos hacia una nueva obra.`,
+      tipo: "solicitud",
+      solicitudId: nuevaSolicitud._id,
     }).save();
   });
   
@@ -32,33 +34,38 @@ export const crearSolicitudTrasladoService = async ({ funcionarioId, obraOrigen,
 
 export const procesarSolicitudTrasladoService = async ({ solicitudId, aprobado, adminId }) => {
   const solicitud = await SolicitudTraslado.findById(solicitudId).populate("funcionario obraDestino");
+  const admin = await Usuario.findById(adminId);
   
-  if (!solicitud) {
-    throw new Error("La solicitud no existe");
-  }
-  if (solicitud.estado !== "Pendiente") {
-    throw new Error("La solicitud ya fue procesada");
-  }
+  if (!solicitud) throw new Error("La solicitud no existe");
+  if (solicitud.estado !== "Pendiente") throw new Error("La solicitud ya fue procesada");
 
   solicitud.procesadoPor = adminId;
   solicitud.fechaProcesado = new Date();
+  solicitud.estado = aprobado ? "Aprobada" : "Rechazada";
+
+  await new AccionUsuario({
+    usuario: adminId,
+    accion: aprobado ? "Aprobó solicitud de traslado" : "Rechazó solicitud de traslado",
+    recursoAfectado: `SolicitudTraslado ID: ${solicitud._id}`,
+    detalles: {
+      solicitanteId: solicitud.funcionario._id,
+      nombreSolicitante: solicitud.funcionario.nombre,
+      unidades: solicitud.unidades,
+      obraDestino: solicitud.obraDestino.nombre
+    }
+  }).save();
 
   if (aprobado) {
-    solicitud.estado = "Aprobada";
-
     await new Notificacion({
       usuario: solicitud.funcionario._id,
-      mensaje: `Tu solicitud de traslado a la obra "${solicitud.obraDestino.nombre}" fue autorizada. Por favor, confirma cuando los equipos hayan sido entregados correctamente.`,
+      mensaje: `Tu solicitud de traslado a "${solicitud.obraDestino.nombre}" fue autorizada por el administrador ${admin.nombre} ${admin.apellido}.`,
       tipo: "solicitud_aprobada",
       solicitudId: solicitud._id,
     }).save();
-    
   } else {
-    solicitud.estado = "Rechazada";
-
     await new Notificacion({
       usuario: solicitud.funcionario._id,
-      mensaje: `Tu solicitud de traslado a la obra "${solicitud.obraDestino.nombre}" ha sido RECHAZADA.`,
+      mensaje: `Tu solicitud de traslado a "${solicitud.obraDestino.nombre}" fue RECHAZADA por el administrador ${admin.nombre} ${admin.apellido}.`,
       tipo: "respuesta",
       solicitudId: solicitud._id,
     }).save();
@@ -69,7 +76,10 @@ export const procesarSolicitudTrasladoService = async ({ solicitudId, aprobado, 
 };
 
 export const confirmarEntregaService = async ({ solicitudId, funcionarioId }) => {
-  const solicitud = await SolicitudTraslado.findById(solicitudId).populate("obraDestino");
+  const solicitud = await SolicitudTraslado.findById(solicitudId)
+    .populate("obraOrigen obraDestino funcionario");
+
+  const funcionario = await Usuario.findById(funcionarioId);
 
   if (!solicitud) throw new Error("La solicitud no existe");
   if (solicitud.estado !== "Aprobada") throw new Error("La solicitud no está autorizada para entrega");
@@ -82,20 +92,23 @@ export const confirmarEntregaService = async ({ solicitudId, funcionarioId }) =>
     { $set: { ubicacion: solicitud.obraDestino._id, estado: "Asignada" } }
   );
 
-  const cantidadEquipos = solicitud.unidades.length;
-  const nombreObra = solicitud.obraDestino.nombre;
-
   const nuevaAccion = new AccionUsuario({
     usuario: funcionarioId, 
-    accion: `Confirmación de traslado de ${cantidadEquipos} equipo/s hacia la obra "${nombreObra}"`,
-    recursoAfectado: `Colección: Unidad | SolicitudTraslado ID: ${solicitud._id}`
+    accion: `Confirmación de traslado completado`,
+    recursoAfectado: `SolicitudTraslado ID: ${solicitud._id}`,
+    detalles: {
+      unidades: solicitud.unidades,
+      obraOrigen: solicitud.obraOrigen.nombre,
+      obraDestino: solicitud.obraDestino.nombre,
+      fechaConfirmacion: new Date()
+    }
   });
   
   await nuevaAccion.save();
   
   await new Notificacion({
     usuario: solicitud.funcionario._id,
-    mensaje: `Confirmaste la entrega de equipos en "${nombreObra}". El traslado fue completado.`,
+    mensaje: `El funcionario ${funcionario.nombre} ${funcionario.apellido} confirmó la entrega de equipos en "${solicitud.obraDestino.nombre}".`,
     tipo: "respuesta",
     solicitudId: solicitud._id,
   }).save();

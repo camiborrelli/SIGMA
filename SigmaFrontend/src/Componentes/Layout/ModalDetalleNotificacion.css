@@ -1,0 +1,400 @@
+.modal-overlay-notif {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
+  height: auto;
+}
+
+.modal-content-notif {
+  background: #ffffff;
+  width: 95%;
+  max-width: 1000px;
+  height: auto; 
+  max-height: 90vh;    
+  overflow-y: visible;  
+  border-radius: 24px;
+  overflow-x: hidden;
+  padding: 0;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.18);
+}
+
+.modal-content-notif::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-content-notif::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.modal-header-notif {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 32px 40px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.header-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: #eef4ff;
+  color: #3563e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.header-info {
+  flex: 1;
+}
+
+.header-info h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.header-info p {
+  margin-top: 6px;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.close-btn {
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #64748b;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.close-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.estado-row {
+  margin: 24px 40px;
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  border: 1px solid #e8edf3;
+  border-radius: 16px;
+}
+
+.estado-row small {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.estado-badge {
+  margin-left: 12px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.estado-badge.pendiente {
+  background: #fff4dd;
+  color: #c2871a;
+}
+
+.estado-badge.aprobada {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.estado-badge.rechazada {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.estado-badge.completada {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.fecha-box {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.solicitante-card {
+  margin: 0 40px;
+  padding: 28px;
+  background: #fafbfd;
+  border: 1px solid #edf2f7;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.avatar-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #e7ebff;
+  color: #4f46e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.solicitante-card small {
+  display: block;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.solicitante-card h4 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.rol-chip {
+  display: inline-block;
+  margin-top: 10px;
+  background: #e6edff;
+  color: #3563e9;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.obras-grid {
+  margin: 24px 40px;
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr;
+  gap: 22px;
+  align-items: center;
+}
+
+.obra-card {
+  border: 1px solid #e8edf3;
+  border-radius: 18px;
+  padding: 24px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.obra-card.origen {
+  background: #f7fcf9;
+}
+
+.obra-card.destino {
+  background: #faf8ff;
+}
+
+.obra-card small {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.obra-card h4 {
+  margin-top: 10px;
+  margin-bottom: 0;
+  font-size: 1.9rem;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.info-box {
+  margin: 28px 40px 32px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: #eef5ff;
+  border: 1px solid #dbeafe;
+  color: #1e40af;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.info-box svg {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.info-box span {
+  line-height: 1.5;
+}
+.equipos-section {
+  margin: 36px 40px 0;
+}
+
+.equipos-section h3 {
+  text-align: center;
+  color: #111827;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 22px;
+}
+
+.equipos-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #edf2f7;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.equipos-table thead {
+  background: #f8fafc;
+}
+
+.equipos-table th {
+  text-align: left;
+  padding: 18px;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.equipos-table td {
+  padding: 20px 18px;
+  color: #1e293b;
+  border-top: 1px solid #edf2f7;
+}
+
+.estado-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #dcfce7;
+  color: #15803d;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.modal-footer-notif {
+  border-top: 1px solid #edf2f7;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-cancelar,
+.btn-rechazar,
+.btn-aprobar {
+  min-width: 100px;
+  height: 50px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-cancelar {
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #374151;
+}
+
+.btn-cancelar:hover {
+  background: #f8fafc;
+}
+
+.btn-rechazar {
+  border: 1px solid #ef4444;
+  background: white;
+  color: #ef4444;
+}
+
+.btn-rechazar:hover {
+  background: #fef2f2;
+}
+
+.btn-aprobar {
+  border: none;
+  background: #0f766e;
+  color: white;
+}
+
+.btn-aprobar:hover {
+  background: #115e59;
+}
+
+
+@media (max-width: 768px) {
+  .modal-content-notif {
+    width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .modal-header-notif,
+  .estado-row,
+  .solicitante-card,
+  .obras-grid,
+  .equipos-section,
+  .info-box,
+  .modal-footer-notif {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  .obras-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .flecha-traslado {
+    transform: rotate(90deg);
+  }
+
+  .modal-footer-notif {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .acciones {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .btn-cancelar,
+  .btn-rechazar,
+  .btn-aprobar {
+    width: 100%;
+  }
+}

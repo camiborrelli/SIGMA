@@ -60,7 +60,8 @@ const Mapa = () => {
 
   useEffect(() => {
     fetchObras();
-    const rol = localStorage.getItem("rol");
+    const user = JSON.parse(localStorage.getItem("usuario"));
+    const rol = user?.rol;
     if (rol) {
       setRolUsuario(rol);
     }

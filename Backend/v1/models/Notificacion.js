@@ -17,7 +17,7 @@ const NotificacionSchema = new mongoose.Schema({
     ref: "SolicitudTraslado",
   },
 
-  leido: {
+  leida: {
     type: Boolean,
     default: false,
   },
