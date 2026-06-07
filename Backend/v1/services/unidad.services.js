@@ -320,3 +320,23 @@ export const trasladarUnidadesAotraObra = async ({
     cantidadTrasladada: idsAMover.length,
   };
 };
+
+export const actualizarDescripcionUnidad = async (id, descripcion) => {
+  const unidad = await Unidad.findById(id);
+  if (!unidad) throw new Error("Unidad no encontrada");
+
+  unidad.descripcion = descripcion;
+  await unidad.save();
+  
+  return unidad;
+};
+
+export const actualizarEtiquetaUnidad = async (id, etiqueta) => {
+  const unidad = await Unidad.findById(id);
+  if (!unidad) throw new Error("Unidad no encontrada");
+
+  unidad.etiqueta = etiqueta;
+  await unidad.save();
+  
+  return unidad;
+};

@@ -6,6 +6,8 @@ const UnidadSchema = new Schema({
     ref: "Equipo",
     required: true,
   },
+  descripcion: { type: String, default: "" },
+  etiqueta: { type: Number, default: null },
   identificador: { type: String, required: true },
   estado: {
     type: String,

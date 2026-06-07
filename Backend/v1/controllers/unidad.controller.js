@@ -12,6 +12,8 @@ import {
   actualizarFechaCompra,
   quitarUnidadDeObra,
   trasladarUnidadesAotraObra,
+  actualizarDescripcionUnidad,
+  actualizarEtiquetaUnidad,
 } from "../services/unidad.services.js";
 
 import Obra from "../models/obra.model.js";
@@ -341,17 +343,15 @@ export const asignarMultiplesUnidadesController = async (req, res) => {
       return res.status(400).json({ error: "Debe indicar la obra de destino" });
     }
 
-    // Verificamos que la obra exista
     const obra = await Obra.findById(obraId);
     if (!obra) {
       return res.status(404).json({ error: "Obra no encontrada" });
     }
 
-    // Guardamos directamente el ID de la obra en cada unidad
     const resultados = await Promise.all(
       ids.map(async (id) => {
         try {
-          const resultado = await asignarUnidad(id, obraId); // ✔ pasás el ObjectId de la obra
+          const resultado = await asignarUnidad(id, obraId);
           return { id, success: true, resultado };
         } catch (error) {
           return { id, success: false, error: error.message };
@@ -363,5 +363,43 @@ export const asignarMultiplesUnidadesController = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al procesar asignación múltiple" });
+  }
+};
+
+export const actualizarDescripcionUnidadController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { descripcion } = req.body;
+
+    const unidad = await actualizarDescripcionUnidad(id, descripcion);
+
+    res.status(200).json(unidad);
+  } catch (error) {
+    console.error(error);
+    if (error.message.includes("no encontrada")) {
+      return res.status(404).json({ error: error.message });
+    }
+    res.status(500).json({ error: "Error al actualizar la descripción" });
+  }
+};
+
+export const actualizarEtiquetaUnidadController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { etiqueta } = req.body;
+
+    if (etiqueta !== undefined && isNaN(Number(etiqueta))) {
+      return res.status(400).json({ error: "La etiqueta debe ser un número" });
+    }
+
+    const unidad = await actualizarEtiquetaUnidad(id, etiqueta);
+
+    res.status(200).json(unidad);
+  } catch (error) {
+    console.error(error);
+    if (error.message.includes("no encontrada")) {
+      return res.status(404).json({ error: error.message });
+    }
+    res.status(500).json({ error: "Error al actualizar la etiqueta" });
   }
 };
