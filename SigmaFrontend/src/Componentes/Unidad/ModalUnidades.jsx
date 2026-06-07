@@ -6,18 +6,20 @@ import BajaUnidadModal from "./BajaUnidadModal";
 import AsignarUnidadModal from "./AsignarUnidadModal";
 import "./ModalUnidades.css";
 import toast from "react-hot-toast";
-import { FaRegCalendarPlus } from "react-icons/fa";
+import { FaRegCalendarPlus, FaRegFileAlt, FaTag } from "react-icons/fa";
 import AgregarFechaCompraModal from "./AgregarFechaCompraModal";
 import ModalFechaMasiva from "./ModalFechaMasiva";
 import ModalObraMasiva from "./ModalObraMasiva";
+import EditarDescripcionModal from "./EditarDescripcionModal";
+import EditarEtiquetaModal from "./EditarEtiquetaModal";
+import FechaCompraExistenteModal from "./FechaCompraExistenteModal";
 
 const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const [unidades, setUnidades] = useState([]);
   const [unidadMantenimiento, setUnidadMantenimiento] = useState(null);
   const [unidadBaja, setUnidadBaja] = useState(null);
   const [unidadAsignar, setUnidadAsignar] = useState(null);
-  const [confirmMantenimientoUnidad, setConfirmMantenimientoUnidad] =
-    useState(null);
+  const [confirmMantenimientoUnidad, setConfirmMantenimientoUnidad] = useState(null);
   const [estadoFiltro, setEstadoFiltro] = useState("");
   const [obraFiltro, setObraFiltro] = useState("");
   const [unidadFecha, setUnidadFecha] = useState(null);
@@ -27,6 +29,9 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const [unidadesSeleccionadas, setUnidadesSeleccionadas] = useState([]);
   const [accionMasiva, setAccionMasiva] = useState("");
   const [bulkLoading, setBulkLoading] = useState(false);
+  const [unidadDescripcion, setUnidadDescripcion] = useState(null);
+  const [unidadEtiqueta, setUnidadEtiqueta] = useState(null);
+  const [unidadFechaExistente, setUnidadFechaExistente] = useState(null);
 
   // modales para acciones masivas con datos extra
   const [modalFechaMasiva, setModalFechaMasiva] = useState(false);
@@ -38,6 +43,9 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     setUnidadAsignar(null);
     setUnidadFecha(null);
     setConfirmMantenimientoUnidad(null);
+    setUnidadDescripcion(null);
+    setUnidadEtiqueta(null);
+    setUnidadFechaExistente(null);
   };
 
   const navigate = useNavigate();
@@ -86,9 +94,16 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   useEffect(() => {
     if (equipo?._id) fetchUnidades();
   }, [equipo]);
+
   useEffect(() => {
     setPaginaActual(1);
   }, [equipo, unidades.length]);
+
+  useEffect(() => {
+  setPaginaActual(1);
+}, [estadoFiltro, obraFiltro]);
+
+
   useEffect(() => {
     const actualizarCantidad = () => {
       const width = window.innerWidth;
@@ -303,6 +318,10 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const columns = [
     { header: "ID", accessor: "identificador" },
     {
+      header: "Etiqueta",
+      accessor: (row) => row.etiqueta ? row.etiqueta : <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>Sin etiqueta</span>
+    },
+    {
       header: "Estado",
       accessor: (row) => {
         const est = String(row.estado || "").toLowerCase();
@@ -370,12 +389,22 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
               <button
                 onClick={() => {
                   cerrarTodos();
-                  row.fechaCompra
-                    ? (onClose(), navigate(`/garantia/${row._id}`))
-                    : setUnidadFecha(row);
+
+                  if (row.fechaCompra) {
+                    setUnidadFechaExistente(row);
+                  } else {
+                    setUnidadFecha(row);
+                  }
                 }}
               >
                 <FaRegCalendarPlus />
+              </button>
+              <button onClick={() => { cerrarTodos(); setUnidadDescripcion(row); }}>
+                <FaRegFileAlt title="Editar descripción" />
+              </button>
+
+              <button onClick={() => { cerrarTodos(); setUnidadEtiqueta(row); }}>
+                <FaTag title="Editar etiqueta" />
               </button>
             </>
           )}
@@ -496,6 +525,12 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           onUpdated={handleUpdated}
         />
       )}
+      {unidadFechaExistente && (
+        <FechaCompraExistenteModal
+          unidad={unidadFechaExistente}
+          onClose={() => setUnidadFechaExistente(null)}
+        />
+      )}
       {confirmMantenimientoUnidad && (
         <div
           className="modal-overlay"
@@ -553,6 +588,20 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           cantidad={unidadesSeleccionadas.length}
           onConfirm={confirmarObraMasiva}
           onClose={() => setModalObraMasiva(false)}
+        />
+      )}
+      {unidadDescripcion && (
+        <EditarDescripcionModal
+          unidad={unidadDescripcion}
+          onClose={cerrarTodos}
+          onUpdated={handleUpdated}
+        />
+      )}
+      {unidadEtiqueta && (
+        <EditarEtiquetaModal
+          unidad={unidadEtiqueta}
+          onClose={cerrarTodos}
+          onUpdated={handleUpdated}
         />
       )}
     </>

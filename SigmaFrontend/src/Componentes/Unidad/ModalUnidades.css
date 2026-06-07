@@ -16,7 +16,7 @@
   padding: 24px;
   border-radius: 12px;
   width: 90%;
-  max-width: 800px !important;
+  max-width: 1000px !important;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -351,161 +351,223 @@
 }
 
 @media (max-width: 768px) {
-  .modal-content {
-    width: 95%;
-    padding: 14px;
-    gap: 10px;
-    max-height: none !important;
-    overflow-y: hidden !important;
-  }
 
-  .sigma-table thead,
-  .modal-content thead {
-    display: none;
+  .modal-content {
+    width: 100%;
+    padding: 14px;
+    gap: 12px;
+    overflow-y: auto;
   }
 
   .sigma-table,
-  .sigma-table tbody,
-  .sigma-tr,
-  .sigma-td {
+  .sigma-table tbody {
     display: block;
-    width: 100% !important;
-    box-sizing: border-box;
+    width: 100%;
   }
 
-  .sigma-tr {
-    background: #ffffff !important;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 10px 12px;
-    margin-bottom: 8px;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.03);
-  }
-
-  .sigma-td {
-    border: none;
-    padding: 5px 0;
-    font-size: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    white-space: normal;
-    text-align: right !important;
-  }
-
-  .sigma-td:nth-of-type(1)::before {
-    content: "ID Unidad:";
-    font-weight: 700;
-    color: #64748b;
-    text-align: left;
-  }
-  .sigma-td:nth-of-type(2)::before {
-    content: "Estado:";
-    font-weight: 700;
-    color: #64748b;
-    text-align: left;
-  }
-  .sigma-td:nth-of-type(3)::before {
-    content: "Obra Asignada:";
-    font-weight: 700;
-    color: #64748b;
-    text-align: left;
-  }
-
-  .sigma-td:nth-of-type(4)::before {
-    content: "";
+  .sigma-table thead {
     display: none;
   }
 
-  .sigma-td:last-child {
-    border-top: 1px dashed #e2e8f0;
-    margin-top: 8px;
-    padding-top: 8px;
-    display: flex;
-    justify-content: center;
+  .sigma-tr {
+    display: block;
+    width: 100%;
+
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+
+    padding: 0;
+    margin-bottom: 14px;
+
+    overflow: hidden;
+
+    box-shadow:
+      0 1px 3px rgba(0,0,0,.05),
+      0 4px 12px rgba(0,0,0,.04);
+  }
+
+  .sigma-td {
+    display: flex !important;
+    justify-content: space-between;
     align-items: center;
+
     width: 100% !important;
+    max-width: 100% !important;
+
+    padding: 14px 16px;
+
+    box-sizing: border-box;
+
+    border-bottom: 1px solid #f1f5f9;
+
+    overflow: visible !important;
+    text-overflow: unset !important;
+    white-space: normal !important;
+  }
+
+  .sigma-td:first-child {
+    background: #f8fafc;
+
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+
+    padding: 16px;
+
+    justify-content: flex-start;
+
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .sigma-td::before {
+    font-size: 13px;
+    font-weight: 700;
+    color: #64748b;
+
+    flex-shrink: 0;
+    margin-right: 16px;
+  }
+
+  .sigma-td:nth-of-type(2)::before {
+    content: "Etiqueta";
+  }
+
+  .sigma-td:nth-of-type(3)::before {
+    content: "Estado";
+  }
+
+  .sigma-td:nth-of-type(4)::before {
+    content: "Obra asignada";
+  }
+
+  .sigma-td > * {
+    text-align: right;
+    max-width: 65%;
+  }
+
+  .sigma-td:nth-of-type(4) > * {
+    white-space: normal !important;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    line-height: 1.5;
+  }
+
+  .estado-badge {
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+
+  .sigma-td:last-child {
+    display: block !important;
+
+    width: 100%;
+
+    padding: 16px;
+
+    border-bottom: none;
+    border-top: 1px dashed #e2e8f0;
   }
 
   .actions {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 10px;
+
     width: 100%;
-    gap: 8px;
   }
 
   .actions button {
-    font-size: 18px;
-    padding: 6px;
+    width: 100%;
+    height: 46px;
+
     margin: 0;
+
     background: #f8fafc;
-    border-radius: 8px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    flex: 1;
-    min-height: 40px;
-    max-width: 55px;
   }
 
-  .actions button:active {
-    background-color: #e2e8f0;
+  .actions button svg {
+    font-size: 18px;
   }
 
   .paginacion {
-    margin-top: 8px;
-    margin-bottom: 2px;
+    width: 100%;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
-  }
-
-  .paginacion button {
-    padding: 8px 14px;
-    font-size: 15px;
-    flex: 0 1 auto;
-    background: #c62828;
-    border-radius: 8px;
-  }
-
-  .paginacion span {
-    font-size: 14px;
-    font-weight: 600;
-    color: #475569;
-  }
-
-  .btn-cancel {
-    width: 100%;
   }
 
   .btn-cerrar {
-    margin-top: 2px;
-    padding: 10px;
-  }
-
-  .filtros select {
-    width: 100%;
-    flex: none;
-    padding: 8px 10px;
-  }
-
-  .acciones-masivas {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .acciones-masivas select {
-    min-width: 100%;
-  }
-
-  .acciones-masivas-botones {
     width: 100%;
   }
+}
 
-  .acciones-masivas-botones button {
-    flex: 1;
+.modal-content {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.paginacion span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.modal-content {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.tabla-wrapper {
+  overflow-x: hidden;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.sigma-table {
+  width: 100%;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .paginacion {
+    margin-top: 18px;
+    padding: 0 4px;
+  }
+
+  .paginacion button {
+    min-width: 44px;
+    height: 44px;
+    border-radius: 12px;
   }
 }
