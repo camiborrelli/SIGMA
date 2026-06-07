@@ -806,14 +806,26 @@
 }
 
 .btn-editar-obra {
-  background: #fad8d8;
-  border: none;
+  background: #ffffff;
+  border: 1.5px;
+  color: #c90036;
   padding: 6px;
   margin-left: 12px;
-  border-radius: 11px;
+  border-radius: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.12s ease, transform 0.08s ease;
+  transition: all 0.2s ease;
+  width: 32px;
+  height: 32px;
+}
+
+.btn-editar-obra:hover {
+  background: #c90036;
+  color: #ffffff;
+}
+
+.btn-editar-obra svg {
+  font-size: 16px;
 }

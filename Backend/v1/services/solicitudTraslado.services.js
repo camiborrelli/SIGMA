@@ -77,8 +77,8 @@ export const procesarSolicitudTrasladoService = async ({ solicitudId, aprobado, 
 
 export const confirmarEntregaService = async ({ solicitudId, funcionarioId }) => {
   const solicitud = await SolicitudTraslado.findById(solicitudId)
-    .populate("obraOrigen obraDestino funcionario");
-
+    .populate("obraOrigen obraDestino funcionario procesadoPor");
+  
   const funcionario = await Usuario.findById(funcionarioId);
 
   if (!solicitud) throw new Error("La solicitud no existe");
@@ -92,11 +92,15 @@ export const confirmarEntregaService = async ({ solicitudId, funcionarioId }) =>
     { $set: { ubicacion: solicitud.obraDestino._id, estado: "Asignada" } }
   );
 
+  const adminId = solicitud.procesadoPor ? solicitud.procesadoPor._id : null;
+
   const nuevaAccion = new AccionUsuario({
-    usuario: funcionarioId, 
+    usuario: adminId,
     accion: `Confirmación de traslado completado`,
     recursoAfectado: `SolicitudTraslado ID: ${solicitud._id}`,
     detalles: {
+      funcionarioId: funcionario._id,
+      nombreFuncionario: `${funcionario.nombre} ${funcionario.apellido}`,
       unidades: solicitud.unidades,
       obraOrigen: solicitud.obraOrigen.nombre,
       obraDestino: solicitud.obraDestino.nombre,
@@ -105,13 +109,15 @@ export const confirmarEntregaService = async ({ solicitudId, funcionarioId }) =>
   });
   
   await nuevaAccion.save();
-  
-  await new Notificacion({
-    usuario: solicitud.funcionario._id,
-    mensaje: `El funcionario ${funcionario.nombre} ${funcionario.apellido} confirmó la entrega de equipos en "${solicitud.obraDestino.nombre}".`,
-    tipo: "respuesta",
-    solicitudId: solicitud._id,
-  }).save();
+
+  if (adminId) {
+    await new Notificacion({
+      usuario: adminId, 
+      mensaje: `El funcionario ${funcionario.nombre} ${funcionario.apellido} confirmó la entrega de equipos en la obra "${solicitud.obraDestino.nombre}".`,
+      tipo: "respuesta",
+      solicitudId: solicitud._id,
+    }).save();
+  }
 
   return nuevaAccion;
 };
