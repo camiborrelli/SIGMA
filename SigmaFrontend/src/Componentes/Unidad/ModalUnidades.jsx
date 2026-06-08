@@ -13,6 +13,7 @@ import ModalObraMasiva from "./ModalObraMasiva";
 import EditarDescripcionModal from "./EditarDescripcionModal";
 import EditarEtiquetaModal from "./EditarEtiquetaModal";
 import FechaCompraExistenteModal from "./FechaCompraExistenteModal";
+import FinalizarMantenimientoModal from "./FinalizarMantenimientoModal";
 
 const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const [unidades, setUnidades] = useState([]);
@@ -532,47 +533,11 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
         />
       )}
       {confirmMantenimientoUnidad && (
-        <div
-          className="modal-overlay"
-          onClick={() => setConfirmMantenimientoUnidad(null)}
-        >
-          <div
-            className="modal-content"
-            onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: 380 }}
-          >
-            <h2>Finalizar mantenimiento</h2>
-            <p style={{ margin: "12px 0", color: "#64748b", fontSize: 14 }}>
-              ¿Confirmar que el mantenimiento de{" "}
-              <strong>{confirmMantenimientoUnidad.identificador}</strong> está
-              finalizado?
-            </p>
-            <div style={{ display: "flex", gap: 8 }}>
-              <button
-                className="btn-aplicar-masiva"
-                onClick={() =>
-                  finalizarMantenimiento(confirmMantenimientoUnidad)
-                }
-                style={{ flex: 1 }}
-              >
-                Confirmar
-              </button>
-              <button
-                onClick={() => setConfirmMantenimientoUnidad(null)}
-                style={{
-                  flex: 1,
-                  padding: 10,
-                  borderRadius: 8,
-                  border: "1px solid #e8e8e8",
-                  background: "#f5f5f5",
-                  cursor: "pointer",
-                }}
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
+        <FinalizarMantenimientoModal
+          unidad={confirmMantenimientoUnidad}
+          onClose={() => setConfirmMantenimientoUnidad(null)}
+          onUpdated={handleUpdated}
+        />
       )}
 
       {/* Modales para acciones masivas */}

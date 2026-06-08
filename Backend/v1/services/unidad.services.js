@@ -41,7 +41,7 @@ export const agregarUnidad = async (equipoId, data = {}) => {
   return nuevaUnidad;
 };
 
-export const enviarAMantenimiento = async (unidadId, usuario = null) => {
+export const enviarAMantenimiento = async (unidadId, usuario = null, fotoUrl = null) => {
   const unidad = await Unidad.findById(unidadId);
 
   if (!unidad) throw new Error("Unidad no encontrada");
@@ -59,19 +59,18 @@ export const enviarAMantenimiento = async (unidadId, usuario = null) => {
   const prev = unidad.cantReparaciones || 0;
   unidad.cantReparaciones = prev + 1;
 
-  console.log(
-    `enviarAMantenimiento: unidad=${unidadId} prevCant=${prev} newCant=${unidad.cantReparaciones} usuario=${usuario}`,
-  );
-
-  // push historial de mantenimiento
+  // push historial de mantenimiento agregando la foto
   const entry = {
     fechaInicio: new Date(),
     fechaFin: null,
     usuario: usuario || null,
+    foto: fotoUrl || null,
   };
 
-  if (!Array.isArray(unidad.historialMantenimiento))
+  if (!Array.isArray(unidad.historialMantenimiento)) {
     unidad.historialMantenimiento = [];
+  }
+  
   unidad.historialMantenimiento.push(entry);
 
   await unidad.save();

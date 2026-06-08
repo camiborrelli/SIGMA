@@ -25,7 +25,8 @@ const UnidadSchema = new Schema({
     {
       fechaInicio: Date,
       fechaFin: Date,
-      usuario: String,
+      usuario: { type: String, default: null },
+      foto: { type: String, default: null },
     },
   ],
 });

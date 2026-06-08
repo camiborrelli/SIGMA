@@ -27,7 +27,6 @@ const Garantia = ({ id: propId }) => {
   const formatDate = (date) => {
     if (!date) return "—";
     return dayjs(date).format("DD/MM/YYYY");
-    console.log(date);
   };
 
   useEffect(() => {
@@ -243,32 +242,56 @@ const Garantia = ({ id: propId }) => {
                       {garantia.historialMantenimiento
                         .slice()
                         .reverse()
-                        .map((h, idx) => (
-                          <li key={idx} className="historial-item">
-                            <div className="historial-left">
-                              <p className="historial-usuario">
-                                {h.usuario || "Usuario desconocido"}
-                              </p>
+                        .map((h, idx) => {
+                          // Validar y construir la URL de la imagen
+                          let urlFoto = null;
+                          if (h.foto) {
+                            urlFoto = h.foto.startsWith("http")
+                              ? h.foto
+                              : `http://localhost:5001${h.foto.startsWith("/") ? "" : "/"}${h.foto}`;
+                          }
 
-                              <div className="historial-meta">
-                                <span className="historial-fechas">
-                                  {formatDate(h.fechaInicio)}
-                                  {h.fechaFin
-                                    ? ` — ${formatDate(h.fechaFin)}`
-                                    : ""}
-                                </span>
+                          return (
+                            <li key={idx} className="historial-item">
+                              <div className="historial-left">
+                                <p className="historial-usuario">
+                                  {h.usuario || "Usuario desconocido"}
+                                </p>
 
-                                <span
-                                  className={`historial-status ${
-                                    h.fechaFin ? "finalizado" : "en-curso"
-                                  }`}
-                                >
-                                  {h.fechaFin ? "Finalizado" : "En curso"}
-                                </span>
+                                <div className="historial-meta">
+                                  <span className="historial-fechas">
+                                    {formatDate(h.fechaInicio)}
+                                    {h.fechaFin
+                                      ? ` — ${formatDate(h.fechaFin)}`
+                                      : ""}
+                                  </span>
+
+                                  <span
+                                    className={`historial-status ${
+                                      h.fechaFin ? "finalizado" : "en-curso"
+                                    }`}
+                                  >
+                                    {h.fechaFin ? "Finalizado" : "En curso"}
+                                  </span>
+                                </div>
+
+                                {/* RENDERIZADO DE LA FOTO DEL SCHEMA */}
+                                {urlFoto && (
+                                  <div className="historial-foto-container">
+                                    <img
+                                      src={urlFoto}
+                                      alt="Evidencia del mantenimiento"
+                                      className="historial-foto-preview"
+                                      loading="lazy"
+                                      onClick={() => window.open(urlFoto, "_blank")}
+                                      title="Click para abrir en pantalla completa"
+                                    />
+                                  </div>
+                                )}
                               </div>
-                            </div>
-                          </li>
-                        ))}
+                            </li>
+                          );
+                        })}
                     </ul>
                   </div>
                 )}

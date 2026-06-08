@@ -82,7 +82,9 @@ export const enviarAMantenimientoController = async (req, res) => {
         req.usuario._id
       : null;
 
-    const unidad = await enviarAMantenimiento(id, usuarioNombre);
+    const fotoUrl = req.file ? req.file.path : null;
+
+    const unidad = await enviarAMantenimiento(id, usuarioNombre, fotoUrl);
 
     res.status(200).json(unidad);
   } catch (error) {
@@ -95,7 +97,6 @@ export const enviarAMantenimientoController = async (req, res) => {
     // errores de negocio (unidad ya en mantenimiento o dada de baja)
     if (
       error.message.includes("mantenimiento") ||
-      error.message.includes("dada de baja") ||
       error.message.includes("dada de baja")
     ) {
       return res.status(400).json({ error: error.message });
