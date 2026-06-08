@@ -1,8 +1,10 @@
-import React from "react";
-import "./Mantenimiento.css";
+import React, { useState } from "react";
+import "./AsignarMantenimientoUnidad.css";
 import toast from "react-hot-toast";
 
 const AsignarMantenimientoUnidad = ({ unidad, onClose, onUpdated }) => {
+  const [foto, setFoto] = useState(null);
+  const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token");
 
   const asignarMantenimiento = async () => {
@@ -19,14 +21,21 @@ const AsignarMantenimientoUnidad = ({ unidad, onClose, onUpdated }) => {
     }
 
     try {
+      setLoading(true);
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+      const formData = new FormData();
+      if (foto) {
+        formData.append("foto", foto); 
+      }
 
       const res = await fetch(
         `http://localhost:5001/unidades/mantenimiento/${unidad._id}`,
         {
           method: "POST",
           headers,
-        },
+          body: formData,
+        }
       );
 
       const body = await res.json().catch(() => ({}));
@@ -42,27 +51,53 @@ const AsignarMantenimientoUnidad = ({ unidad, onClose, onUpdated }) => {
       if (onClose) onClose();
     } catch (err) {
       toast.error("Error de conexión");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="modal-overlay">
       <div className="modal-card">
-        <h2>Enviar a mantenimiento</h2>
+        <h2 className="modal-title">Enviar a mantenimiento</h2>
 
-        <p>
+        <p className="modal-subtitle">
           Unidad: <strong>{unidad?.identificador}</strong>
         </p>
 
-        <p>Esta unidad dejará de estar disponible.</p>
+        <p className="modal-description">Esta unidad dejará de estar disponible.</p>
 
-        <div className="acciones">
-          <button className="btn-cancel" onClick={onClose}>
+        <div className="modal-input-container">
+          <label htmlFor="input-foto" className="modal-file-dropzone">
+            <span className="modal-file-icon">📷</span>
+            <span className="modal-file-text">
+              {foto ? `Seleccionado: ${foto.name}` : "Adjuntar foto del estado (opcional)"}
+            </span>
+          </label>
+          <input
+            id="input-foto"
+            type="file"
+            accept="image/*"
+            onChange={(e) => setFoto(e.target.files[0])}
+            className="modal-input-hidden"
+          />
+        </div>
+
+        <div className="modal-actions">
+          <button 
+            className="btn-modal btn-secondary" 
+            onClick={onClose} 
+            disabled={loading}
+          >
             Cancelar
           </button>
 
-          <button className="btn-asign" onClick={asignarMantenimiento}>
-            Confirmar
+          <button 
+            className="btn-modal btn-danger" 
+            onClick={asignarMantenimiento} 
+            disabled={loading}
+          >
+            {loading ? "Enviando..." : "Confirmar"}
           </button>
         </div>
       </div>

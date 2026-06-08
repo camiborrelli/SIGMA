@@ -668,3 +668,25 @@
   margin: 0;
   line-height: 1.5;
 }
+
+.historial-foto-container {
+  margin-top: 10px;
+  width: 100%;
+}
+
+.historial-foto-preview {
+  max-width: 100%;
+  max-height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.historial-foto-preview:hover {
+  transform: scale(1.015);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e1;
+}

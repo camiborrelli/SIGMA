@@ -1,0 +1,100 @@
+.fin-mantenimiento-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(2px);
+}
+
+.fin-mantenimiento-content {
+  background: #ffffff;
+  width: 100%;
+  max-width: 400px;
+  padding: 30px 24px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  animation: modalFadeIn 0.2s ease-out forwards;
+}
+
+.fin-mantenimiento-titulo {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 1.4rem;
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.fin-mantenimiento-desc {
+  margin-bottom: 24px;
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.fin-mantenimiento-desc strong {
+  color: #334155;
+}
+
+.fin-mantenimiento-acciones {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  width: 100%;
+}
+
+.fin-mantenimiento-acciones button {
+  flex: 1;
+  padding: 12px 0;
+  font-weight: 800;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+
+.fin-mantenimiento-acciones button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-fin-rojo {
+  background-color: #dc2626;
+  color: #ffffff;
+  border: none;
+}
+
+.btn-fin-rojo:hover:not(:disabled) {
+  background-color: #b91c1c;
+  transform: translateY(-1px);
+}
+
+.btn-fin-blanco {
+  background-color: #ffffff;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.btn-fin-blanco:hover:not(:disabled) {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
