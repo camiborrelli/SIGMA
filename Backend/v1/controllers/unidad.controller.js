@@ -404,3 +404,15 @@ export const actualizarEtiquetaUnidadController = async (req, res) => {
     res.status(500).json({ error: "Error al actualizar la etiqueta" });
   }
 };
+
+export const getUnidadesController = async (req, res) => {
+  try {
+    const unidades = await Unidad.find()
+      .populate("equipo")
+      .populate("ubicacion");
+    res.status(200).json(unidades);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener las unidades" });
+  }
+};

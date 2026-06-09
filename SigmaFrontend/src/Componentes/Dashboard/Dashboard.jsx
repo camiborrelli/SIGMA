@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import RegistrarEquipo from "../Equipo/RegistrarEquipo";
 import RegistroObra from "../Obra/RegistroObra";
 import RegistrarUnidad from "../Unidad/RegistrarUnidad";
+import ModalFiltros from "../Unidad/ModalFiltros";
 
 import { VscTools } from "react-icons/vsc";
 import {
@@ -24,6 +25,7 @@ const Dashboard = () => {
   const [isObraModalOpen, setIsObraModalOpen] = useState(false);
   const [isUnidadModalOpen, setIsUnidadModalOpen] = useState(false);
   const [selectedEquipoId, setSelectedEquipoId] = useState("");
+  const [filtroSeleccionado, setFiltroSeleccionado] = useState("");
 
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -137,8 +139,13 @@ const Dashboard = () => {
             <FaCheckCircle />
           </div>
           <div className="summary-card__content">
-            <p className="summary-card__number">{stats.disponibles}</p>
-            <h4 className="summary-card__label">Disponibles</h4>
+            <button
+              className="btn-link"
+              onClick={() => setFiltroSeleccionado("Disponible")}
+            >
+              <p className="summary-card__number">{stats.disponibles}</p>
+              <h4 className="summary-card__label">Disponibles</h4>
+            </button>
           </div>
         </div>
         <div className="summary-card summary-card--asignadas">
@@ -146,8 +153,13 @@ const Dashboard = () => {
             <FaClipboardList />
           </div>
           <div className="summary-card__content">
-            <p className="summary-card__number">{stats.asignadas}</p>
-            <h4 className="summary-card__label">Asignadas</h4>
+            <button
+              className="btn-link"
+              onClick={() => setFiltroSeleccionado("Asignada")}
+            >
+              <p className="summary-card__number">{stats.asignadas}</p>
+              <h4 className="summary-card__label">Asignadas</h4>
+            </button>
           </div>
         </div>
         <div className="summary-card summary-card--mantenimiento">
@@ -155,8 +167,13 @@ const Dashboard = () => {
             <FaTools />
           </div>
           <div className="summary-card__content">
-            <p className="summary-card__number">{stats.mantenimiento}</p>
-            <h4 className="summary-card__label">Mantenimiento</h4>
+            <button
+              className="btn-link"
+              onClick={() => setFiltroSeleccionado("Mantenimiento")}
+            >
+              <p className="summary-card__number">{stats.mantenimiento}</p>
+              <h4 className="summary-card__label">Mantenimiento</h4>
+            </button>
           </div>
         </div>
         <div className="summary-card summary-card--debaja">
@@ -164,8 +181,13 @@ const Dashboard = () => {
             <FaTrashAlt />
           </div>
           <div className="summary-card__content">
-            <p className="summary-card__number">{stats.bajas}</p>
-            <h4 className="summary-card__label">Dados de baja</h4>
+            <button
+              className="btn-link"
+              onClick={() => setFiltroSeleccionado("De Baja")}
+            >
+              <p className="summary-card__number">{stats.bajas}</p>
+              <h4 className="summary-card__label">Dados de baja</h4>
+            </button>
           </div>
         </div>
       </div>
@@ -246,6 +268,12 @@ const Dashboard = () => {
           setRefreshKey((prev) => prev + 1);
         }}
       />
+      {filtroSeleccionado && (
+        <ModalFiltros
+          estadoFilter={filtroSeleccionado}
+          setEstadoFilter={setFiltroSeleccionado}
+        />
+      )}
     </div>
   );
 };

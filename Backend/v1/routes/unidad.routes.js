@@ -18,18 +18,24 @@ import {
   bajaMultiplesUnidadesController,
   actualizarDescripcionUnidadController,
   actualizarEtiquetaUnidadController,
+  getUnidadesController,
 } from "../controllers/unidad.controller.js";
 import { verificarToken } from "../middlewares/auth.js";
 import multer from "multer";
-import { storage } from '../config/cloudinary.js';
+import { storage } from "../config/cloudinary.js";
 
 const upload = multer({ storage: storage });
 const router = express.Router();
 
 router.get("/equipo/:equipoId", verificarToken, getUnidadesPorEquipoController);
-
+router.get("/", verificarToken, getUnidadesController); 
 router.post("/baja/:id", verificarToken, bajaUnidadController);
-router.post("/mantenimiento/:id", verificarToken, upload.single('foto'), enviarAMantenimientoController);
+router.post(
+  "/mantenimiento/:id",
+  verificarToken,
+  upload.single("foto"),
+  enviarAMantenimientoController,
+);
 router.post(
   "/mantenimiento/finalizar/:id",
   verificarToken,
@@ -72,12 +78,8 @@ router.post("/baja-multiple", verificarToken, bajaMultiplesUnidadesController);
 router.put(
   "/descripcion/:id",
   verificarToken,
-  actualizarDescripcionUnidadController
+  actualizarDescripcionUnidadController,
 );
-router.put(
-  "/etiqueta/:id",
-  verificarToken,
-  actualizarEtiquetaUnidadController
-);
+router.put("/etiqueta/:id", verificarToken, actualizarEtiquetaUnidadController);
 
 export default router;

@@ -212,6 +212,15 @@
   text-align: left;
 }
 
+.summary-card__content button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
 .summary-card__number {
   margin: 0;
   font-size: 22px;
