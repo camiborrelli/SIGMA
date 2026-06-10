@@ -12,7 +12,6 @@ body {
   padding-top: 20px;
 }
 
-/*TARJETA*/
 .card {
   background: white;
   padding: 30px;
@@ -31,7 +30,6 @@ h2 {
   margin-bottom: 20px;
 }
 
-/* Maquinarias list in dashboard */
 .card h2 {
   text-align: center;
 }
@@ -55,8 +53,8 @@ label {
   display: block;
   margin-top: 10px;
   font-size: 14px;
-  color: black; /* 🔥 negro */
-  text-align: left; /* 🔥 izquierda */
+  color: black;
+  text-align: left;
 }
 
 input {
@@ -67,7 +65,6 @@ input {
   border: 1px solid #ccc;
   background: white;
   color: black;
-
   box-sizing: border-box;
 }
 
@@ -86,7 +83,6 @@ input {
   background: #a61c1c;
 }
 
-/*LINK*/
 .link {
   text-align: center;
   margin-top: 15px;
@@ -97,7 +93,6 @@ input {
   color: #666;
 }
 
-/*registrarse*/
 .link .accion {
   font-size: 13px;
   color: #c62828;
@@ -111,17 +106,15 @@ input {
   font-size: 14px;
 }
 
-/* CONTENEDOR */
 .roles {
   display: flex;
   gap: 1mm;
   margin: 20px 0;
 }
 
-/* BOTONES BASE */
 .role-btn {
   flex: 1;
-  padding: 16px; /* 🔥 un poco más alto */
+  padding: 16px;
   border-radius: 12px;
   border: 1px solid #ddd;
   background: white;
@@ -131,14 +124,100 @@ input {
   cursor: pointer;
 }
 
-/* HOVER (opcional pero queda pro) */
 .role-btn:hover {
   border-color: #c62828;
 }
 
-/* ACTIVO */
 .role-btn.active {
   background: #c62828;
   color: white;
   border: none;
+}
+
+.expirado-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999999;
+  animation: expiradoFadeIn 0.2s ease-out;
+}
+
+.expirado-modal-content {
+  background: var(--color-surface);
+  padding: 32px;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--color-border);
+  text-align: center;
+  box-sizing: border-box;
+  animation: expiradoScaleUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.expirado-modal-icono-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background-color: var(--color-status-canceled-bg);
+  color: var(--color-brand-red);
+  border-radius: 50%;
+  margin-bottom: 20px;
+}
+
+.expirado-modal-titulo {
+  color: var(--color-text-main);
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.expirado-modal-texto {
+  color: var(--color-text-muted);
+  margin: 0 0 24px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.expirado-modal-btn {
+  width: 100%;
+  padding: 10px 18px;
+  background-color: var(--color-brand-red);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.expirado-modal-btn:hover {
+  background-color: #b0002f;
+  transform: translateY(-1px);
+}
+
+.expirado-modal-btn:active {
+  transform: translateY(0);
+}
+
+@keyframes expiradoFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes expiradoScaleUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }

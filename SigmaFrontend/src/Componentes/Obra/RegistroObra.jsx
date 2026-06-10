@@ -34,6 +34,11 @@ const RegistroObra = ({ isOpen, onClose, onSuccess }) => {
       );
       const data = await res.json();
 
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
+
       if (!data || data.length === 0) {
         setLatitud("");
         setLongitud("");

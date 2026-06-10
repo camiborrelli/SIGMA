@@ -107,6 +107,11 @@ const ListadoUsuarios = () => {
 
       const data = await res.json();
 
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
+
       if (!res.ok) {
         alert(data.error || "Error al cambiar rol");
         return;

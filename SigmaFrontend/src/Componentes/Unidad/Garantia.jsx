@@ -8,7 +8,7 @@ import { FaRegCalendarXmark } from "react-icons/fa6";
 import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
 import { FaTools } from "react-icons/fa";
 import dayjs from "dayjs";
-import "dayjs/locale/es"; // para español
+import "dayjs/locale/es";
 dayjs.locale("es");
 
 const Garantia = ({ id: propId }) => {
@@ -43,6 +43,10 @@ const Garantia = ({ id: propId }) => {
           `http://localhost:5001/unidades/garantia/${id}`,
           { headers },
         );
+        if (res.status === 401) {
+          window.dispatchEvent(new Event("token-expirado"));
+          throw new Error("Sesión expirada");
+        }
         if (!res.ok) {
           const r = await res.json().catch(() => ({}));
           setError(r.error || "Error al obtener garantía");
@@ -124,7 +128,6 @@ const Garantia = ({ id: propId }) => {
 
   return (
     <div className="garantia-wrapper">
-      {/* <h1 className="garantia-titulo">DETALLE DE UNIDAD</h1> */}
       <div className="garantia-body">
         {loading && <p>Cargando...</p>}
         {error && <p className="garantia-error">{error}</p>}
@@ -226,7 +229,6 @@ const Garantia = ({ id: propId }) => {
               <div className="fecha-card">
                 <div className="fecha-icono">
                   <FaTools />
-                  {/* <IoCheckmarkDoneCircleOutline color="#10b981" /> */}
                 </div>
                 <div>
                   <p className="fecha-label">Reparaciones</p>
@@ -249,6 +251,15 @@ const Garantia = ({ id: propId }) => {
                                 {h.usuario || "Usuario desconocido"}
                               </p>
 
+                              {h.destino && (
+                                <p className="historial-destino">
+                                  📍 <strong>Ubicación:</strong>{" "}
+                                  {typeof h.destino === "object"
+                                    ? h.destino.nombre || h.destino.identificador || "Asignado"
+                                    : h.destino}
+                                </p>
+                              )}
+
                               <div className="historial-meta">
                                 <span className="historial-fechas">
                                   {formatDate(h.fechaInicio)}
@@ -265,6 +276,17 @@ const Garantia = ({ id: propId }) => {
                                   {h.fechaFin ? "Finalizado" : "En curso"}
                                 </span>
                               </div>
+
+                              {h.foto && (
+                                <div className="historial-foto-container">
+                                  <img
+                                    src={h.foto.startsWith("http") ? h.foto : `http://localhost:5001/${h.foto}`}
+                                    alt="Estado de la unidad"
+                                    className="historial-foto-preview"
+                                    onClick={() => window.open(h.foto.startsWith("http") ? h.foto : `http://localhost:5001/${h.foto}`, "_blank")}
+                                  />
+                                </div>
+                              )}
                             </div>
                           </li>
                         ))}
@@ -317,7 +339,6 @@ const Garantia = ({ id: propId }) => {
           }}
           onClose={() => setShowModal(false)}
           onUpdated={async () => {
-            // refrescar datos después de enviar a mantenimiento
             setShowModal(false);
             try {
               const token = localStorage.getItem("token");
@@ -342,7 +363,6 @@ const Garantia = ({ id: propId }) => {
                 setCantReparaciones(d2.cantReparaciones || 0);
               }
             } catch (err) {
-              // ignore
             }
           }}
         />

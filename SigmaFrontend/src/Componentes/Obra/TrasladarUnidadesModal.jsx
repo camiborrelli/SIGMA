@@ -68,6 +68,12 @@ const TrasladarUnidadesModal = ({ isOpen, onClose, obraOrigen, obras, onSuccess,
         });
 
         const data = await res.json();
+
+        if (res.status === 401) {
+          window.dispatchEvent(new Event("token-expirado"));
+          throw new Error("Sesión expirada");
+        }
+
         if (!res.ok) throw new Error(data.error || "Error al ejecutar el traslado");
         toast.success("Equipos trasladados exitosamente");
 

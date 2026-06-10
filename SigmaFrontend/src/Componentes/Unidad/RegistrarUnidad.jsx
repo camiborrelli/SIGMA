@@ -30,6 +30,10 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
         });
         const data = await res.json().catch(() => []);
 
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
         if (res.ok) {
           setEquipos(Array.isArray(data) ? data : []);
         } else {

@@ -47,6 +47,11 @@ const RegistrarEquipo = ({ isOpen, onClose, onSuccess }) => {
         }),
       });
 
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
+
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {

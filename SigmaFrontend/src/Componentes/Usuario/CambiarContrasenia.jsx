@@ -45,6 +45,11 @@ const CambiarContrasenia = ({ isOpen, onClose, desdePerfil = false }) => {
 
       const data = await res.json();
 
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
+
       if (!res.ok) {
         toast.error(data.error || "Email no registrado");
         return;

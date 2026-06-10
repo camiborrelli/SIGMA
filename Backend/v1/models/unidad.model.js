@@ -27,6 +27,7 @@ const UnidadSchema = new Schema({
       fechaFin: Date,
       usuario: { type: String, default: null },
       foto: { type: String, default: null },
+      destino: { type: String, default: null },
     },
   ],
 });

@@ -5,23 +5,21 @@ import { Toaster } from "react-hot-toast";
 
 import Login from "./Componentes/Usuario/Login";
 import Registro from "./Componentes/Usuario/Registro";
-
 import MainLayout from "./Componentes/Layout/MainLayout";
-
 import Dashboard from "./Componentes/Dashboard/Dashboard";
 import ListadoGeneral from "./Componentes/Equipo/ListadoGeneral";
-
 import RegistroObra from "./Componentes/Obra/RegistroObra";
 import RegistrarEquipo from "./Componentes/Equipo/RegistrarEquipo";
 import RegistrarUnidad from "./Componentes/Unidad/RegistrarUnidad";
 import Garantia from "./Componentes/Unidad/Garantia";
 import Mapa from "./Componentes/Mapa/Mapa";
 import PerfilUsuario from "./Componentes/Usuario/PerfilUsuario";
-
+import ModalTokenExpirado from "./Componentes/Usuario/ModalTokenExpirado"; 
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [usuario, setUsuario] = useState(null);
+  const [sesionExpirada, setSesionExpirada] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -31,6 +29,20 @@ function App() {
       setIsAuthenticated(true);
       setUsuario(JSON.parse(user));
     }
+  }, []);
+
+  useEffect(() => {
+    const manejarTokenExpirado = () => {
+      setSesionExpirada(true);
+      setIsAuthenticated(false);
+      setUsuario(null);
+    };
+
+    window.addEventListener("token-expirado", manejarTokenExpirado);
+
+    return () => {
+      window.removeEventListener("token-expirado", manejarTokenExpirado);
+    };
   }, []);
 
   return (
@@ -43,7 +55,6 @@ function App() {
         }}
       />
       <Routes>
-
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Registro />} />
@@ -61,6 +72,13 @@ function App() {
 
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
+
+      {sesionExpirada && (
+        <ModalTokenExpirado 
+          isOpen={sesionExpirada} 
+          onClose={() => setSesionExpirada(false)} 
+        />
+      )}
     </div>
   );
 }

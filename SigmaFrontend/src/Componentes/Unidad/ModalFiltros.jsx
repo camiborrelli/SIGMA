@@ -5,25 +5,36 @@ import { useNavigate } from "react-router-dom";
 const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
   const [estado, setEstado] = useState(estadoFilter || "");
   const [unidades, setUnidades] = useState([]);
-  const [unidadesFiltradas, setUnidadesFiltradas] = useState([]);
   const navigate = useNavigate();
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [porPagina, setPorPagina] = useState(6);
 
-  console.log("Estado filter en ModalFiltros:", estadoFilter);
+  useEffect(() => {
+    const actualizarCantidad = () => {
+      const width = window.innerWidth;
+      if (width <= 768) {
+        setPorPagina(5); // Mobile
+      } else if (width <= 1024) {
+        setPorPagina(6); // Tablet
+      } else {
+        setPorPagina(7); // Desktop
+      }
+    };
 
-  const handleAplicarFiltros = () => {
-    setTipoFilter(tipo);
-    setEstadoFilter(estado);
-  };
-
-  const handleEstadoChange = (e) => {
-    setEstadoFilter(e.target.value);
-  };
+    actualizarCantidad();
+    window.addEventListener("resize", actualizarCantidad);
+    return () => window.removeEventListener("resize", actualizarCantidad);
+  }, []);
 
   useEffect(() => {
     if (estadoFilter) {
       fetchUnidadesFiltradas();
     }
   }, [estadoFilter]);
+
+  useEffect(() => {
+    setPaginaActual(1);
+  }, [estadoFilter, porPagina]);
 
   const cerrarModal = () => {
     setEstadoFilter("");
@@ -37,6 +48,12 @@ const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
       const res = await fetch(`http://localhost:5001/unidades`, {
         headers,
       });
+
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
+      
       if (!res.ok) throw new Error("Error al obtener unidades");
       const data = await res.json();
       setUnidades(data || []);
@@ -52,28 +69,30 @@ const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
     if (v.includes("baja")) return "Dada de Baja";
     if (v.includes("asignada")) return "Asignada";
     if (v.includes("disponible")) return "Disponible";
-    return estado; // fallback
+    return estado;
   };
 
-  const filtradas = unidades.filter((unidad) => {
+  const equiposFiltrados = unidades.filter((unidad) => {
     if (!estado) return true;
     return normalizarEstado(unidad.estado) === normalizarEstado(estado);
   });
 
+  const totalPaginas = Math.ceil(equiposFiltrados.length / porPagina) || 1;
+  const indiceInicio = (paginaActual - 1) * porPagina;
+  const indiceFin = indiceInicio + porPagina;
+  const unidadesPaginadas = equiposFiltrados.slice(indiceInicio, indiceFin);
+
   return (
-    <div className="modal-overlay">
-      <div
-        className="modal-content"
-        onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: 400 }}
-      >
-        {unidades.length === 1 ? (
+    <div className="modal-filtros-overlay" onClick={cerrarModal}>
+      <div className="modal-filtros-content" onClick={(e) => e.stopPropagation()}>
+        
+        {equiposFiltrados.length === 1 ? (
           <h2>Unidad {estadoFilter}</h2>
         ) : (
           <h2>Unidades {estadoFilter + "s"}</h2>
         )}
-        {/* <p>Resultados encontrados: {filtradas.length}</p> */}
-        <table>
+
+        <table className="table-filtros">
           <thead>
             <tr>
               <th>Identificador</th>
@@ -83,18 +102,38 @@ const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
             </tr>
           </thead>
           <tbody>
-            {filtradas.map((unidad) => (
+            {unidadesPaginadas.map((unidad) => (
               <tr key={unidad.identificador}>
                 <td>{unidad.identificador}</td>
                 <td>{unidad.equipo?.nombre || "Sin equipo"}</td>
-
                 <td>{unidad.estado}</td>
                 <td>{unidad.ubicacion?.nombre || "Sin asignar"}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        <button onClick={() => cerrarModal()} className="btn-cerrar-filtros">
+
+        {totalPaginas > 1 && (
+          <div className="paginacion-filtros">
+            <button
+              disabled={paginaActual === 1}
+              onClick={() => setPaginaActual(paginaActual - 1)}
+            >
+              ⬅
+            </button>
+            <span>
+              Página {paginaActual} de {totalPaginas}
+            </span>
+            <button
+              disabled={paginaActual === totalPaginas}
+              onClick={() => setPaginaActual(paginaActual + 1)}
+            >
+              ➡
+            </button>
+          </div>
+        )}
+
+        <button onClick={cerrarModal} className="btn-cerrar-filtros">
           Cerrar
         </button>
       </div>

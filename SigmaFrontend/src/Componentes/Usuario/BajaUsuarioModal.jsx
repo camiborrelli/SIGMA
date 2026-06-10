@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./BajaUsuarioModal.css"; // Asegúrate de que el CSS tenga los nuevos nombres
+import "./BajaUsuarioModal.css";
 
 const BajaUsuarioModal = ({ usuario, isOpen, onClose, onConfirm }) => {
   const [loading, setLoading] = useState(false);
