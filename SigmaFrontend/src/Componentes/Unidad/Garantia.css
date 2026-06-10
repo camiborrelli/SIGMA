@@ -690,3 +690,9 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   border-color: #cbd5e1;
 }
+
+.historial-destino {
+  font-size: 13px;
+  color: #475569;
+  margin: 4px 0 2px 0;
+}

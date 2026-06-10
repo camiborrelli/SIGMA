@@ -52,6 +52,12 @@ const Mapa = () => {
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     try {
       const res = await fetch("http://localhost:5001/obras", { headers });
+      
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
+
       if (!res.ok) return;
       const data = await res.json();
       setObras(data);
@@ -96,6 +102,11 @@ const Mapa = () => {
         },
       );
 
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
+
       if (!res.ok) return;
       const data = await res.json();
 
@@ -120,6 +131,11 @@ const Mapa = () => {
         },
       );
 
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
+
       if (!res.ok) {
         const bodyErr = await res.json().catch(() => ({}));
         toast.error(bodyErr.error || "Error al quitar unidad de la obra");
@@ -132,6 +148,12 @@ const Mapa = () => {
         `http://localhost:5001/obras/detalle/${detalleObra._id}`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
+
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
+      
       if (detalleRes.ok) {
         const detalleData = await detalleRes.json();
         setDetalleObra(detalleData);

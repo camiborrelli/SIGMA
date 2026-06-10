@@ -57,6 +57,12 @@ const Dashboard = () => {
       const res = await fetch("http://localhost:5001/unidades/stats", {
         headers,
       });
+
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
+
       if (!res.ok) return;
       const data = await res.json();
       setStats({
@@ -79,6 +85,10 @@ const Dashboard = () => {
         headers,
       });
       const data = await res.json();
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
       if (res.ok) setStatsEquipos({ total: data.total || 0 });
     } catch (err) {
       console.error("Error equipos stats:", err);

@@ -75,6 +75,7 @@ export const agregarUnidadController = async (req, res) => {
 export const enviarAMantenimientoController = async (req, res) => {
   try {
     const { id } = req.params;
+    const { destino } = req.body; 
 
     const usuarioNombre = req.usuario
       ? `${req.usuario.nombre || ""} ${req.usuario.apellido || ""}`.trim() ||
@@ -84,7 +85,7 @@ export const enviarAMantenimientoController = async (req, res) => {
 
     const fotoUrl = req.file ? req.file.path : null;
 
-    const unidad = await enviarAMantenimiento(id, usuarioNombre, fotoUrl);
+    const unidad = await enviarAMantenimiento(id, usuarioNombre, fotoUrl, destino);
 
     res.status(200).json(unidad);
   } catch (error) {
@@ -94,7 +95,7 @@ export const enviarAMantenimientoController = async (req, res) => {
       return res.status(404).json({ error: error.message });
     }
 
-    // errores de negocio (unidad ya en mantenimiento o dada de baja)
+    // Errores de negocio (unidad ya en mantenimiento o dada de baja)
     if (
       error.message.includes("mantenimiento") ||
       error.message.includes("dada de baja")

@@ -25,6 +25,11 @@ const EditarEtiquetaModal = ({ unidad, onClose, onUpdated }) => {
         body: JSON.stringify({ etiqueta: Number(etiqueta) }),
       });
 
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
+
       if (!res.ok) throw new Error("Error al actualizar");
 
       toast.success("Etiqueta actualizada");

@@ -61,6 +61,12 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           headers: { Authorization: token ? `Bearer ${token}` : "" },
         },
       );
+
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
+
       if (!res.ok) throw new Error("Error al obtener unidades");
       const data = await res.json();
       const unidadesArray = Array.isArray(data) ? data : [];
@@ -125,6 +131,10 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
       headers: { Authorization: token ? `Bearer ${token}` : "" },
     })
       .then((res) => {
+        if (res.status === 401) {
+          window.dispatchEvent(new Event("token-expirado"));
+          throw new Error("Sesión expirada");
+        }
         if (!res.ok) throw new Error();
         toast.success("Mantenimiento finalizado");
         setConfirmMantenimientoUnidad(null);
@@ -159,6 +169,12 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
       },
       body: JSON.stringify({ ids }),
     });
+
+    if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+    }
+
     if (!res.ok) throw new Error("Error al dar de baja");
     toast.success("Unidades dadas de baja");
     handleUpdated();
@@ -179,6 +195,11 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
       },
     );
     const body = await res.json().catch(() => ({}));
+
+    if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+    }
 
     if (!res.ok) {
       toast.error(body.error || "Error al asignar unidad");
@@ -201,6 +222,10 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
         body: JSON.stringify({ ids, fechaCompra }), // ← ahora manda fechaCompra
       },
     );
+    if (res.status === 401) {
+      window.dispatchEvent(new Event("token-expirado"));
+      throw new Error("Sesión expirada");
+    }
     if (!res.ok) throw new Error("Error al agregar fecha de compra");
     toast.success("Fechas de compra agregadas");
     handleUpdated();

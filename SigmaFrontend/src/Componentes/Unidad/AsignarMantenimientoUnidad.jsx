@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 
 const AsignarMantenimientoUnidad = ({ unidad, onClose, onUpdated }) => {
   const [foto, setFoto] = useState(null);
+  const [destino, setDestino] = useState("");
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token");
 
@@ -25,6 +26,9 @@ const AsignarMantenimientoUnidad = ({ unidad, onClose, onUpdated }) => {
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
       const formData = new FormData();
+
+      formData.append("destino", destino.trim());
+
       if (foto) {
         formData.append("foto", foto); 
       }
@@ -39,6 +43,11 @@ const AsignarMantenimientoUnidad = ({ unidad, onClose, onUpdated }) => {
       );
 
       const body = await res.json().catch(() => ({}));
+
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
 
       if (!res.ok) {
         toast.error(body.error || "Error asignando a mantenimiento");
@@ -66,6 +75,20 @@ const AsignarMantenimientoUnidad = ({ unidad, onClose, onUpdated }) => {
         </p>
 
         <p className="modal-description">Esta unidad dejará de estar disponible.</p>
+
+        <div className="modal-input-wrapper">
+          <label htmlFor="input-destino" className="modal-label">
+            ¿A dónde se envía? (Opcional)
+          </label>
+          <input
+            id="input-destino"
+            type="text"
+            value={destino}
+            onChange={(e) => setDestino(e.target.value)}
+            placeholder="Ej: Taller Central, Service Oficial..."
+            className="modal-input-text"
+          />
+        </div>
 
         <div className="modal-input-container">
           <label htmlFor="input-foto" className="modal-file-dropzone">

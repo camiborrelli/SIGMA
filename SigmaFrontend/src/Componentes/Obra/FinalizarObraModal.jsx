@@ -31,6 +31,11 @@ const FinalizarObraModal = ({ obra, onClose, onUpdated }) => {
 
     const body = await res.json().catch(() => ({}));
 
+    if (res.status === 401) {
+      window.dispatchEvent(new Event("token-expirado"));
+      throw new Error("Sesión expirada");
+    }
+
     if (!res.ok) {
       toast.error(body.error || "Error al finalizar la obra");
       return;

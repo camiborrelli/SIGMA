@@ -27,6 +27,11 @@ const AgregarFechaCompraModal = ({ unidad, onClose, onUpdated }) => {
         }
       );
 
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
+
       if (!res.ok) throw new Error();
 
       toast.success("Fecha de compra guardada");

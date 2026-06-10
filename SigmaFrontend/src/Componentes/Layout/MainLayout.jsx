@@ -42,6 +42,12 @@ const MainLayout = () => {
           body: JSON.stringify({ aprobado }),
         },
       );
+
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
+
       if (!res.ok) throw new Error((await res.json()).error);
 
       toast.success(
@@ -70,6 +76,11 @@ const MainLayout = () => {
           body: JSON.stringify({ solicitudId }),
         },
       );
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
+      
       if (!res.ok) throw new Error("Error al confirmar entrega");
 
       toast.success("Entrega confirmada con éxito");
@@ -89,6 +100,10 @@ const MainLayout = () => {
       const res = await fetch("http://localhost:5001/notificaciones", {
         headers: { Authorization: `Bearer ${token}` },
       });
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
       if (res.ok) setNotificaciones(await res.json());
     } catch (error) {
       console.error("Error al cargar notificaciones:", error);
@@ -103,6 +118,10 @@ const MainLayout = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setNotificaciones((prev) => prev.map((n) => ({ ...n, leida: true })));
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
     } catch (error) {
       console.error(error);
     }

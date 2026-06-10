@@ -18,6 +18,11 @@ const EditarObraModal = ({ obra, onClose, onUpdated }) => {
         body: JSON.stringify({ nombre }),
       });
 
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
+
       if (!res.ok) throw new Error("Error al editar obra");
       const data = await res.json();
       toast.success("Obra actualizada correctamente");
