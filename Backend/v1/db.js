@@ -3,15 +3,24 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+let isConnected = false;
+
 export async function connectDB() {
+  if (isConnected) return;
+
   const uri = process.env.MONGODB_URI;
-  if (!uri) throw new Error("MONGODB_URI no definido en .env");
+
+  if (!uri) {
+    throw new Error("MONGODB_URI no definido");
+  }
+
   try {
     await mongoose.connect(uri);
+    isConnected = true;
     console.log("Conectado a MongoDB");
-  } catch (err) {
-    console.error("Error al conectar a MongoDB:", err);
-    throw err;
+  } catch (error) {
+    console.error("Error al conectar MongoDB:", error);
+    throw error;
   }
 }
 
