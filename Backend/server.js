@@ -17,6 +17,13 @@ await connectDB();
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "SIGMA Backend funcionando"
+  });
+});
+
 app.use("/unidades", unidadRoutes);
 app.use("/equipos", equipoRoutes);
 app.use("/usuarios", usuarioRoutes);
