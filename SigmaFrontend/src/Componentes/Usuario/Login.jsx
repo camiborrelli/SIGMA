@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./LoginRegistro.css";
 import toast from "react-hot-toast";
 import CambiarContrasenia from "./CambiarContrasenia";
-import { API_URL } from ".../api";
+import { API_URL } from "../../../api";
 
 const Login = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

@@ -7,7 +7,7 @@ import { LuWrench } from "react-icons/lu";
 import { FiTruck } from "react-icons/fi";
 import { FaList } from "react-icons/fa";
 import EditarEquipoModal from "./EditarEquipoModal";
-import API_URL from ".../api";
+import { API_URL } from "../../../api";
 
 const ListadoGeneral = ({
   onUpdated,

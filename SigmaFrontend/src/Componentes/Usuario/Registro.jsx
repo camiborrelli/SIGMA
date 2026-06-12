@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginRegistro.css";
 import toast from "react-hot-toast";
-import { API_URL } from ".../api";
+import { API_URL } from "../../../api";
 
 const Registro = ({ setIsLogin }) => {
   const navigate = useNavigate();

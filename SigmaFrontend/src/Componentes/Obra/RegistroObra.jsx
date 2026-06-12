@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "../Equipo/registrar-form.css";
 import toast from "react-hot-toast";
-import API_URL from ".../api";
+import { API_URL } from "../../../api";
 
 const RegistroObra = ({ isOpen, onClose, onSuccess }) => {
   const [nombre, setNombre] = useState("");

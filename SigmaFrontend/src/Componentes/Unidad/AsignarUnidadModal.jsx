@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import API_URL from ".../api";
+import { API_URL } from "../../../api";
 
 const AsignarUnidadModal = ({ unidad, onClose, onUpdated }) => {
   const token = localStorage.getItem("token");
@@ -31,7 +31,7 @@ const AsignarUnidadModal = ({ unidad, onClose, onUpdated }) => {
       setUbicacion(
         typeof unidad.ubicacion === "object"
           ? unidad.ubicacion._id
-          : unidad.ubicacion
+          : unidad.ubicacion,
       );
     } else {
       setUbicacion("");
@@ -52,14 +52,11 @@ const AsignarUnidadModal = ({ unidad, onClose, onUpdated }) => {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       };
 
-      const res = await fetch(
-        `${API_URL}/unidades/asignar/${unidad._id}`,
-        {
-          method: "POST",
-          headers,
-          body: JSON.stringify({ ubicacion }),
-        }
-      );
+      const res = await fetch(`${API_URL}/unidades/asignar/${unidad._id}`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ ubicacion }),
+      });
 
       const body = await res.json().catch(() => ({}));
 

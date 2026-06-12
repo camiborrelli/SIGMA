@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./registrar-form.css";
 import toast from "react-hot-toast";
-import API_URL from ".../api";
+import { API_URL } from "../../../api";
 
 const RegistrarEquipo = ({ isOpen, onClose, onSuccess }) => {
   const [nombre, setNombre] = useState("");
@@ -114,7 +114,9 @@ const RegistrarEquipo = ({ isOpen, onClose, onSuccess }) => {
               min={1}
               placeholder="Cantidad de unidades"
               value={cantidad || ""}
-              onChange={(e) => setCantidad(e.target.value === "" ? "" : Number(e.target.value))}
+              onChange={(e) =>
+                setCantidad(e.target.value === "" ? "" : Number(e.target.value))
+              }
             />
           </div>
 
@@ -122,11 +124,7 @@ const RegistrarEquipo = ({ isOpen, onClose, onSuccess }) => {
             <button type="submit" className="btn-primary">
               Registrar Equipo
             </button>
-            <button
-              type="button"
-              className="btn-cancel"
-              onClick={onClose}
-            >
+            <button type="button" className="btn-cancel" onClick={onClose}>
               Cancelar
             </button>
           </div>

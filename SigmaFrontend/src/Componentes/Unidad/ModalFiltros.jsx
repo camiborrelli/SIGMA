@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./ModalFiltros.css";
 import { useNavigate } from "react-router-dom";
-import API_URL from ".../api";
+import { API_URL } from "../../../api";
 
 const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
   const [estado, setEstado] = useState(estadoFilter || "");
@@ -54,7 +54,7 @@ const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
         window.dispatchEvent(new Event("token-expirado"));
         throw new Error("Sesión expirada");
       }
-      
+
       if (!res.ok) throw new Error("Error al obtener unidades");
       const data = await res.json();
       setUnidades(data || []);
@@ -85,8 +85,10 @@ const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
 
   return (
     <div className="modal-filtros-overlay" onClick={cerrarModal}>
-      <div className="modal-filtros-content" onClick={(e) => e.stopPropagation()}>
-        
+      <div
+        className="modal-filtros-content"
+        onClick={(e) => e.stopPropagation()}
+      >
         {equiposFiltrados.length === 1 ? (
           <h2>Unidad {estadoFilter}</h2>
         ) : (

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import API_URL from ".../api";
+import { API_URL } from "../../../api";
 
 const AgregarFechaCompraModal = ({ unidad, onClose, onUpdated }) => {
   const [fechaCompra, setFechaCompra] = useState("");
@@ -25,7 +25,7 @@ const AgregarFechaCompraModal = ({ unidad, onClose, onUpdated }) => {
             Authorization: token ? `Bearer ${token}` : "",
           },
           body: JSON.stringify({ fechaCompra }),
-        }
+        },
       );
 
       if (res.status === 401) {

@@ -4,7 +4,7 @@ import "./ListadoUsuarios.css";
 import Buscador from "./Buscador";
 import BajaUsuarioModal from "./BajaUsuarioModal";
 import toast from "react-hot-toast";
-import { API_URL } from ".../api";
+import { API_URL } from "../../../api";
 
 const ListadoUsuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -83,7 +83,7 @@ const ListadoUsuarios = () => {
       return u.estado !== "Inactivo";
     })
     .sort((a, b) =>
-      a.apellido.toLowerCase().localeCompare(b.apellido.toLowerCase())
+      a.apellido.toLowerCase().localeCompare(b.apellido.toLowerCase()),
     );
 
   const totalPaginas = Math.ceil(usuariosFiltrados.length / usuariosPorPagina);
@@ -152,16 +152,13 @@ const ListadoUsuarios = () => {
   const reactivarUsuario = async (id) => {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(
-        `${API_URL}/usuarios/${id}/reactivar`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await fetch(`${API_URL}/usuarios/${id}/reactivar`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await res.json();
 
       if (!res.ok) {
@@ -230,7 +227,7 @@ const ListadoUsuarios = () => {
     <div className="usuarios-container">
       <h2 className="titulo">Gestión de usuarios</h2>
       <p className="subtitulo-admin">Administra los funcionarios del sistema</p>
-      
+
       <div className="filters-container">
         <div className="buscador-wrapper">
           <Buscador

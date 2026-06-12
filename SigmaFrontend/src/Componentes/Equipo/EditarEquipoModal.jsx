@@ -1,6 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import API_URL from ".../api";
+import { API_URL } from "../../../api";
 
 const EditarEquipoModal = ({ equipo, onClose, onUpdated }) => {
   const [nombre, setNombre] = useState(equipo.nombre || "");
@@ -18,21 +18,18 @@ const EditarEquipoModal = ({ equipo, onClose, onUpdated }) => {
       setLoading(true);
       const token = localStorage.getItem("token");
 
-      const res = await fetch(
-        `${API_URL}/equipos/${equipo._id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-          body: JSON.stringify({
-            nombre,
-            modelo,
-            tipo,
-          }),
-        }
-      );
+      const res = await fetch(`${API_URL}/equipos/${equipo._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({
+          nombre,
+          modelo,
+          tipo,
+        }),
+      });
 
       if (res.status === 401) {
         window.dispatchEvent(new Event("token-expirado"));

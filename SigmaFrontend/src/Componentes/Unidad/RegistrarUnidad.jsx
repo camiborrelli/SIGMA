@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import "../Equipo/registrar-form.css"; 
+import "../Equipo/registrar-form.css";
 import toast from "react-hot-toast";
-import ".../api";
+import { API_URL } from "../../../api";
 
 const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
   const [equipoId, setEquipoId] = useState("");
-  const [placeholderIdentificador, setPlaceholderIdentificador] = useState("Ej: EQ-XXXXXX-1");
+  const [placeholderIdentificador, setPlaceholderIdentificador] =
+    useState("Ej: EQ-XXXXXX-1");
   const [unidadesCount, setUnidadesCount] = useState(0);
   const [fechaCompra, setFechaCompra] = useState("");
   const [equipos, setEquipos] = useState([]);
@@ -31,10 +32,10 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
         });
         const data = await res.json().catch(() => []);
 
-      if (res.status === 401) {
-        window.dispatchEvent(new Event("token-expirado"));
-        throw new Error("Sesión expirada");
-      }
+        if (res.status === 401) {
+          window.dispatchEvent(new Event("token-expirado"));
+          throw new Error("Sesión expirada");
+        }
         if (res.ok) {
           setEquipos(Array.isArray(data) ? data : []);
         } else {
@@ -58,21 +59,21 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
     const fetchUnidades = async () => {
       const token = localStorage.getItem("token");
       try {
-        const res = await fetch(
-          `${API_URL}/unidades/equipo/${equipoId}`,
-          { headers: { Authorization: token ? `Bearer ${token}` : "" } }
-        );
+        const res = await fetch(`${API_URL}/unidades/equipo/${equipoId}`, {
+          headers: { Authorization: token ? `Bearer ${token}` : "" },
+        });
         const data = await res.json().catch(() => []);
         const count = Array.isArray(data) ? data.length : 0;
         setUnidadesCount(count);
 
         const equipoObj = equipos.find(
-          (eq) => String(eq._id || eq.id) === String(equipoId)
+          (eq) => String(eq._id || eq.id) === String(equipoId),
         );
 
-        const codigoEquipo = equipoObj && equipoObj.codigo ? equipoObj.codigo : "EQ-XXXXXX";
+        const codigoEquipo =
+          equipoObj && equipoObj.codigo ? equipoObj.codigo : "EQ-XXXXXX";
         const nextNum = count + 1;
-        
+
         setPlaceholderIdentificador(`${codigoEquipo}-${nextNum}`);
       } catch (err) {
         setUnidadesCount(0);
@@ -99,19 +100,16 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
     }
 
     try {
-      const res = await fetch(
-        `${API_URL}/unidades/agregar/${equipoId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-          body: JSON.stringify({
-            fechaCompra,
-          }),
-        }
-      );
+      const res = await fetch(`${API_URL}/unidades/agregar/${equipoId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({
+          fechaCompra,
+        }),
+      });
 
       const data = await res.json().catch(() => ({}));
 
@@ -142,14 +140,27 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label style={{ display: "block", marginBottom: "4px", fontSize: "14px", fontWeight: "600", color: "#475569" }}>Equipo</label>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "4px",
+                fontSize: "14px",
+                fontWeight: "600",
+                color: "#475569",
+              }}
+            >
+              Equipo
+            </label>
             <select
               value={equipoId}
               onChange={(e) => setEquipoId(e.target.value)}
             >
               <option value="">Seleccionar equipo</option>
               {equipos.map((equipo) => (
-                <option key={equipo._id || equipo.id} value={equipo._id || equipo.id}>
+                <option
+                  key={equipo._id || equipo.id}
+                  value={equipo._id || equipo.id}
+                >
                   {equipo.nombre} {equipo.modelo ? `(${equipo.modelo})` : ""}
                 </option>
               ))}
@@ -157,19 +168,43 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
           </div>
 
           <div className="form-group">
-            <label style={{ display: "block", marginBottom: "4px", fontSize: "14px", fontWeight: "600", color: "#475569" }}>Identificador</label>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "4px",
+                fontSize: "14px",
+                fontWeight: "600",
+                color: "#475569",
+              }}
+            >
+              Identificador
+            </label>
             <input
               type="text"
               value={equipoId ? placeholderIdentificador : ""}
               readOnly
               disabled
               placeholder="Selecciona un equipo primero"
-              style={{ backgroundColor: "#f1f5f9", color: "#64748b", cursor: "not-allowed" }}
+              style={{
+                backgroundColor: "#f1f5f9",
+                color: "#64748b",
+                cursor: "not-allowed",
+              }}
             />
           </div>
 
           <div className="form-group">
-            <label style={{ display: "block", marginBottom: "4px", fontSize: "14px", fontWeight: "600", color: "#475569" }}>Fecha de compra</label>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "4px",
+                fontSize: "14px",
+                fontWeight: "600",
+                color: "#475569",
+              }}
+            >
+              Fecha de compra
+            </label>
             <input
               type="date"
               value={fechaCompra}
@@ -182,11 +217,7 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
               {loading ? "Creando..." : "Crear Unidad"}
             </button>
 
-            <button
-              type="button"
-              className="btn-cancel"
-              onClick={onClose}
-            >
+            <button type="button" className="btn-cancel" onClick={onClose}>
               Cancelar
             </button>
           </div>

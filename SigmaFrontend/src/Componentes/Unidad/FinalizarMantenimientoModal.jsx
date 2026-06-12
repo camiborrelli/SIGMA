@@ -1,33 +1,33 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import "./FinalizarMantenimientoModal.css";
-import API_URL from ".../api";
+import { API_URL } from "../../../api";
 
 const FinalizarMantenimientoModal = ({ unidad, onClose, onUpdated }) => {
   const [loading, setLoading] = useState(false);
 
   const handleConfirmar = async () => {
     if (!unidad?._id) return;
-    
+
     setLoading(true);
     const token = localStorage.getItem("token");
-    
+
     try {
       const res = await fetch(
         `${API_URL}/unidades/mantenimiento/finalizar/${unidad._id}`,
         {
           method: "POST",
           headers: { Authorization: token ? `Bearer ${token}` : "" },
-        }
+        },
       );
-      
+
       if (res.status === 401) {
         window.dispatchEvent(new Event("token-expirado"));
         throw new Error("Sesión expirada");
       }
-      
+
       if (!res.ok) throw new Error();
-      
+
       toast.success("Mantenimiento finalizado");
       if (onUpdated) onUpdated();
       onClose();
@@ -49,7 +49,7 @@ const FinalizarMantenimientoModal = ({ unidad, onClose, onUpdated }) => {
           ¿Confirmar que el mantenimiento de{" "}
           <strong>{unidad?.identificador}</strong> está finalizado?
         </p>
-        
+
         <div className="fin-mantenimiento-acciones">
           <button
             className="btn-fin-rojo"

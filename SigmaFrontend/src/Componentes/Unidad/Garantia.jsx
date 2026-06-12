@@ -9,7 +9,7 @@ import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
 import { FaTools } from "react-icons/fa";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
-import API_URL from ".../api";
+import { API_URL } from "../../../api";
 
 dayjs.locale("es");
 
@@ -41,10 +41,9 @@ const Garantia = ({ id: propId }) => {
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
       try {
-        const res = await fetch(
-          `${API_URL}/unidades/garantia/${id}`,
-          { headers },
-        );
+        const res = await fetch(`${API_URL}/unidades/garantia/${id}`, {
+          headers,
+        });
         if (res.status === 401) {
           window.dispatchEvent(new Event("token-expirado"));
           throw new Error("Sesión expirada");
@@ -66,10 +65,9 @@ const Garantia = ({ id: propId }) => {
 
       // reparaciones
       try {
-        const r2 = await fetch(
-          `${API_URL}/unidades/${id}/reparaciones`,
-          { headers },
-        );
+        const r2 = await fetch(`${API_URL}/unidades/${id}/reparaciones`, {
+          headers,
+        });
         if (r2.ok) {
           const d2 = await r2.json();
           setCantReparaciones(d2.cantReparaciones || 0);
@@ -96,12 +94,9 @@ const Garantia = ({ id: propId }) => {
       if (!res.ok) throw new Error();
       toast.success("Mantenimiento finalizado");
       // refrescar datos
-      const res2 = await fetch(
-        `${API_URL}/unidades/garantia/${maquinaId}`,
-        {
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
-        },
-      );
+      const res2 = await fetch(`${API_URL}/unidades/garantia/${maquinaId}`, {
+        headers: { Authorization: token ? `Bearer ${token}` : "" },
+      });
       if (res2.ok) {
         const data = await res2.json();
         setGarantia(data);
@@ -257,7 +252,9 @@ const Garantia = ({ id: propId }) => {
                                 <p className="historial-destino">
                                   📍 <strong>Ubicación:</strong>{" "}
                                   {typeof h.destino === "object"
-                                    ? h.destino.nombre || h.destino.identificador || "Asignado"
+                                    ? h.destino.nombre ||
+                                      h.destino.identificador ||
+                                      "Asignado"
                                     : h.destino}
                                 </p>
                               )}
@@ -282,10 +279,21 @@ const Garantia = ({ id: propId }) => {
                               {h.foto && (
                                 <div className="historial-foto-container">
                                   <img
-                                    src={h.foto.startsWith("http") ? h.foto : `${API_URL}/${h.foto}`}
+                                    src={
+                                      h.foto.startsWith("http")
+                                        ? h.foto
+                                        : `${API_URL}/${h.foto}`
+                                    }
                                     alt="Estado de la unidad"
                                     className="historial-foto-preview"
-                                    onClick={() => window.open(h.foto.startsWith("http") ? h.foto : `${API_URL}/${h.foto}`, "_blank")}
+                                    onClick={() =>
+                                      window.open(
+                                        h.foto.startsWith("http")
+                                          ? h.foto
+                                          : `${API_URL}/${h.foto}`,
+                                        "_blank",
+                                      )
+                                    }
                                   />
                                 </div>
                               )}
@@ -364,8 +372,7 @@ const Garantia = ({ id: propId }) => {
                 const d2 = await r2.json();
                 setCantReparaciones(d2.cantReparaciones || 0);
               }
-            } catch (err) {
-            }
+            } catch (err) {}
           }}
         />
       )}

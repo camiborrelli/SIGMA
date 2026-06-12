@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { FaTag, FaTimes } from "react-icons/fa";
 import "./EditarEtiquetaModal.css";
-import API_URL from ".../api";
+import { API_URL } from "../../../api";
 
 const EditarDescripcionModal = ({ unidad, onClose, onUpdated }) => {
   const [descripcion, setDescripcion] = useState(unidad.descripcion || "");
@@ -14,9 +14,9 @@ const EditarDescripcionModal = ({ unidad, onClose, onUpdated }) => {
     try {
       const res = await fetch(`${API_URL}/unidades/descripcion/${unidad._id}`, {
         method: "PUT",
-        headers: { 
-          "Content-Type": "application/json", 
-          Authorization: token ? `Bearer ${token}` : "" 
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
         },
         body: JSON.stringify({ descripcion }),
       });
@@ -46,7 +46,9 @@ const EditarDescripcionModal = ({ unidad, onClose, onUpdated }) => {
         <div className="etiqueta-modal-body">
           <div className="unidad-id-box">
             <FaTag className="tag-icon" />
-            <span>Unidad: <strong>{unidad.identificador}</strong></span>
+            <span>
+              Unidad: <strong>{unidad.identificador}</strong>
+            </span>
           </div>
 
           <div className="form-group">
@@ -62,9 +64,11 @@ const EditarDescripcionModal = ({ unidad, onClose, onUpdated }) => {
         </div>
 
         <div className="etiqueta-acciones">
-          <button className="btn-etiqueta-cancel" onClick={onClose}>Cancelar</button>
-          <button 
-            className="btn-etiqueta-confirm" 
+          <button className="btn-etiqueta-cancel" onClick={onClose}>
+            Cancelar
+          </button>
+          <button
+            className="btn-etiqueta-confirm"
             onClick={handleGuardar}
             disabled={loading}
           >

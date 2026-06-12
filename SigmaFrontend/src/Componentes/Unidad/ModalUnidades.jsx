@@ -14,14 +14,15 @@ import EditarDescripcionModal from "./EditarDescripcionModal";
 import EditarEtiquetaModal from "./EditarEtiquetaModal";
 import FechaCompraExistenteModal from "./FechaCompraExistenteModal";
 import FinalizarMantenimientoModal from "./FinalizarMantenimientoModal";
-import API_URL from ".../api";
+import { API_URL } from "../../../api";
 
 const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const [unidades, setUnidades] = useState([]);
   const [unidadMantenimiento, setUnidadMantenimiento] = useState(null);
   const [unidadBaja, setUnidadBaja] = useState(null);
   const [unidadAsignar, setUnidadAsignar] = useState(null);
-  const [confirmMantenimientoUnidad, setConfirmMantenimientoUnidad] = useState(null);
+  const [confirmMantenimientoUnidad, setConfirmMantenimientoUnidad] =
+    useState(null);
   const [estadoFiltro, setEstadoFiltro] = useState("");
   const [obraFiltro, setObraFiltro] = useState("");
   const [unidadFecha, setUnidadFecha] = useState(null);
@@ -56,12 +57,9 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     const token = localStorage.getItem("token");
     if (!equipo?._id) return;
     try {
-      const res = await fetch(
-        `${API_URL}/unidades/equipo/${equipo._id}`,
-        {
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
-        },
-      );
+      const res = await fetch(`${API_URL}/unidades/equipo/${equipo._id}`, {
+        headers: { Authorization: token ? `Bearer ${token}` : "" },
+      });
 
       if (res.status === 401) {
         window.dispatchEvent(new Event("token-expirado"));
@@ -108,9 +106,8 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   }, [equipo, unidades.length]);
 
   useEffect(() => {
-  setPaginaActual(1);
-}, [estadoFiltro, obraFiltro]);
-
+    setPaginaActual(1);
+  }, [estadoFiltro, obraFiltro]);
 
   useEffect(() => {
     const actualizarCantidad = () => {
@@ -172,8 +169,8 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     });
 
     if (res.status === 401) {
-        window.dispatchEvent(new Event("token-expirado"));
-        throw new Error("Sesión expirada");
+      window.dispatchEvent(new Event("token-expirado"));
+      throw new Error("Sesión expirada");
     }
 
     if (!res.ok) throw new Error("Error al dar de baja");
@@ -184,22 +181,19 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const asignarObraMultiplesUnidades = async (ids, obraId) => {
     const token = localStorage.getItem("token");
 
-    const res = await fetch(
-      `${API_URL}/unidades/asignar-obra-multiples`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-        body: JSON.stringify({ ids, obraId }),
+    const res = await fetch(`${API_URL}/unidades/asignar-obra-multiples`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token ? `Bearer ${token}` : "",
       },
-    );
+      body: JSON.stringify({ ids, obraId }),
+    });
     const body = await res.json().catch(() => ({}));
 
     if (res.status === 401) {
-        window.dispatchEvent(new Event("token-expirado"));
-        throw new Error("Sesión expirada");
+      window.dispatchEvent(new Event("token-expirado"));
+      throw new Error("Sesión expirada");
     }
 
     if (!res.ok) {
@@ -212,17 +206,14 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
 
   const agregarFechaCompraMultiplesUnidades = async (ids, fechaCompra) => {
     const token = localStorage.getItem("token");
-    const res = await fetch(
-      `${API_URL}/unidades/actualizar-multiples`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-        body: JSON.stringify({ ids, fechaCompra }), // ← ahora manda fechaCompra
+    const res = await fetch(`${API_URL}/unidades/actualizar-multiples`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token ? `Bearer ${token}` : "",
       },
-    );
+      body: JSON.stringify({ ids, fechaCompra }), // ← ahora manda fechaCompra
+    });
     if (res.status === 401) {
       window.dispatchEvent(new Event("token-expirado"));
       throw new Error("Sesión expirada");
@@ -346,7 +337,14 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     { header: "ID", accessor: "identificador" },
     {
       header: "Etiqueta",
-      accessor: (row) => row.etiqueta ? row.etiqueta : <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>Sin etiqueta</span>
+      accessor: (row) =>
+        row.etiqueta ? (
+          row.etiqueta
+        ) : (
+          <span style={{ color: "#94a3b8", fontStyle: "italic" }}>
+            Sin etiqueta
+          </span>
+        ),
     },
     {
       header: "Estado",
@@ -426,11 +424,21 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
               >
                 <FaRegCalendarPlus />
               </button>
-              <button onClick={() => { cerrarTodos(); setUnidadDescripcion(row); }}>
+              <button
+                onClick={() => {
+                  cerrarTodos();
+                  setUnidadDescripcion(row);
+                }}
+              >
                 <FaRegFileAlt title="Editar descripción" />
               </button>
 
-              <button onClick={() => { cerrarTodos(); setUnidadEtiqueta(row); }}>
+              <button
+                onClick={() => {
+                  cerrarTodos();
+                  setUnidadEtiqueta(row);
+                }}
+              >
                 <FaTag title="Editar etiqueta" />
               </button>
             </>

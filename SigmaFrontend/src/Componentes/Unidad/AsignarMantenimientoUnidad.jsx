@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./AsignarMantenimientoUnidad.css";
 import toast from "react-hot-toast";
-import API_URL from ".../api";
+import { API_URL } from "../../../api";
 
 const AsignarMantenimientoUnidad = ({ unidad, onClose, onUpdated }) => {
   const [foto, setFoto] = useState(null);
@@ -31,7 +31,7 @@ const AsignarMantenimientoUnidad = ({ unidad, onClose, onUpdated }) => {
       formData.append("destino", destino.trim());
 
       if (foto) {
-        formData.append("foto", foto); 
+        formData.append("foto", foto);
       }
 
       const res = await fetch(
@@ -40,7 +40,7 @@ const AsignarMantenimientoUnidad = ({ unidad, onClose, onUpdated }) => {
           method: "POST",
           headers,
           body: formData,
-        }
+        },
       );
 
       const body = await res.json().catch(() => ({}));
@@ -75,7 +75,9 @@ const AsignarMantenimientoUnidad = ({ unidad, onClose, onUpdated }) => {
           Unidad: <strong>{unidad?.identificador}</strong>
         </p>
 
-        <p className="modal-description">Esta unidad dejará de estar disponible.</p>
+        <p className="modal-description">
+          Esta unidad dejará de estar disponible.
+        </p>
 
         <div className="modal-input-wrapper">
           <label htmlFor="input-destino" className="modal-label">
@@ -95,7 +97,9 @@ const AsignarMantenimientoUnidad = ({ unidad, onClose, onUpdated }) => {
           <label htmlFor="input-foto" className="modal-file-dropzone">
             <span className="modal-file-icon">📷</span>
             <span className="modal-file-text">
-              {foto ? `Seleccionado: ${foto.name}` : "Adjuntar foto del estado (opcional)"}
+              {foto
+                ? `Seleccionado: ${foto.name}`
+                : "Adjuntar foto del estado (opcional)"}
             </span>
           </label>
           <input
@@ -108,17 +112,17 @@ const AsignarMantenimientoUnidad = ({ unidad, onClose, onUpdated }) => {
         </div>
 
         <div className="modal-actions">
-          <button 
-            className="btn-modal btn-secondary" 
-            onClick={onClose} 
+          <button
+            className="btn-modal btn-secondary"
+            onClick={onClose}
             disabled={loading}
           >
             Cancelar
           </button>
 
-          <button 
-            className="btn-modal btn-danger" 
-            onClick={asignarMantenimiento} 
+          <button
+            className="btn-modal btn-danger"
+            onClick={asignarMantenimiento}
             disabled={loading}
           >
             {loading ? "Enviando..." : "Confirmar"}

@@ -18,7 +18,7 @@ import {
   FaTrashAlt,
 } from "react-icons/fa";
 
-import API_URL from ".../api";
+import { API_URL } from "../../../api";
 
 const Dashboard = () => {
   const navigate = useNavigate();

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { FiRefreshCcw, FiX, FiCheck } from "react-icons/fi";
 import "./ReactivarObraModal.css";
-import API_URL from ".../api";
+import { API_URL } from "../../../api";
 
 const ReactivarObraModal = ({ obra, onClose, onUpdated }) => {
   const [loading, setLoading] = useState(false);
@@ -25,13 +25,10 @@ const ReactivarObraModal = ({ obra, onClose, onUpdated }) => {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       };
 
-      const res = await fetch(
-        `${API_URL}/obras/reactivar/${obraId}`,
-        {
-          method: "PATCH",
-          headers,
-        }
-      );
+      const res = await fetch(`${API_URL}/obras/reactivar/${obraId}`, {
+        method: "PATCH",
+        headers,
+      });
 
       const body = await res.json().catch(() => ({}));
 
@@ -51,7 +48,6 @@ const ReactivarObraModal = ({ obra, onClose, onUpdated }) => {
       setTimeout(() => {
         onClose();
       }, 1200);
-
     } catch (err) {
       toast.error("Error de conexión");
     } finally {
@@ -64,7 +60,6 @@ const ReactivarObraModal = ({ obra, onClose, onUpdated }) => {
   return (
     <div className="reactivar-modal-overlay">
       <div className="reactivar-modal-card">
-
         <div className="reactivar-modal-icon-badge">
           <FiRefreshCcw className="icon-spin-reverse" />
         </div>
@@ -73,12 +68,14 @@ const ReactivarObraModal = ({ obra, onClose, onUpdated }) => {
 
         {yaActiva ? (
           <p className="reactivar-modal-desc">
-            La obra <strong className="txt-highlight-red">{obra.nombre}</strong> ya se encuentra activa.
+            La obra <strong className="txt-highlight-red">{obra.nombre}</strong>{" "}
+            ya se encuentra activa.
           </p>
         ) : (
           <>
             <p className="reactivar-modal-desc">
-              ¿Confirmas que deseas reactivar la obra <strong className="txt-highlight-red">{obra.nombre}</strong>?
+              ¿Confirmas que deseas reactivar la obra{" "}
+              <strong className="txt-highlight-red">{obra.nombre}</strong>?
             </p>
 
             <div className="reactivar-modal-alert-box">
@@ -86,14 +83,20 @@ const ReactivarObraModal = ({ obra, onClose, onUpdated }) => {
                 <FiRefreshCcw />
               </div>
               <p>
-                La obra pasará a estado <strong className="txt-highlight-green">'Activa'</strong> y volverá a mostrarse en el mapa operacional.
+                La obra pasará a estado{" "}
+                <strong className="txt-highlight-green">'Activa'</strong> y
+                volverá a mostrarse en el mapa operacional.
               </p>
             </div>
           </>
         )}
 
         <div className="reactivar-modal-actions">
-          <button className="btn-reactivar-cancel" onClick={onClose} disabled={loading}>
+          <button
+            className="btn-reactivar-cancel"
+            onClick={onClose}
+            disabled={loading}
+          >
             <FiX /> CANCELAR
           </button>
 
@@ -113,7 +116,6 @@ const ReactivarObraModal = ({ obra, onClose, onUpdated }) => {
             </button>
           )}
         </div>
-
       </div>
     </div>
   );

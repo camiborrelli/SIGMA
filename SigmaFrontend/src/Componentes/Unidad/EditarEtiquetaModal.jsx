@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { FaTag, FaInfoCircle, FaTimes } from "react-icons/fa";
 import "./EditarEtiquetaModal.css";
-import API_URL from ".../api";
+import { API_URL } from "../../../api";
 
 const EditarEtiquetaModal = ({ unidad, onClose, onUpdated }) => {
   const [etiqueta, setEtiqueta] = useState(unidad.etiqueta);
@@ -11,17 +11,17 @@ const EditarEtiquetaModal = ({ unidad, onClose, onUpdated }) => {
 
   const handleGuardar = async () => {
     if (!etiqueta || etiqueta === "") {
-        toast.error("Por favor, ingresa un número de etiqueta.");
-        return;
+      toast.error("Por favor, ingresa un número de etiqueta.");
+      return;
     }
 
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/unidades/etiqueta/${unidad._id}`, {
         method: "PUT",
-        headers: { 
-          "Content-Type": "application/json", 
-          Authorization: token ? `Bearer ${token}` : "" 
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
         },
         body: JSON.stringify({ etiqueta: Number(etiqueta) }),
       });
@@ -56,7 +56,9 @@ const EditarEtiquetaModal = ({ unidad, onClose, onUpdated }) => {
         <div className="etiqueta-modal-body">
           <div className="unidad-id-box">
             <FaTag className="tag-icon" />
-            <span>Unidad: <strong>{unidad.identificador}</strong></span>
+            <span>
+              Unidad: <strong>{unidad.identificador}</strong>
+            </span>
           </div>
 
           <div className="form-group">
@@ -83,8 +85,8 @@ const EditarEtiquetaModal = ({ unidad, onClose, onUpdated }) => {
           <button className="btn-etiqueta-cancel" onClick={onClose}>
             Cancelar
           </button>
-          <button 
-            className="btn-etiqueta-confirm" 
+          <button
+            className="btn-etiqueta-confirm"
             onClick={handleGuardar}
             disabled={loading}
           >

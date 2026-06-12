@@ -7,7 +7,7 @@ import { VscTools } from "react-icons/vsc";
 import { FaRegUser, FaBell } from "react-icons/fa";
 import "./MainLayout.css";
 import ModalDetalleNotificacion from "./ModalDetalleNotificacion";
-import API_URL from ".../api";
+import { API_URL } from "../../../api";
 
 const MainLayout = () => {
   const navigate = useNavigate();
@@ -81,7 +81,7 @@ const MainLayout = () => {
         window.dispatchEvent(new Event("token-expirado"));
         throw new Error("Sesión expirada");
       }
-      
+
       if (!res.ok) throw new Error("Error al confirmar entrega");
 
       toast.success("Entrega confirmada con éxito");

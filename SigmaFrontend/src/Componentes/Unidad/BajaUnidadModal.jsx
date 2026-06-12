@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import API_URL from ".../api";
+import { API_URL } from "../../../api";
 
 const BajaUnidadModal = ({ unidad, onClose, onUpdated }) => {
   const [loading, setLoading] = useState(false);
@@ -15,13 +15,10 @@ const BajaUnidadModal = ({ unidad, onClose, onUpdated }) => {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       };
 
-      const res = await fetch(
-        `${API_URL}/unidades/baja/${unidad._id}`,
-        {
-          method: "POST",
-          headers,
-        }
-      );
+      const res = await fetch(`${API_URL}/unidades/baja/${unidad._id}`, {
+        method: "POST",
+        headers,
+      });
 
       const body = await res.json().catch(() => ({}));
 
@@ -41,7 +38,6 @@ const BajaUnidadModal = ({ unidad, onClose, onUpdated }) => {
       setTimeout(() => {
         onClose();
       }, 1200);
-
     } catch (err) {
       toast.error("Error de conexión");
     } finally {
@@ -58,7 +54,8 @@ const BajaUnidadModal = ({ unidad, onClose, onUpdated }) => {
 
         {yaBaja ? (
           <p>
-            La unidad <strong>{unidad.identificador}</strong> ya está dada de baja.
+            La unidad <strong>{unidad.identificador}</strong> ya está dada de
+            baja.
           </p>
         ) : (
           <p>
