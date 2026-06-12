@@ -14,13 +14,19 @@ const app = express();
 
 await connectDB();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://sigma-front-five.vercel.app",
+    credentials: true,
+  }),
+);
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
   res.json({
     status: "ok",
-    message: "SIGMA Backend funcionando"
+    message: "SIGMA Backend funcionando",
   });
 });
 
