@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./ModalFiltros.css";
 import { useNavigate } from "react-router-dom";
+import API_URL from ".../api";
 
 const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
   const [estado, setEstado] = useState(estadoFilter || "");
@@ -45,7 +46,7 @@ const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
     const token = localStorage.getItem("token");
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     try {
-      const res = await fetch(`http://localhost:5001/unidades`, {
+      const res = await fetch(`${API_URL}/unidades`, {
         headers,
       });
 

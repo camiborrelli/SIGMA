@@ -17,6 +17,7 @@ import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import EditarObraModal from "../Obra/EditarObraModal";
 import { FaEdit } from "react-icons/fa";
+import API_URL from ".../api";
 
 let DefaultIcon = L.icon({
   iconUrl: markerIcon,
@@ -51,7 +52,7 @@ const Mapa = () => {
     const token = localStorage.getItem("token");
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     try {
-      const res = await fetch("http://localhost:5001/obras", { headers });
+      const res = await fetch(`${API_URL}/obras`, { headers });
       
       if (res.status === 401) {
         window.dispatchEvent(new Event("token-expirado"));
@@ -96,7 +97,7 @@ const Mapa = () => {
     const token = localStorage.getItem("token");
     try {
       const res = await fetch(
-        `http://localhost:5001/obras/detalle/${obra._id}`,
+        `${API_URL}/obras/detalle/${obra._id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -124,7 +125,7 @@ const Mapa = () => {
     const token = localStorage.getItem("token");
     try {
       const res = await fetch(
-        `http://localhost:5001/unidades/quitar-de-obra/${unidadId}/${detalleObra._id}`,
+        `${API_URL}/unidades/quitar-de-obra/${unidadId}/${detalleObra._id}`,
         {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
@@ -145,7 +146,7 @@ const Mapa = () => {
       toast.success("Unidad quitada de la obra");
 
       const detalleRes = await fetch(
-        `http://localhost:5001/obras/detalle/${detalleObra._id}`,
+        `${API_URL}/obras/detalle/${detalleObra._id}`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
 

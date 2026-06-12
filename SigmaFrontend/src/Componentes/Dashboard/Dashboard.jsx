@@ -18,6 +18,8 @@ import {
   FaTrashAlt,
 } from "react-icons/fa";
 
+import API_URL from ".../api";
+
 const Dashboard = () => {
   const navigate = useNavigate();
 
@@ -54,7 +56,7 @@ const Dashboard = () => {
     const token = localStorage.getItem("token");
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     try {
-      const res = await fetch("http://localhost:5001/unidades/stats", {
+      const res = await fetch(`${API_URL}/unidades/stats`, {
         headers,
       });
 
@@ -81,7 +83,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem("token");
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const res = await fetch("http://localhost:5001/equipos/stats", {
+      const res = await fetch(`${API_URL}/equipos/stats`, {
         headers,
       });
       const data = await res.json();

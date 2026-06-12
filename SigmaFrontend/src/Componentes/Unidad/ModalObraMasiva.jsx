@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useEffect } from "react";
+import API_URL from ".../api";
 
 const ModalObraMasiva = ({ cantidad, onConfirm, onClose }) => {
   const [obraId, setObraId] = useState("");
@@ -10,7 +11,7 @@ const ModalObraMasiva = ({ cantidad, onConfirm, onClose }) => {
     const fetchObras = async () => {
       const token = localStorage.getItem("token");
       try {
-        const res = await fetch("http://localhost:5001/obras", {
+        const res = await fetch(`${API_URL}/obras`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
 

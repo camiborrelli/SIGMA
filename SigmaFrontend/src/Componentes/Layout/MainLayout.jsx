@@ -7,6 +7,7 @@ import { VscTools } from "react-icons/vsc";
 import { FaRegUser, FaBell } from "react-icons/fa";
 import "./MainLayout.css";
 import ModalDetalleNotificacion from "./ModalDetalleNotificacion";
+import API_URL from ".../api";
 
 const MainLayout = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const MainLayout = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:5001/solicitudes/traslado/${solicitudId}/procesar`,
+        `${API_URL}/solicitudes/traslado/${solicitudId}/procesar`,
         {
           method: "PUT",
           headers: {
@@ -66,7 +67,7 @@ const MainLayout = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        "http://localhost:5001/solicitudes/traslado/confirmar-entrega",
+        `${API_URL}/solicitudes/traslado/confirmar-entrega`,
         {
           method: "POST",
           headers: {
@@ -97,7 +98,7 @@ const MainLayout = () => {
     const token = localStorage.getItem("token");
     if (!token) return;
     try {
-      const res = await fetch("http://localhost:5001/notificaciones", {
+      const res = await fetch(`${API_URL}/notificaciones`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.status === 401) {
@@ -113,7 +114,7 @@ const MainLayout = () => {
   const marcarComoLeidas = async () => {
     try {
       const token = localStorage.getItem("token");
-      await fetch("http://localhost:5001/notificaciones/leidas", {
+      await fetch(`${API_URL}/notificaciones/leidas`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` },
       });

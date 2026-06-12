@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./AsignarMantenimientoUnidad.css";
 import toast from "react-hot-toast";
+import API_URL from ".../api";
 
 const AsignarMantenimientoUnidad = ({ unidad, onClose, onUpdated }) => {
   const [foto, setFoto] = useState(null);
@@ -34,7 +35,7 @@ const AsignarMantenimientoUnidad = ({ unidad, onClose, onUpdated }) => {
       }
 
       const res = await fetch(
-        `http://localhost:5001/unidades/mantenimiento/${unidad._id}`,
+        `${API_URL}/unidades/mantenimiento/${unidad._id}`,
         {
           method: "POST",
           headers,

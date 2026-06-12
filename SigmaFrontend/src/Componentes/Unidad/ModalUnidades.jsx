@@ -14,6 +14,7 @@ import EditarDescripcionModal from "./EditarDescripcionModal";
 import EditarEtiquetaModal from "./EditarEtiquetaModal";
 import FechaCompraExistenteModal from "./FechaCompraExistenteModal";
 import FinalizarMantenimientoModal from "./FinalizarMantenimientoModal";
+import API_URL from ".../api";
 
 const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const [unidades, setUnidades] = useState([]);
@@ -56,7 +57,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     if (!equipo?._id) return;
     try {
       const res = await fetch(
-        `http://localhost:5001/unidades/equipo/${equipo._id}`,
+        `${API_URL}/unidades/equipo/${equipo._id}`,
         {
           headers: { Authorization: token ? `Bearer ${token}` : "" },
         },
@@ -126,7 +127,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const finalizarMantenimiento = (u) => {
     const token = localStorage.getItem("token");
     if (!u?._id) return;
-    fetch(`http://localhost:5001/unidades/mantenimiento/finalizar/${u._id}`, {
+    fetch(`${API_URL}/unidades/mantenimiento/finalizar/${u._id}`, {
       method: "POST",
       headers: { Authorization: token ? `Bearer ${token}` : "" },
     })
@@ -161,7 +162,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   // ── Acciones masivas ──
   const darDeBajaMultiplesUnidades = async (ids) => {
     const token = localStorage.getItem("token");
-    const res = await fetch(`http://localhost:5001/unidades/baja-multiple`, {
+    const res = await fetch(`${API_URL}/unidades/baja-multiple`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -184,7 +185,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     const token = localStorage.getItem("token");
 
     const res = await fetch(
-      "http://localhost:5001/unidades/asignar-obra-multiples",
+      `${API_URL}/unidades/asignar-obra-multiples`,
       {
         method: "POST",
         headers: {
@@ -212,7 +213,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const agregarFechaCompraMultiplesUnidades = async (ids, fechaCompra) => {
     const token = localStorage.getItem("token");
     const res = await fetch(
-      `http://localhost:5001/unidades/actualizar-multiples`,
+      `${API_URL}/unidades/actualizar-multiples`,
       {
         method: "POST",
         headers: {

@@ -7,6 +7,7 @@ import { LuWrench } from "react-icons/lu";
 import { FiTruck } from "react-icons/fi";
 import { FaList } from "react-icons/fa";
 import EditarEquipoModal from "./EditarEquipoModal";
+import API_URL from ".../api";
 
 const ListadoGeneral = ({
   onUpdated,
@@ -53,7 +54,7 @@ const ListadoGeneral = ({
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch("http://localhost:5001/equipos", {
+      const res = await fetch(`${API_URL}/equipos`, {
         headers: { Authorization: token ? `Bearer ${token}` : "" },
       });
 

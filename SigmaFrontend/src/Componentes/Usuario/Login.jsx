@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./LoginRegistro.css";
 import toast from "react-hot-toast";
 import CambiarContrasenia from "./CambiarContrasenia";
+import { API_URL } from ".../api";
 
 const Login = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -52,7 +53,7 @@ const Login = () => {
     setMensaje("");
     setErrors({});
 
-    const res = await fetch("http://localhost:5001/usuarios/login", {
+    const res = await fetch(`${API_URL}/usuarios/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(loginData),

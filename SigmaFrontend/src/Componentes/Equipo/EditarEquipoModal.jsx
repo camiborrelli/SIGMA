@@ -1,5 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
+import API_URL from ".../api";
 
 const EditarEquipoModal = ({ equipo, onClose, onUpdated }) => {
   const [nombre, setNombre] = useState(equipo.nombre || "");
@@ -18,7 +19,7 @@ const EditarEquipoModal = ({ equipo, onClose, onUpdated }) => {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `http://localhost:5001/equipos/${equipo._id}`,
+        `${API_URL}/equipos/${equipo._id}`,
         {
           method: "PUT",
           headers: {

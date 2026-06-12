@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import "./EditarObraModal.css";
+import API_URL from ".../api";
 
 const EditarObraModal = ({ obra, onClose, onUpdated }) => {
   const [nombre, setNombre] = useState(obra.nombre);
@@ -12,7 +13,7 @@ const EditarObraModal = ({ obra, onClose, onUpdated }) => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`http://localhost:5001/obras/editar/${obra._id || obra.id}`, {
+      const res = await fetch(`${API_URL}/obras/editar/${obra._id || obra.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ nombre }),

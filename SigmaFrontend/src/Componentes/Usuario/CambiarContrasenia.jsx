@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import "./CambiarContrasenia.css";
+import { API_URL } from ".../api";
 
 const CambiarContrasenia = ({ isOpen, onClose, desdePerfil = false }) => {
   const [recoveryStep, setRecoveryStep] = useState(1);
@@ -32,7 +33,7 @@ const CambiarContrasenia = ({ isOpen, onClose, desdePerfil = false }) => {
 
     try {
       const res = await fetch(
-        "http://localhost:5001/usuarios/verificar-email",
+        `${API_URL}/usuarios/verificar-email`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -86,7 +87,7 @@ const CambiarContrasenia = ({ isOpen, onClose, desdePerfil = false }) => {
 
     try {
       const res = await fetch(
-        `http://localhost:5001/usuarios/${usuarioId}/cambiar-contrasenia-recuperar`,
+        `${API_URL}/usuarios/${usuarioId}/cambiar-contrasenia-recuperar`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

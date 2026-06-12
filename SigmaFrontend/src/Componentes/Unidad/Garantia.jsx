@@ -9,6 +9,8 @@ import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
 import { FaTools } from "react-icons/fa";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
+import API_URL from ".../api";
+
 dayjs.locale("es");
 
 const Garantia = ({ id: propId }) => {
@@ -40,7 +42,7 @@ const Garantia = ({ id: propId }) => {
 
       try {
         const res = await fetch(
-          `http://localhost:5001/unidades/garantia/${id}`,
+          `${API_URL}/unidades/garantia/${id}`,
           { headers },
         );
         if (res.status === 401) {
@@ -65,7 +67,7 @@ const Garantia = ({ id: propId }) => {
       // reparaciones
       try {
         const r2 = await fetch(
-          `http://localhost:5001/unidades/${id}/reparaciones`,
+          `${API_URL}/unidades/${id}/reparaciones`,
           { headers },
         );
         if (r2.ok) {
@@ -85,7 +87,7 @@ const Garantia = ({ id: propId }) => {
     const token = localStorage.getItem("token");
     try {
       const res = await fetch(
-        `http://localhost:5001/unidades/mantenimiento/finalizar/${maquinaId}`,
+        `${API_URL}/unidades/mantenimiento/finalizar/${maquinaId}`,
         {
           method: "POST",
           headers: { Authorization: token ? `Bearer ${token}` : "" },
@@ -95,7 +97,7 @@ const Garantia = ({ id: propId }) => {
       toast.success("Mantenimiento finalizado");
       // refrescar datos
       const res2 = await fetch(
-        `http://localhost:5001/unidades/garantia/${maquinaId}`,
+        `${API_URL}/unidades/garantia/${maquinaId}`,
         {
           headers: { Authorization: token ? `Bearer ${token}` : "" },
         },
@@ -280,10 +282,10 @@ const Garantia = ({ id: propId }) => {
                               {h.foto && (
                                 <div className="historial-foto-container">
                                   <img
-                                    src={h.foto.startsWith("http") ? h.foto : `http://localhost:5001/${h.foto}`}
+                                    src={h.foto.startsWith("http") ? h.foto : `${API_URL}/${h.foto}`}
                                     alt="Estado de la unidad"
                                     className="historial-foto-preview"
-                                    onClick={() => window.open(h.foto.startsWith("http") ? h.foto : `http://localhost:5001/${h.foto}`, "_blank")}
+                                    onClick={() => window.open(h.foto.startsWith("http") ? h.foto : `${API_URL}/${h.foto}`, "_blank")}
                                   />
                                 </div>
                               )}
@@ -344,7 +346,7 @@ const Garantia = ({ id: propId }) => {
               const token = localStorage.getItem("token");
               const headers = token ? { Authorization: `Bearer ${token}` } : {};
               const res = await fetch(
-                `http://localhost:5001/unidades/garantia/${maquinaId}`,
+                `${API_URL}/unidades/garantia/${maquinaId}`,
                 { headers },
               );
               if (res.ok) {
@@ -355,7 +357,7 @@ const Garantia = ({ id: propId }) => {
                 );
               }
               const r2 = await fetch(
-                `http://localhost:5001/unidades/${maquinaId}/reparaciones`,
+                `${API_URL}/unidades/${maquinaId}/reparaciones`,
                 { headers },
               );
               if (r2.ok) {

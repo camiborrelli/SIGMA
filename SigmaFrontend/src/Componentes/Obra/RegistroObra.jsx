@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "../Equipo/registrar-form.css";
 import toast from "react-hot-toast";
+import API_URL from ".../api";
 
 const RegistroObra = ({ isOpen, onClose, onSuccess }) => {
   const [nombre, setNombre] = useState("");
@@ -73,7 +74,7 @@ const RegistroObra = ({ isOpen, onClose, onSuccess }) => {
       const headers = { "Content-Type": "application/json" };
       if (token) headers.Authorization = `Bearer ${token}`;
 
-      const res = await fetch("http://localhost:5001/obras", {
+      const res = await fetch(`${API_URL}/obras`, {
         method: "POST",
         headers,
         body: JSON.stringify({

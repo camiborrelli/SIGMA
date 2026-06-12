@@ -4,6 +4,7 @@ import "./ListadoUsuarios.css";
 import Buscador from "./Buscador";
 import BajaUsuarioModal from "./BajaUsuarioModal";
 import toast from "react-hot-toast";
+import { API_URL } from ".../api";
 
 const ListadoUsuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -46,7 +47,7 @@ const ListadoUsuarios = () => {
       const token = localStorage.getItem("token");
 
       try {
-        const res = await fetch("http://localhost:5001/usuarios", {
+        const res = await fetch(`${API_URL}/usuarios`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -96,7 +97,7 @@ const ListadoUsuarios = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`http://localhost:5001/usuarios/${id}/rol`, {
+      const res = await fetch(`${API_URL}/usuarios/${id}/rol`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -126,7 +127,7 @@ const ListadoUsuarios = () => {
   const darDeBajaUsuario = async (id) => {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`http://localhost:5001/usuarios/${id}/baja`, {
+      const res = await fetch(`${API_URL}/usuarios/${id}/baja`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -152,7 +153,7 @@ const ListadoUsuarios = () => {
     const token = localStorage.getItem("token");
     try {
       const res = await fetch(
-        `http://localhost:5001/usuarios/${id}/reactivar`,
+        `${API_URL}/usuarios/${id}/reactivar`,
         {
           method: "PUT",
           headers: {

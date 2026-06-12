@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./registrar-form.css";
 import toast from "react-hot-toast";
+import API_URL from ".../api";
 
 const RegistrarEquipo = ({ isOpen, onClose, onSuccess }) => {
   const [nombre, setNombre] = useState("");
@@ -33,7 +34,7 @@ const RegistrarEquipo = ({ isOpen, onClose, onSuccess }) => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch("http://localhost:5001/equipos", {
+      const res = await fetch(`${API_URL}/equipos`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

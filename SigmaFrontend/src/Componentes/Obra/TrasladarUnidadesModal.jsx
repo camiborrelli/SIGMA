@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import "./TrasladarUnidadesModal.css";
+import API_URL from ".../api";
 
 const TrasladarUnidadesModal = ({ isOpen, onClose, obraOrigen, obras, onSuccess, rolUsuario }) => {
   const [obraDestinoId, setObraDestinoId] = useState("");
@@ -58,7 +59,7 @@ const TrasladarUnidadesModal = ({ isOpen, onClose, obraOrigen, obras, onSuccess,
           unidadesIds: unidadesAEnviar,
         };
 
-        const res = await fetch("http://localhost:5001/unidades/trasladar", { 
+        const res = await fetch(`${API_URL}/unidades/trasladar`, { 
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -84,7 +85,7 @@ const TrasladarUnidadesModal = ({ isOpen, onClose, obraOrigen, obras, onSuccess,
           unidades: unidadesAEnviar,
         };
 
-        const res = await fetch("http://localhost:5001/solicitudes/traslado", {
+        const res = await fetch(`${API_URL}/solicitudes/traslado`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

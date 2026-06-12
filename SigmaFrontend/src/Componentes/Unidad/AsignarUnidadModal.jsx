@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import API_URL from ".../api";
 
 const AsignarUnidadModal = ({ unidad, onClose, onUpdated }) => {
   const token = localStorage.getItem("token");
@@ -10,7 +11,7 @@ const AsignarUnidadModal = ({ unidad, onClose, onUpdated }) => {
   useEffect(() => {
     const fetchObras = async () => {
       try {
-        const res = await fetch("http://localhost:5001/obras", {
+        const res = await fetch(`${API_URL}/obras`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
 
@@ -52,7 +53,7 @@ const AsignarUnidadModal = ({ unidad, onClose, onUpdated }) => {
       };
 
       const res = await fetch(
-        `http://localhost:5001/unidades/asignar/${unidad._id}`,
+        `${API_URL}/unidades/asignar/${unidad._id}`,
         {
           method: "POST",
           headers,

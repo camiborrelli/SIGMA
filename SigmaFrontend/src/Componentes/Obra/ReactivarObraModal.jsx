@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { FiRefreshCcw, FiX, FiCheck } from "react-icons/fi";
 import "./ReactivarObraModal.css";
+import API_URL from ".../api";
 
 const ReactivarObraModal = ({ obra, onClose, onUpdated }) => {
   const [loading, setLoading] = useState(false);
@@ -25,7 +26,7 @@ const ReactivarObraModal = ({ obra, onClose, onUpdated }) => {
       };
 
       const res = await fetch(
-        `http://localhost:5001/obras/reactivar/${obraId}`,
+        `${API_URL}/obras/reactivar/${obraId}`,
         {
           method: "PATCH",
           headers,

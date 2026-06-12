@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { FaTag, FaInfoCircle, FaTimes } from "react-icons/fa";
 import "./EditarEtiquetaModal.css";
+import API_URL from ".../api";
 
 const EditarEtiquetaModal = ({ unidad, onClose, onUpdated }) => {
   const [etiqueta, setEtiqueta] = useState(unidad.etiqueta);
@@ -16,7 +17,7 @@ const EditarEtiquetaModal = ({ unidad, onClose, onUpdated }) => {
 
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:5001/unidades/etiqueta/${unidad._id}`, {
+      const res = await fetch(`${API_URL}/unidades/etiqueta/${unidad._id}`, {
         method: "PUT",
         headers: { 
           "Content-Type": "application/json", 

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import API_URL from ".../api";
 
 const AgregarFechaCompraModal = ({ unidad, onClose, onUpdated }) => {
   const [fechaCompra, setFechaCompra] = useState("");
@@ -16,7 +17,7 @@ const AgregarFechaCompraModal = ({ unidad, onClose, onUpdated }) => {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `http://localhost:5001/unidades/fecha-compra/${unidad._id}`,
+        `${API_URL}/unidades/fecha-compra/${unidad._id}`,
         {
           method: "PUT",
           headers: {

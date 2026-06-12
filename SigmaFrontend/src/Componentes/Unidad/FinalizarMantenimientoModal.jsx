@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import "./FinalizarMantenimientoModal.css";
+import API_URL from ".../api";
 
 const FinalizarMantenimientoModal = ({ unidad, onClose, onUpdated }) => {
   const [loading, setLoading] = useState(false);
@@ -13,7 +14,7 @@ const FinalizarMantenimientoModal = ({ unidad, onClose, onUpdated }) => {
     
     try {
       const res = await fetch(
-        `http://localhost:5001/unidades/mantenimiento/finalizar/${unidad._id}`,
+        `${API_URL}/unidades/mantenimiento/finalizar/${unidad._id}`,
         {
           method: "POST",
           headers: { Authorization: token ? `Bearer ${token}` : "" },

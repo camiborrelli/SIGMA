@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import API_URL from ".../api";
 
 const FinalizarObraModal = ({ obra, onClose, onUpdated }) => {
   const [loading, setLoading] = useState(false);
@@ -22,7 +23,7 @@ const FinalizarObraModal = ({ obra, onClose, onUpdated }) => {
     };
 
     const res = await fetch(
-      `http://localhost:5001/obras/finalizar/${obraId}`,
+      `${API_URL}/obras/finalizar/${obraId}`,
       {
         method: "PATCH",
         headers,

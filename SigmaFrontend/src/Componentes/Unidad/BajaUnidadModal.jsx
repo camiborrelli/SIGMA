@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import API_URL from ".../api";
 
 const BajaUnidadModal = ({ unidad, onClose, onUpdated }) => {
   const [loading, setLoading] = useState(false);
@@ -15,7 +16,7 @@ const BajaUnidadModal = ({ unidad, onClose, onUpdated }) => {
       };
 
       const res = await fetch(
-        `http://localhost:5001/unidades/baja/${unidad._id}`,
+        `${API_URL}/unidades/baja/${unidad._id}`,
         {
           method: "POST",
           headers,

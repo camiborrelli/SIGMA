@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../Equipo/registrar-form.css"; 
 import toast from "react-hot-toast";
+import ".../api";
 
 const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
   const [equipoId, setEquipoId] = useState("");
@@ -23,7 +24,7 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
     const cargarEquipos = async () => {
       const token = localStorage.getItem("token");
       try {
-        const res = await fetch("http://localhost:5001/equipos", {
+        const res = await fetch(`${API_URL}/equipos`, {
           headers: {
             Authorization: token ? `Bearer ${token}` : "",
           },
@@ -58,7 +59,7 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
       const token = localStorage.getItem("token");
       try {
         const res = await fetch(
-          `http://localhost:5001/unidades/equipo/${equipoId}`,
+          `${API_URL}/unidades/equipo/${equipoId}`,
           { headers: { Authorization: token ? `Bearer ${token}` : "" } }
         );
         const data = await res.json().catch(() => []);
@@ -99,7 +100,7 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
 
     try {
       const res = await fetch(
-        `http://localhost:5001/unidades/agregar/${equipoId}`,
+        `${API_URL}/unidades/agregar/${equipoId}`,
         {
           method: "POST",
           headers: {

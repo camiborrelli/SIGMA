@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginRegistro.css";
 import toast from "react-hot-toast";
+import { API_URL } from ".../api";
 
 const Registro = ({ setIsLogin }) => {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const Registro = ({ setIsLogin }) => {
       return;
     }
 
-    const res = await fetch("http://localhost:5001/usuarios/register", {
+    const res = await fetch(`${API_URL}/usuarios/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
