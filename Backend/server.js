@@ -14,13 +14,23 @@ const app = express();
 
 await connectDB();
 
+const allowedOrigins = [
+  "https://sigma-front-five.vercel.app",
+  "https://sigma-front-git-develop-camilas-projects-2b00654e.vercel.app",
+];
+
 app.use(
   cors({
-    origin: "https://sigma-front-five.vercel.app",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );
-
 app.use(express.json());
 
 app.get("/", (req, res) => {
