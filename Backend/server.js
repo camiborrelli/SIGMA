@@ -30,6 +30,10 @@ app.get("/", (req, res) => {
   });
 });
 
+app.listen(process.env.PORT || 5001, () => {
+  console.log(`Servidor corriendo en puerto ${process.env.PORT || 5001}`);
+});
+
 app.use("/unidades", unidadRoutes);
 app.use("/equipos", equipoRoutes);
 app.use("/usuarios", usuarioRoutes);
