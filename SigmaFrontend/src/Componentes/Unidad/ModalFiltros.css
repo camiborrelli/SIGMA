@@ -8,7 +8,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 1100;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .modal-filtros-content {
@@ -20,6 +22,8 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal-filtros-content h2 {
@@ -69,6 +73,7 @@
   display: block;
   text-align: center;
   transition: background-color 0.2s;
+  flex-shrink: 0;
 }
 
 .btn-cerrar-filtros:hover {
@@ -97,6 +102,7 @@
   align-items: center;
   gap: 14px;
   margin-top: 16px;
+  flex-shrink: 0;
 }
 
 .paginacion-filtros button {
