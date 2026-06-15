@@ -21,7 +21,7 @@
   min-height: 100vh;
   background-color: var(--color-bg-main);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  padding-bottom: 65px; /* Espacio para el footer móvil */
+  padding-bottom: 65px;
   box-sizing: border-box;
 }
 
@@ -227,73 +227,8 @@
   font-weight: 500;
 }
 
-.notification-actions {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin-top: 12px;
-  padding: 4px 0;
-}
-
-.notification-actions button {
-  padding: 6px 16px;
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 6px;
-  border: 1px solid var(--color-border);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 90px;
-}
-
-.notification-actions button:first-child {
-  background-color: var(--color-status-active);
-  color: white;
-  border-color: var(--color-status-active);
-}
-
-.notification-actions button:first-child:hover {
-  filter: brightness(1.1);
-}
-
-.notification-actions button:last-child {
-  background-color: transparent;
-  color: var(--color-brand-red);
-  border-color: var(--color-brand-red);
-}
-
-.notification-actions button:last-child:hover {
-  background-color: var(--color-status-canceled-bg);
-}
-
-@media (min-width: 769px) {
-  .mobile-only {
-    display: none;
-  }
-  .app-layout-container {
-    padding-bottom: 0; /* Quita el espacio extra en escritorio */
-  }
-}
-
-@media (max-width: 768px) {
-  .desktop-only {
-    display: none;
-  }
-  .notification-dropdown {
-    position: fixed;
-    bottom: 70px;
-    top: auto;
-    right: 16px;
-    left: 16px;
-    width: auto;
-    max-width: none;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
-  }
-}
-
 .mobile-footer {
-  display: flex;
+  display: none;
   justify-content: space-between;
   align-items: center;
   background: var(--color-surface);
@@ -372,4 +307,38 @@
 .close-dropdown-btn:hover {
   background: var(--color-brand-red);
   color: white;
+}
+
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none;
+  }
+  .app-layout-container {
+    padding-bottom: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
+
+  .app-layout-container {
+    padding-bottom: 65px;
+  }
+
+  .mobile-footer {
+    display: flex;
+  }
+
+  .notification-dropdown {
+    position: fixed;
+    bottom: 70px;
+    top: auto;
+    right: 16px;
+    left: 16px;
+    width: auto;
+    max-width: none;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  }
 }

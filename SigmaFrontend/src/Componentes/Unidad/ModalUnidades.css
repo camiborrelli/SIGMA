@@ -9,8 +9,8 @@
   justify-content: center;
   align-items: center;
   z-index: 9999;
-  padding: 20px; /* NUEVO: Evita que el modal toque los bordes de la pantalla */
-  box-sizing: border-box; /* NUEVO: Asegura que el padding no desborde el 100% */
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .modal-content {
@@ -148,7 +148,7 @@
   align-items: center;
   gap: 14px;
   margin-top: 16px;
-  flex-shrink: 0; /* NUEVO: Evita que la paginación se reduzca si falta espacio */
+  flex-shrink: 0;
 }
 
 .paginacion button {
@@ -309,7 +309,7 @@
   opacity: 1 !important;
   margin-top: 8px;
   transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
-  flex-shrink: 0; /* NUEVO: Evita que el botón de cerrar se aplaste */
+  flex-shrink: 0;
 }
 
 .btn-cerrar:hover {
@@ -334,20 +334,23 @@
   background: rgba(0, 0, 0, 0.2);
   border-radius: 12px;
   z-index: 99999;
-  padding: 20px; /* NUEVO: Margen interno de seguridad */
-  box-sizing: border-box; /* NUEVO */
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .modal-card {
   background: white;
   padding: 24px;
   border-radius: 12px;
-  width: 90%;
+  width: 95%;
   max-width: 500px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .modal-content::-webkit-scrollbar {
@@ -369,13 +372,71 @@
   background: #94a3b8;
 }
 
+.acciones {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.btn-cancel,
+.btn-asign {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  min-width: 130px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.btn-cancel {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+.btn-cancel:hover { background-color: #e2e8f0; }
+.btn-cancel:active { transform: scale(0.98); }
+
+.btn-asign {
+  background-color: #c62828;
+  color: white;
+}
+.btn-asign:hover { background-color: #a61c1c; }
+.btn-asign:active { transform: scale(0.98); }
+.btn-asign:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
 @media (max-width: 768px) {
   .modal-content {
     width: 100%;
     padding: 14px;
     gap: 12px;
-    max-height: 85vh; /* NUEVO: Reducido un poquito en móvil para esquivar la barra de direcciones / footer nativo del teléfono */
+    max-height: 85vh;
     overflow-y: auto;
+  }
+
+  .modal-card {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .acciones {
+    gap: 10px;
+    width: 100%;
+  }
+
+  .btn-cancel,
+  .btn-asign {
+    min-width: 105px;
+    padding: 10px 12px;
+    font-size: 13px;
   }
 
   .sigma-table,
@@ -432,17 +493,9 @@
     margin-right: 16px;
   }
 
-  .sigma-td:nth-of-type(2)::before {
-    content: "Etiqueta";
-  }
-
-  .sigma-td:nth-of-type(3)::before {
-    content: "Estado";
-  }
-
-  .sigma-td:nth-of-type(4)::before {
-    content: "Obra asignada";
-  }
+  .sigma-td:nth-of-type(2)::before { content: "Etiqueta"; }
+  .sigma-td:nth-of-type(3)::before { content: "Estado"; }
+  .sigma-td:nth-of-type(4)::before { content: "Obra asignada"; }
 
   .sigma-td > * {
     text-align: right;
@@ -511,64 +564,4 @@
   .btn-cerrar {
     width: 100%;
   }
-}
-
-/* Contenedor centrado, sin estirar los botones */
-.acciones {
-  display: flex;
-  justify-content: center; /* Mantiene los botones en el centro */
-  gap: 16px; /* Separación entre ambos */
-  margin-top: 16px;
-}
-
-/* Ambos botones comparten este estilo para medir exactamente lo mismo */
-.btn-cancel,
-.btn-asign {
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  border: none;
-  min-width: 120px; /* ESTO ES LA CLAVE: Fuerza a que ambos midan lo mismo */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: background 0.2s ease, transform 0.1s ease;
-}
-
-/* Botón Cancelar (Gris) */
-.btn-cancel {
-  background-color: #f1f5f9;
-  color: #475569;
-  border: 1px solid #cbd5e1;
-}
-
-.btn-cancel:hover {
-  background-color: #e2e8f0;
-}
-
-.btn-cancel:active {
-  transform: scale(0.98);
-}
-
-/* Botón Asignar/Confirmar (Rojo) */
-.btn-asign {
-  background-color: #c62828;
-  color: white;
-}
-
-.btn-asign:hover {
-  background-color: #a61c1c;
-}
-
-.btn-asign:active {
-  transform: scale(0.98);
-}
-
-/* Cuando el botón está procesando (loading) */
-.btn-asign:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
 }
