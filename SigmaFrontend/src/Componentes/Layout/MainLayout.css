@@ -109,10 +109,18 @@
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
 }
 
 .btn-logout:hover {
   background: #b91c1c;
+}
+
+.btn-logout .logout-icon {
+  display: none;
 }
 
 .notification-wrapper {
@@ -309,12 +317,68 @@
   color: white;
 }
 
-@media (min-width: 769px) {
+@media (min-width: 1025px) {
   .mobile-only {
     display: none;
   }
   .app-layout-container {
     padding-bottom: 0;
+  }
+}
+
+@media (max-width: 1024px) {
+  .topbar {
+    padding: 0 20px;
+  }
+
+  .logo-container {
+    margin-right: 16px;
+  }
+
+  .logo-img {
+    height: 38px;
+  }
+
+  .topbar .nav {
+    display: none;
+  }
+
+  .btn-perfil-topbar .user-name-text {
+    display: none;
+  }
+  
+  .btn-perfil-topbar {
+    width: 38px;
+    height: 38px;
+    padding: 0 !important;
+    border-radius: 50%;
+    justify-content: center;
+    background-color: #f3f4f6;
+    color: var(--color-text-main);
+    font-size: 16px;
+  }
+
+  .btn-logout {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border-radius: 50%;
+    justify-content: center;
+  }
+
+  .btn-logout .logout-text {
+    display: none;
+  }
+
+  .btn-logout .logout-icon {
+    display: inline-block;
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none;
   }
 }
 
