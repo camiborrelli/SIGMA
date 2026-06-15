@@ -330,22 +330,26 @@
 @media (max-width: 1024px) {
   .topbar {
     padding: 0 20px;
-    justify-content: space-between;
+    display: flex !important;
+    justify-content: space-between !important; /* Fuerza a separar el logo a la izquierda y los botones a la derecha */
+    align-items: center;
   }
 
   .logo-container {
-    margin-right: 0;
-    display: flex;
+    margin-right: 0 !important;
+    display: flex !important; /* Asegura que el contenedor del logo no se oculte */
     align-items: center;
   }
 
   .logo-img {
-    height: 38px;
-    display: block;
+    height: 38px !important;
+    width: auto !important;
+    display: block !important; /* Fuerza a la imagen del logo a ser visible */
+    object-fit: contain;
   }
 
   .topbar .nav {
-    display: none;
+    display: none !important;
   }
 
   .btn-perfil-topbar .user-name-text {
@@ -357,33 +361,36 @@
     height: 38px;
     padding: 0 !important;
     border-radius: 50%;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     background-color: #f3f4f6;
     color: var(--color-text-main);
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .btn-logout {
-    width: 38px;
-    height: 38px;
-    padding: 0;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 38px !important;
+    height: 38px !important;
+    padding: 0 !important; /* ¡SOLUCIÓN CLAVE! Eliminamos los 16px que aplastaban al ícono */
+    border-radius: 50% !important;
+    display: flex !important; /* Centrado absoluto con flexbox */
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   .btn-logout .logout-text {
-    display: none;
+    display: none !important;
   }
 
-  .btn-logout .logout-icon {
-    display: inline-block;
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+  /* Forzamos al ícono (sea SVG o etiqueta i) a tomar un tamaño legible */
+  .btn-logout .logout-icon,
+  .btn-logout svg,
+  .btn-logout i {
+    display: inline-block !important;
+    width: 18px !important;  /* Tamaño perfecto y proporcional para los 38px del botón */
+    height: 18px !important;
+    margin: 0 !important;
   }
 }
 
