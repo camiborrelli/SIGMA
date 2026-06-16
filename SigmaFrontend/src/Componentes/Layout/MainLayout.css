@@ -329,67 +329,82 @@
 
 @media (max-width: 1024px) {
   .topbar {
-    padding: 0 20px;
+    padding: 0 16px !important;
     display: flex !important;
-    justify-content: space-between !important; /* Fuerza a separar el logo a la izquierda y los botones a la derecha */
-    align-items: center;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
+  /* FORZAMOS AL LOGO A APARECER Y QUEDARSE A LA IZQUIERDA */
   .logo-container {
-    margin-right: 0 !important;
-    display: flex !important; /* Asegura que el contenedor del logo no se oculte */
-    align-items: center;
+    display: flex !important; 
+    align-items: center !important;
+    margin-right: auto !important; /* Empuja todo lo demás hacia la derecha */
   }
 
   .logo-img {
-    height: 38px !important;
+    display: block !important;
+    height: 34px !important; /* Tamaño óptimo para barras móviles */
     width: auto !important;
-    display: block !important; /* Fuerza a la imagen del logo a ser visible */
-    object-fit: contain;
+    object-fit: contain !important;
   }
 
   .topbar .nav {
     display: none !important;
   }
 
+  /* EMPUJAMOS LOS DOS BOTONES JUNTOS HACIA LA DERECHA */
+  .topbar-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important; /* Distancia elegante entre el perfil y el botón rojo */
+    margin-left: auto !important; /* Imanta el contenedor a la derecha */
+  }
+
   .btn-perfil-topbar .user-name-text {
-    display: none;
+    display: none !important;
   }
   
   .btn-perfil-topbar {
-    width: 38px;
-    height: 38px;
+    width: 38px !important;
+    height: 38px !important;
     padding: 0 !important;
-    border-radius: 50%;
+    border-radius: 50% !important;
     display: flex !important;
-    align-items: center;
-    justify-content: center;
-    background-color: #f3f4f6;
-    color: var(--color-text-main);
-    font-size: 16px;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: #f3f4f6 !important;
+    color: var(--color-text-main) !important;
+    font-size: 18px !important;
+    margin-left: auto !important; /* Doble seguridad si no usas contenedor derecho */
   }
 
   .btn-logout {
     width: 38px !important;
     height: 38px !important;
-    padding: 0 !important; /* ¡SOLUCIÓN CLAVE! Eliminamos los 16px que aplastaban al ícono */
+    padding: 0 !important;
     border-radius: 50% !important;
-    display: flex !important; /* Centrado absoluto con flexbox */
+    display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    background: #dc2626 !important;
   }
 
   .btn-logout .logout-text {
     display: none !important;
   }
 
-  /* Forzamos al ícono (sea SVG o etiqueta i) a tomar un tamaño legible */
   .btn-logout .logout-icon,
   .btn-logout svg,
   .btn-logout i {
-    display: inline-block !important;
-    width: 18px !important;  /* Tamaño perfecto y proporcional para los 38px del botón */
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 18px !important;
     height: 18px !important;
+    color: white !important;
     margin: 0 !important;
   }
 }
@@ -401,7 +416,13 @@
 }
 
 @media (max-width: 768px) {
-  .desktop-only {
+  /* Rescatamos al logo por si llegó a tener la clase desktop-only en el HTML */
+  .logo-container.desktop-only,
+  .logo-img.desktop-only {
+    display: flex !important;
+  }
+
+  .desktop-only:not(.logo-container):not(.logo-img) {
     display: none;
   }
 
