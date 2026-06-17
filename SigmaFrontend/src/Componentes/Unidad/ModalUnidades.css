@@ -38,6 +38,7 @@
 
 .modal-header h2 {
   margin: 0;
+  text-align: center;
 }
 
 .modal-header button {
@@ -308,7 +309,8 @@
   display: inline-block;
   opacity: 1 !important;
   margin-top: 8px;
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    transform 0.1s ease;
   flex-shrink: 0;
 }
 
@@ -402,20 +404,32 @@
   color: #475569;
   border: 1px solid #cbd5e1;
 }
-.btn-cancel:hover { background-color: #e2e8f0; }
-.btn-cancel:active { transform: scale(0.98); }
+.btn-cancel:hover {
+  background-color: #e2e8f0;
+}
+.btn-cancel:active {
+  transform: scale(0.98);
+}
 
 .btn-asign {
   background-color: #c62828;
   color: white;
 }
-.btn-asign:hover { background-color: #a61c1c; }
-.btn-asign:active { transform: scale(0.98); }
-.btn-asign:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+.btn-asign:hover {
+  background-color: #a61c1c;
+}
+.btn-asign:active {
+  transform: scale(0.98);
+}
+.btn-asign:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
 
 @media (max-width: 768px) {
   .modal-content {
-    width: 100%;
+    width: 85%;
     padding: 14px;
     gap: 12px;
     max-height: 85vh;
@@ -427,10 +441,10 @@
     gap: 12px;
   }
 
-  .acciones {
+  /* .acciones {
     gap: 10px;
     width: 100%;
-  }
+  } */
 
   .btn-cancel,
   .btn-asign {
@@ -458,7 +472,7 @@
     padding: 0;
     margin-bottom: 14px;
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,.05), 0 4px 12px rgba(0,0,0,.04);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.04);
   }
 
   .sigma-td {
@@ -493,9 +507,15 @@
     margin-right: 16px;
   }
 
-  .sigma-td:nth-of-type(2)::before { content: "Etiqueta"; }
-  .sigma-td:nth-of-type(3)::before { content: "Estado"; }
-  .sigma-td:nth-of-type(4)::before { content: "Obra asignada"; }
+  .sigma-td:nth-of-type(2)::before {
+    content: "Etiqueta";
+  }
+  .sigma-td:nth-of-type(3)::before {
+    content: "Estado";
+  }
+  .sigma-td:nth-of-type(4)::before {
+    content: "Obra asignada";
+  }
 
   .sigma-td > * {
     text-align: right;
@@ -516,7 +536,6 @@
   }
 
   .sigma-td:last-child {
-    display: block !important;
     width: 100%;
     padding: 16px;
     border-bottom: none;
@@ -554,7 +573,7 @@
     margin-top: 18px;
     padding: 0 4px;
   }
-  
+
   .paginacion button {
     min-width: 44px;
     height: 44px;
