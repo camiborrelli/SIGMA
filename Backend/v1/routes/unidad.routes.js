@@ -6,6 +6,7 @@ import {
   enviarAMantenimientoController,
   finalizarMantenimientoController,
   getGarantiaUnidadController,
+  getGarantiasPorVencerController,
   getStatsUnidadesController,
   getReparacionesUnidadController,
   asignarUnidadController,
@@ -21,8 +22,10 @@ import {
   getUnidadesController,
   getUnidadesMantenimientoController,
   agregarComentarioMantenimientoController,
+  revisarGarantiasPorVencerController,
 } from "../controllers/unidad.controller.js";
 import { verificarToken } from "../middlewares/auth.js";
+import { soloAdmin } from "../middlewares/roles.js";
 import multer from "multer";
 import { storage } from "../config/cloudinary.js";
 
@@ -58,6 +61,17 @@ router.post("/agregar/:equipoId", verificarToken, agregarUnidadController);
 router.post("/asignar/:id", verificarToken, asignarUnidadController);
 router.delete("/:id", verificarToken, eliminarUnidadController);
 
+router.get(
+  "/garantias/por-vencer",
+  verificarToken,
+  getGarantiasPorVencerController,
+);
+router.post(
+  "/garantias/revisar",
+  verificarToken,
+  soloAdmin,
+  revisarGarantiasPorVencerController,
+);
 router.get("/garantia/:id", verificarToken, getGarantiaUnidadController);
 router.get("/stats", verificarToken, getStatsUnidadesController);
 router.get(

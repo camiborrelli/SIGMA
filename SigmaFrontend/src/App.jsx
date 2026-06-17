@@ -12,6 +12,7 @@ import RegistroObra from "./Componentes/Obra/RegistroObra";
 import RegistrarEquipo from "./Componentes/Equipo/RegistrarEquipo";
 import RegistrarUnidad from "./Componentes/Unidad/RegistrarUnidad";
 import Garantia from "./Componentes/Unidad/Garantia";
+import GarantiasPorVencer from "./Componentes/Unidad/GarantiasPorVencer";
 import Mapa from "./Componentes/Mapa/Mapa";
 import PerfilUsuario from "./Componentes/Usuario/PerfilUsuario";
 import ModalTokenExpirado from "./Componentes/Usuario/ModalTokenExpirado";
@@ -67,6 +68,7 @@ function App() {
           <Route path="/registrarEquipo" element={<RegistrarEquipo />} />
           <Route path="/registrarUnidad" element={<RegistrarUnidad />} />
           <Route path="/garantia/:id" element={<Garantia />} />
+          <Route path="/garantias-vencer" element={<GarantiasPorVencer />} />
           <Route path="/mapa" element={<Mapa />} />
           <Route path="/perfil" element={<PerfilUsuario />} />
           <Route

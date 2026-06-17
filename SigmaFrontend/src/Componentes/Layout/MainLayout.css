@@ -214,6 +214,10 @@
   transition: background-color 0.15s ease;
 }
 
+.notification-item.clickable {
+  cursor: pointer;
+}
+
 .notification-item:last-child {
   border-bottom: none;
 }

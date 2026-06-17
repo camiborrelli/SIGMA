@@ -7,6 +7,17 @@ export const obtenerNotificacionesService = async (usuarioId) => {
     .sort({ createdAt: -1 })
     .limit(20)
     .populate({
+      path: "unidadId",
+      populate: [
+        {
+          path: "equipo",
+        },
+        {
+          path: "ubicacion",
+        },
+      ],
+    })
+    .populate({
       path: "solicitudId",
       populate: [
         {

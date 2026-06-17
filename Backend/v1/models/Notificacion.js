@@ -17,6 +17,15 @@ const NotificacionSchema = new mongoose.Schema({
     ref: "SolicitudTraslado",
   },
 
+  unidadId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Unidad",
+  },
+
+  fechaVencimientoGarantia: {
+    type: Date,
+  },
+
   leida: {
     type: Boolean,
     default: false,
