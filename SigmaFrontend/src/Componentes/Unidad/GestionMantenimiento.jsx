@@ -127,6 +127,7 @@ const GestionMantenimiento = () => {
 
             return (
               <div key={unidad._id} className="gm-card">
+                <h2>{unidad.nombre}</h2>
                 <div className="gm-card-photo">
                   {fotoSrc ? (
                     <img

@@ -20,6 +20,7 @@ import {
   actualizarEtiquetaUnidadController,
   getUnidadesController,
   getUnidadesMantenimientoController,
+  agregarComentarioMantenimientoController,
 } from "../controllers/unidad.controller.js";
 import { verificarToken } from "../middlewares/auth.js";
 import multer from "multer";
@@ -41,6 +42,11 @@ router.post(
   verificarToken,
   upload.single("foto"),
   enviarAMantenimientoController,
+);
+router.post(
+  "/:id/comentario-mantenimiento",
+  verificarToken,
+  agregarComentarioMantenimientoController,
 );
 router.post(
   "/mantenimiento/finalizar/:id",
