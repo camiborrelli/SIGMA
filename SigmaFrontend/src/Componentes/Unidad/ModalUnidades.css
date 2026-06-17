@@ -23,8 +23,7 @@
   flex-direction: column;
   gap: 16px;
   max-height: 90vh;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
 }
@@ -433,7 +432,7 @@
     padding: 14px;
     gap: 12px;
     max-height: 85vh;
-    overflow-y: auto;
+    overflow: hidden;
   }
 
   .modal-card {
@@ -583,4 +582,17 @@
   .btn-cerrar {
     width: 100%;
   }
+}
+
+.modal-content > .tabla-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.modal-content .btn-cerrar {
+  position: sticky;
+  bottom: 0;
+  background: #f1f5f9 !important;
+  z-index: 5;
 }

@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import logo from "../../assets/LogoSinFondo.png";
 import { TfiMapAlt } from "react-icons/tfi";
 import { VscTools } from "react-icons/vsc";
-import { FaRegUser, FaBell } from "react-icons/fa";
+import { FaRegUser, FaBell, FaSignOutAlt } from "react-icons/fa";
 import "./MainLayout.css";
 import ModalDetalleNotificacion from "./ModalDetalleNotificacion";
 import { API_URL } from "../../../api";
@@ -14,8 +14,7 @@ const MainLayout = () => {
   const location = useLocation();
   const [notificaciones, setNotificaciones] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [notificacionSeleccionada, setNotificacionSeleccionada] =
-    useState(null);
+  const [notificacionSeleccionada, setNotificacionSeleccionada] = useState(null);
   const [verModalNotificacion, setVerModalNotificacion] = useState(false);
 
   const headerRef = useRef(null);
@@ -221,9 +220,11 @@ const MainLayout = () => {
             onClick={() => navigate("/dashboard")}
           >
             <VscTools />{" "}
-            {usuario?.rol === "Admin"
-              ? "Gestión de equipos y usuarios"
-              : "Gestión de equipos"}
+            <span>
+              {usuario?.rol === "Admin"
+                ? "Gestión de equipos y usuarios"
+                : "Gestión de equipos"}
+            </span>
           </button>
           <button
             className={`btn-nav ${
@@ -231,7 +232,7 @@ const MainLayout = () => {
             }`}
             onClick={() => navigate("/mapa")}
           >
-            <TfiMapAlt /> Ver mapa
+            <TfiMapAlt /> <span>Ver mapa</span>
           </button>
         </nav>
         <div className="topbar-right" ref={headerRef}>
@@ -247,16 +248,19 @@ const MainLayout = () => {
             {showDropdown && renderDropdown()}
           </div>
           <button
-            className={`btn-nav ${
+            className={`btn-nav btn-perfil-topbar ${
               location.pathname === "/perfil" ? "active" : ""
             }`}
             onClick={() => navigate("/perfil")}
           >
             <FaRegUser />{" "}
-            {usuario ? `${usuario.nombre} ${usuario.apellido}` : "Usuario"}
+            <span className="user-name-text">
+              {usuario ? `${usuario.nombre} ${usuario.apellido}` : "Usuario"}
+            </span>
           </button>
-          <button className="btn-logout" onClick={logout}>
-            Cerrar sesión
+          <button className="btn-logout" onClick={logout} title="Cerrar sesión">
+            <FaSignOutAlt className="logout-icon" />
+            <span className="logout-text">Cerrar sesión</span>
           </button>
         </div>
       </div>
