@@ -4,11 +4,15 @@ import toast from "react-hot-toast";
 import logo from "../../assets/LogoSinFondo.png";
 import { TfiMapAlt } from "react-icons/tfi";
 import { VscTools } from "react-icons/vsc";
-import { FaRegUser, FaBell, FaSignOutAlt } from "react-icons/fa";
+import {
+  FaBell,
+  FaExclamationTriangle,
+  FaRegUser,
+  FaSignOutAlt,
+} from "react-icons/fa";
 import "./MainLayout.css";
 import ModalDetalleNotificacion from "./ModalDetalleNotificacion";
 import { API_URL } from "../../../api";
-import GestionMantenimiento from "../Unidad/GestionMantenimiento";
 
 const MainLayout = () => {
   const navigate = useNavigate();
@@ -115,15 +119,16 @@ const MainLayout = () => {
   const marcarComoLeidas = async () => {
     try {
       const token = localStorage.getItem("token");
-      await fetch(`${API_URL}/notificaciones/leidas`, {
+      const res = await fetch(`${API_URL}/notificaciones/leidas`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` },
       });
-      setNotificaciones((prev) => prev.map((n) => ({ ...n, leida: true })));
       if (res.status === 401) {
         window.dispatchEvent(new Event("token-expirado"));
         throw new Error("Sesión expirada");
       }
+      if (!res.ok) return;
+      setNotificaciones((prev) => prev.map((n) => ({ ...n, leida: true })));
     } catch (error) {
       console.error(error);
     }
@@ -139,6 +144,14 @@ const MainLayout = () => {
   };
 
   const handleNotificacionClick = (n) => {
+    if (n.tipo === "garantia_por_vencer" && n.unidadId) {
+      const unidadId =
+        typeof n.unidadId === "object" ? n.unidadId._id : n.unidadId;
+      navigate(`/garantia/${unidadId}`);
+      setShowDropdown(false);
+      return;
+    }
+
     const esSolicitudAdmin = usuario?.rol === "Admin" && n.tipo === "solicitud";
     const esSolicitudUsuario =
       usuario?.rol !== "Admin" && n.tipo === "solicitud_aprobada";
@@ -186,7 +199,8 @@ const MainLayout = () => {
           notificaciones.map((n) => {
             const requiereAccion =
               (usuario?.rol === "Admin" && n.tipo === "solicitud") ||
-              (usuario?.rol !== "Admin" && n.tipo === "solicitud_aprobada");
+              (usuario?.rol !== "Admin" && n.tipo === "solicitud_aprobada") ||
+              n.tipo === "garantia_por_vencer";
 
             return (
               <div
@@ -233,6 +247,14 @@ const MainLayout = () => {
             onClick={() => navigate("/gestion-mantenimiento")}
           >
             Gestion de Mantenimiento
+          </button>
+          <button
+            className={`btn-nav ${
+              location.pathname === "/garantias-vencer" ? "active" : ""
+            }`}
+            onClick={() => navigate("/garantias-vencer")}
+          >
+            <FaExclamationTriangle /> <span>Garantias</span>
           </button>
           <button
             className={`btn-nav ${
@@ -293,6 +315,14 @@ const MainLayout = () => {
           onClick={() => navigate("/mapa")}
         >
           <TfiMapAlt /> <span>Mapa</span>
+        </button>
+        <button
+          className={`mobile-footer-btn ${
+            location.pathname === "/garantias-vencer" ? "active" : ""
+          }`}
+          onClick={() => navigate("/garantias-vencer")}
+        >
+          <FaExclamationTriangle /> <span>Garantias</span>
         </button>
         <div className="notification-wrapper mobile-only">
           <button className="mobile-footer-btn" onClick={handleToggleDropdown}>

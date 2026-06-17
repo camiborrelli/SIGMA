@@ -8,6 +8,7 @@ import usuarioRoutes from "./routes/usuario.routes.js";
 import obraRoutes from "./routes/obra.routes.js";
 import notificacionRoutes from "./routes/notificacion.routes.js";
 import solicitudRoutes from "./routes/solicitudTraslado.routes.js";
+import { iniciarMonitorGarantiasPorVencer } from "./services/garantia.services.js";
 
 import { connectDB } from "./db.js";
 
@@ -15,6 +16,7 @@ const app = express();
 
 //Conexión DB
 await connectDB();
+iniciarMonitorGarantiasPorVencer();
 
 //Middlewares
 app.use(cors());

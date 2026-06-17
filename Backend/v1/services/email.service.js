@@ -12,6 +12,9 @@ const transporter = nodemailer.createTransport({
 export const enviarCorreo = async ({ destino, asunto, mensaje }) => {
 
   try {
+    const contenido = /<\/?[a-z][\s\S]*>/i.test(mensaje)
+      ? mensaje
+      : `<p>${mensaje}</p>`;
 
     await transporter.sendMail({
       from: `SIGMA <${process.env.EMAIL_USER}>`,
@@ -20,7 +23,7 @@ export const enviarCorreo = async ({ destino, asunto, mensaje }) => {
       html: `
         <div>
           <h2>SIGMA</h2>
-          <p>${mensaje}</p>
+          ${contenido}
         </div>
       `
     });

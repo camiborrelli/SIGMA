@@ -1,0 +1,283 @@
+.garantias-vencer-page {
+  background: #f4f6f8;
+  min-height: 100vh;
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  box-sizing: border-box;
+}
+
+.garantias-vencer-header,
+.garantias-vencer-toolbar,
+.garantias-vencer-content {
+  width: 100%;
+  max-width: 1100px;
+}
+
+.garantias-vencer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.garantias-vencer-eyebrow {
+  margin: 0 0 6px;
+  color: #c90036;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.garantias-vencer-header h1 {
+  margin: 0 0 8px;
+  color: #08060d;
+  font-size: 34px;
+  line-height: 1.15;
+}
+
+.garantias-vencer-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.garantias-vencer-counter {
+  width: 96px;
+  height: 72px;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #c90036;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 10px 25px rgba(16, 24, 40, 0.06);
+  font-size: 20px;
+  flex: 0 0 auto;
+}
+
+.garantias-vencer-counter span {
+  color: #0f172a;
+  font-weight: 800;
+  font-size: 26px;
+}
+
+.garantias-vencer-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+}
+
+.garantias-vencer-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0 12px;
+  min-height: 42px;
+  flex: 1;
+  color: #64748b;
+  box-sizing: border-box;
+}
+
+.garantias-vencer-search input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #0f172a;
+  background: transparent;
+}
+
+.garantias-vencer-refresh,
+.garantia-vencer-actions button {
+  border: none;
+  border-radius: 6px;
+  background: #c90036;
+  color: #ffffff;
+  min-height: 38px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.garantias-vencer-refresh:hover,
+.garantia-vencer-actions button:hover {
+  background: #a6002d;
+}
+
+.garantias-vencer-refresh:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.garantias-vencer-content {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.garantias-vencer-state {
+  margin: 0;
+  padding: 28px 16px;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.garantias-vencer-state--error {
+  color: #b91c1c;
+}
+
+.garantias-vencer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.garantia-vencer-item {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.3fr) minmax(240px, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.garantia-vencer-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.garantia-vencer-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: rgba(201, 0, 54, 0.1);
+  color: #c90036;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.garantia-vencer-main h3,
+.garantia-vencer-main p,
+.garantia-vencer-main span {
+  margin: 0;
+}
+
+.garantia-vencer-main h3 {
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.garantia-vencer-main p {
+  color: #334155;
+  font-size: 14px;
+}
+
+.garantia-vencer-main span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.garantia-vencer-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #475569;
+  font-size: 13px;
+}
+
+.garantia-vencer-meta div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.garantia-vencer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.garantia-vencer-days {
+  min-width: 76px;
+  border-radius: 999px;
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 7px 10px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+@media (max-width: 900px) {
+  .garantia-vencer-item {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+  }
+
+  .garantia-vencer-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 768px) {
+  .garantias-vencer-page {
+    padding: 18px 10px;
+  }
+
+  .garantias-vencer-header {
+    align-items: flex-start;
+  }
+
+  .garantias-vencer-header h1 {
+    font-size: 24px;
+  }
+
+  .garantias-vencer-counter {
+    width: 76px;
+    height: 58px;
+  }
+
+  .garantias-vencer-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px;
+  }
+
+  .garantias-vencer-refresh {
+    width: 100%;
+  }
+
+  .garantias-vencer-content {
+    padding: 12px;
+  }
+}

@@ -14,6 +14,7 @@ import {
   FaBoxes,
   FaCheckCircle,
   FaClipboardList,
+  FaExclamationTriangle,
   FaTools,
   FaTrashAlt,
 } from "react-icons/fa";
@@ -34,7 +35,7 @@ const Dashboard = () => {
   let usuario = null;
   try {
     usuario = JSON.parse(localStorage.getItem("usuario"));
-  } catch (e) {
+  } catch {
     usuario = null;
   }
 
@@ -48,6 +49,7 @@ const Dashboard = () => {
     bajas: 0,
   });
   const [statsEquipos, setStatsEquipos] = useState({ total: 0 });
+  const [garantiasPorVencer, setGarantiasPorVencer] = useState([]);
   const [tipoFilter, setTipoFilter] = useState("");
   const [estadoFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -97,14 +99,39 @@ const Dashboard = () => {
     }
   };
 
+  const fetchGarantiasPorVencer = async () => {
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    try {
+      const res = await fetch(`${API_URL}/unidades/garantias/por-vencer`, {
+        headers,
+      });
+
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesion expirada");
+      }
+
+      if (!res.ok) return;
+      const data = await res.json();
+      setGarantiasPorVencer(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Error garantias por vencer:", err);
+    }
+  };
+
   useEffect(() => {
     fetchStatsUnidades();
     fetchStatsEquipos();
+    fetchGarantiasPorVencer();
   }, []);
 
   const registrarEquipo = () => setIsEquipoModalOpen(true);
   const registrarObra = () => setIsObraModalOpen(true);
-  const verMapa = () => navigate("/mapa");
+  const refrescarDatosUnidades = () => {
+    fetchStatsUnidades();
+    fetchGarantiasPorVencer();
+  };
 
   return (
     <div className="container">
@@ -202,7 +229,60 @@ const Dashboard = () => {
             </button>
           </div>
         </div>
+        <div className="summary-card summary-card--garantias">
+          <div className="summary-card__icon">
+            <FaExclamationTriangle />
+          </div>
+          <div className="summary-card__content">
+            <button
+              className="btn-link"
+              onClick={() => navigate("/garantias-vencer")}
+            >
+              <p className="summary-card__number">
+                {garantiasPorVencer.length}
+              </p>
+              <h4 className="summary-card__label">Garantias por vencer</h4>
+            </button>
+          </div>
+        </div>
       </div>
+
+      {garantiasPorVencer.length > 0 && (
+        <div className="dashboard-card dashboard-card--garantias">
+          <div className="dashboard-section-heading">
+            <div>
+              <h2>Garantias por vencer</h2>
+              <p>Vencen dentro de los proximos 30 dias.</p>
+            </div>
+            <button
+              className="btn btn-acciones"
+              onClick={() => navigate("/garantias-vencer")}
+            >
+              Ver todas
+            </button>
+          </div>
+          <div className="garantias-dashboard-list">
+            {garantiasPorVencer.slice(0, 3).map((garantia) => (
+              <button
+                type="button"
+                className="garantia-dashboard-item"
+                key={garantia._id}
+                onClick={() => navigate(`/garantia/${garantia._id}`)}
+              >
+                <span className="garantia-dashboard-id">
+                  {garantia.identificador}
+                </span>
+                <span>
+                  {garantia.equipo?.nombre ||
+                    garantia.equipo?.codigo ||
+                    "Equipo sin nombre"}
+                </span>
+                <strong>{garantia.diasRestantes} dia(s)</strong>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="dashboard-card">
         <h2>Listado de equipos</h2>
@@ -225,7 +305,7 @@ const Dashboard = () => {
         </div>
         <ListadoGeneral
           refreshKey={refreshKey}
-          onUpdated={fetchStatsUnidades}
+          onUpdated={refrescarDatosUnidades}
           tipoFilter={tipoFilter}
           estadoFilter={estadoFilter}
           busquedaProp={searchQuery}
@@ -256,6 +336,7 @@ const Dashboard = () => {
         onSuccess={() => {
           fetchStatsEquipos();
           fetchStatsUnidades();
+          fetchGarantiasPorVencer();
           setRefreshKey((prev) => prev + 1);
         }}
       />
@@ -265,6 +346,7 @@ const Dashboard = () => {
         onClose={() => setIsObraModalOpen(false)}
         onSuccess={() => {
           fetchStatsUnidades();
+          fetchGarantiasPorVencer();
         }}
       />
 
@@ -277,6 +359,7 @@ const Dashboard = () => {
         initialEquipoId={selectedEquipoId}
         onSuccess={() => {
           fetchStatsUnidades();
+          fetchGarantiasPorVencer();
           setRefreshKey((prev) => prev + 1);
         }}
       />

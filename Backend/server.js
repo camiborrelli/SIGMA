@@ -9,10 +9,12 @@ import usuarioRoutes from "./v1/routes/usuario.routes.js";
 import obrasRoutes from "./v1/routes/obra.routes.js";
 import notificacionRoutes from "./v1/routes/notificacion.routes.js";
 import solicitudRoutes from "./v1/routes/solicitudTraslado.routes.js";
+import { iniciarMonitorGarantiasPorVencer } from "./v1/services/garantia.services.js";
 
 const app = express();
 
 await connectDB();
+iniciarMonitorGarantiasPorVencer();
 
 const allowedOrigins = [
   "https://sigma-front-five.vercel.app",

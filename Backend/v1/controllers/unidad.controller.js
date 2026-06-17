@@ -15,6 +15,10 @@ import {
   actualizarDescripcionUnidad,
   actualizarEtiquetaUnidad,
 } from "../services/unidad.services.js";
+import {
+  notificarGarantiasPorVencer,
+  obtenerGarantiasPorVencer,
+} from "../services/garantia.services.js";
 
 import Obra from "../models/obra.model.js";
 import Unidad from "../models/unidad.model.js";
@@ -136,6 +140,32 @@ export const getGarantiaUnidadController = async (req, res) => {
     return res
       .status(500)
       .json({ error: "Error al obtener garantía", message: error.message });
+  }
+};
+
+export const getGarantiasPorVencerController = async (req, res) => {
+  try {
+    const garantias = await obtenerGarantiasPorVencer(req.query.dias);
+    res.status(200).json(garantias);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "Error al obtener garantias por vencer",
+      message: error.message,
+    });
+  }
+};
+
+export const revisarGarantiasPorVencerController = async (req, res) => {
+  try {
+    const resultado = await notificarGarantiasPorVencer(req.query.dias);
+    res.status(200).json(resultado);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "Error al revisar garantias por vencer",
+      message: error.message,
+    });
   }
 };
 
