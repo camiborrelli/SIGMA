@@ -162,6 +162,13 @@ const GestionMantenimiento = () => {
                         )}`
                       : "Sin fecha de inicio"}
                   </div>
+                  <div className="gm-meta-row">
+                    <i className="ti ti-clock" aria-hidden="true" />
+                    Cantidad de reparaciones: {unidad.cantidadReparaciones || 0}
+                  </div>
+                  <div className="gm-meta-row">
+                    Garantía Activa: {unidad.garantia ? "Sí" : "No"}
+                  </div>
 
                   {dias !== null && (
                     <span className="gm-days-badge">
