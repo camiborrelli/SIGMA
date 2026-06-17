@@ -26,7 +26,7 @@ const GestionMantenimiento = () => {
       }
       if (!res.ok) throw new Error("Error al cargar unidades en mantenimiento");
       const data = await res.json();
-      setUnidades(data.unidades || data.mantenimiento || []);
+      setUnidades(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Error al cargar unidades en mantenimiento:", err);
       toast.error("No se pudieron cargar las unidades en mantenimiento");
