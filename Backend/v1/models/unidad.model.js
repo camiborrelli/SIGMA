@@ -28,6 +28,12 @@ const UnidadSchema = new Schema({
       usuario: { type: String, default: null },
       foto: { type: String, default: null },
       destino: { type: String, default: null },
+      comentarios: [
+        {
+          texto: String,
+          fecha: { type: Date, default: Date.now },
+        },
+      ],
     },
   ],
 });

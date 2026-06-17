@@ -1,0 +1,265 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+.gestion-mantenimiento {
+  font-family: "Inter", sans-serif;
+  padding: 1.5rem;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.gm-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.gm-header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.gm-count-pill {
+  font-size: 13px;
+  font-weight: 500;
+  color: #854f0b;
+  background: #faeeda;
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+
+.gm-loading,
+.gm-empty {
+  text-align: center;
+  padding: 3rem;
+  color: #888;
+  font-size: 14px;
+}
+
+/* ── Carrusel ── */
+.gm-carousel {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scroll-snap-type: x mandatory;
+}
+
+.gm-carousel::-webkit-scrollbar {
+  height: 6px;
+}
+.gm-carousel::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+}
+
+/* ── Card ── */
+.gm-card {
+  flex: 0 0 290px;
+  scroll-snap-align: start;
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.gm-card-photo {
+  width: 100%;
+  height: 140px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+
+.gm-card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.gm-card-body {
+  padding: 1rem 1.1rem;
+}
+
+.gm-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 2px;
+}
+
+.gm-card-sub {
+  font-size: 12px;
+  color: #888;
+  margin: 0 0 10px;
+}
+
+.gm-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 6px;
+}
+
+.gm-meta-row i {
+  font-size: 15px;
+  color: #999;
+  flex-shrink: 0;
+}
+
+.gm-days-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fef2f2;
+  color: #991b1b;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 8px;
+  margin-top: 6px;
+}
+
+.gm-divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 12px 0;
+}
+
+.gm-comentarios-activos {
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.gm-comentario-item {
+  font-size: 12px;
+  background: #f8fafc;
+  border-radius: 6px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gm-comentario-texto {
+  color: #1a1a1a;
+}
+.gm-comentario-fecha {
+  color: #aaa;
+  font-size: 11px;
+}
+
+.gm-card-body textarea {
+  width: 100%;
+  font-size: 13px;
+  font-family: "Inter", sans-serif;
+  min-height: 56px;
+  resize: vertical;
+  padding: 8px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  outline: none;
+  color: #1a1a1a;
+}
+
+.gm-card-body textarea:focus {
+  border-color: #94a3b8;
+}
+
+.gm-btn-comment {
+  margin-top: 8px;
+  width: 100%;
+  font-size: 13px;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  background: #3b6d11;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.gm-btn-comment:hover {
+  background: #27500a;
+}
+.gm-btn-comment:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.gm-history-toggle {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #185fa5;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.gm-history-toggle:hover {
+  text-decoration: underline;
+}
+
+.gm-history-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.gm-history-item {
+  font-size: 12px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gm-history-fechas {
+  color: #555;
+  font-weight: 500;
+}
+.gm-history-lugar {
+  color: #888;
+}
+.gm-history-comentario {
+  color: #1a1a1a;
+  font-style: italic;
+}
+
+@media (max-width: 480px) {
+  .gestion-mantenimiento {
+    padding: 1rem;
+  }
+  .gm-card {
+    flex: 0 0 78vw;
+  }
+}

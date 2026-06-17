@@ -8,13 +8,15 @@ import { FaRegUser, FaBell, FaSignOutAlt } from "react-icons/fa";
 import "./MainLayout.css";
 import ModalDetalleNotificacion from "./ModalDetalleNotificacion";
 import { API_URL } from "../../../api";
+import GestionMantenimiento from "../Unidad/GestionMantenimiento";
 
 const MainLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [notificaciones, setNotificaciones] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [notificacionSeleccionada, setNotificacionSeleccionada] = useState(null);
+  const [notificacionSeleccionada, setNotificacionSeleccionada] =
+    useState(null);
   const [verModalNotificacion, setVerModalNotificacion] = useState(false);
 
   const headerRef = useRef(null);
@@ -225,6 +227,12 @@ const MainLayout = () => {
                 ? "Gestión de equipos y usuarios"
                 : "Gestión de equipos"}
             </span>
+          </button>
+          <button
+            className={"btn-nav"}
+            onClick={() => navigate("/gestion-mantenimiento")}
+          >
+            Gestion de Mantenimiento
           </button>
           <button
             className={`btn-nav ${

@@ -75,7 +75,7 @@ export const agregarUnidadController = async (req, res) => {
 export const enviarAMantenimientoController = async (req, res) => {
   try {
     const { id } = req.params;
-    const { destino } = req.body; 
+    const { destino } = req.body;
 
     const usuarioNombre = req.usuario
       ? `${req.usuario.nombre || ""} ${req.usuario.apellido || ""}`.trim() ||
@@ -85,7 +85,12 @@ export const enviarAMantenimientoController = async (req, res) => {
 
     const fotoUrl = req.file ? req.file.path : null;
 
-    const unidad = await enviarAMantenimiento(id, usuarioNombre, fotoUrl, destino);
+    const unidad = await enviarAMantenimiento(
+      id,
+      usuarioNombre,
+      fotoUrl,
+      destino,
+    );
 
     res.status(200).json(unidad);
   } catch (error) {
@@ -415,5 +420,56 @@ export const getUnidadesController = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al obtener las unidades" });
+  }
+};
+
+export const getUnidadesMantenimientoController = async (req, res) => {
+  try {
+    const unidades = await Unidad.find({ estado: "Mantenimiento" })
+      .populate("equipo")
+      .populate("ubicacion");
+    res.status(200).json(unidades);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "Error al obtener las unidades en mantenimiento" });
+  }
+};
+export const agregarComentarioMantenimientoController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { comentario } = req.body;
+
+    if (!comentario) {
+      return res.status(400).json({ error: "Debe proporcionar un comentario" });
+    }
+
+    const unidad = await Unidad.findById(id);
+    if (!unidad) {
+      return res.status(404).json({ error: "Unidad no encontrada" });
+    }
+
+    //Busco el último registro de mantenimiento y verifico que esté en curso
+    const ultimoRegistro =
+      unidad.historialMantenimiento[unidad.historialMantenimiento.length - 1];
+
+    if (!ultimoRegistro || ultimoRegistro.fechaFin) {
+      return res
+        .status(400)
+        .json({ error: "La unidad no está en mantenimiento" });
+    }
+
+    ultimoRegistro.comentarios.push({
+      texto: comentario,
+      fecha: new Date(),
+    });
+    await unidad.save();
+    res.status(200).json(unidad);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "Error al agregar comentario de mantenimiento" });
   }
 };

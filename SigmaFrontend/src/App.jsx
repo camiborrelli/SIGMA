@@ -14,7 +14,8 @@ import RegistrarUnidad from "./Componentes/Unidad/RegistrarUnidad";
 import Garantia from "./Componentes/Unidad/Garantia";
 import Mapa from "./Componentes/Mapa/Mapa";
 import PerfilUsuario from "./Componentes/Usuario/PerfilUsuario";
-import ModalTokenExpirado from "./Componentes/Usuario/ModalTokenExpirado"; 
+import ModalTokenExpirado from "./Componentes/Usuario/ModalTokenExpirado";
+import GestionMantenimiento from "./Componentes/Unidad/GestionMantenimiento";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -68,15 +69,19 @@ function App() {
           <Route path="/garantia/:id" element={<Garantia />} />
           <Route path="/mapa" element={<Mapa />} />
           <Route path="/perfil" element={<PerfilUsuario />} />
+          <Route
+            path="/gestion-mantenimiento"
+            element={<GestionMantenimiento />}
+          />
         </Route>
 
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
 
       {sesionExpirada && (
-        <ModalTokenExpirado 
-          isOpen={sesionExpirada} 
-          onClose={() => setSesionExpirada(false)} 
+        <ModalTokenExpirado
+          isOpen={sesionExpirada}
+          onClose={() => setSesionExpirada(false)}
         />
       )}
     </div>

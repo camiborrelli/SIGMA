@@ -19,6 +19,7 @@ import {
   actualizarDescripcionUnidadController,
   actualizarEtiquetaUnidadController,
   getUnidadesController,
+  getUnidadesMantenimientoController,
 } from "../controllers/unidad.controller.js";
 import { verificarToken } from "../middlewares/auth.js";
 import multer from "multer";
@@ -28,7 +29,12 @@ const upload = multer({ storage: storage });
 const router = express.Router();
 
 router.get("/equipo/:equipoId", verificarToken, getUnidadesPorEquipoController);
-router.get("/", verificarToken, getUnidadesController); 
+router.get("/", verificarToken, getUnidadesController);
+router.get(
+  "/mantenimiento",
+  verificarToken,
+  getUnidadesMantenimientoController,
+);
 router.post("/baja/:id", verificarToken, bajaUnidadController);
 router.post(
   "/mantenimiento/:id",
