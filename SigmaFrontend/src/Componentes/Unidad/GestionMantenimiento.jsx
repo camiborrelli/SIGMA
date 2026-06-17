@@ -141,11 +141,6 @@ const GestionMantenimiento = () => {
                 </div>
 
                 <div className="gm-card-body">
-                  <p className="gm-card-title">{unidad.nombre}</p>
-                  <p className="gm-card-sub">
-                    {unidad.tipo} {unidad.modelo ? `· ${unidad.modelo}` : ""}
-                  </p>
-
                   <div className="gm-meta-row">
                     <i className="ti ti-map-pin" aria-hidden="true" />
                     {activa?.destino || "Lugar no especificado"}
@@ -167,7 +162,13 @@ const GestionMantenimiento = () => {
                     Cantidad de reparaciones: {unidad.cantidadReparaciones || 0}
                   </div>
                   <div className="gm-meta-row">
-                    Garantía Activa: {unidad.garantia ? "Sí" : "No"}
+                    <i className="ti ti-shield" aria-hidden="true" /> Garantía
+                    Activa:{" "}
+                    {unidad.garantia.fechaFin
+                      ? dayjs(unidad.garantia.fechaFin).isAfter(dayjs())
+                        ? "Sí"
+                        : "No"
+                      : "No especificada"}
                   </div>
 
                   {dias !== null && (

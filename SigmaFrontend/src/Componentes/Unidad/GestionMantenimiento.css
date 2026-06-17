@@ -4,6 +4,13 @@
   box-sizing: border-box;
 }
 
+.gm-card h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1e293b; /* gris oscuro, visible sobre fondo blanco */
+  margin-bottom: 0.8rem;
+}
+
 .gestion-mantenimiento {
   font-family: "Inter", sans-serif;
   padding: 1.5rem;
@@ -196,7 +203,7 @@
   padding: 8px;
   border-radius: 8px;
   border: none;
-  background: #ed4426;
+  background: #3b6d11;
   color: #fff;
   cursor: pointer;
   transition: background 0.15s;
