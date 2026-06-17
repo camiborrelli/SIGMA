@@ -16,16 +16,17 @@ const GestionMantenimiento = () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`${API_URL}/unidades/stats`, {
+      const res = await fetch(`${API_URL}/unidades/mantenimiento`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
+
       if (res.status === 401) {
         window.dispatchEvent(new Event("token-expirado"));
         throw new Error("Sesión expirada");
       }
       if (!res.ok) throw new Error("Error al cargar unidades en mantenimiento");
       const data = await res.json();
-      setUnidades(Array.isArray(data.mantenimiento) ? data.mantenimiento : []);
+      setUnidades(data.unidades || data.mantenimiento || []);
     } catch (err) {
       console.error("Error al cargar unidades en mantenimiento:", err);
       toast.error("No se pudieron cargar las unidades en mantenimiento");

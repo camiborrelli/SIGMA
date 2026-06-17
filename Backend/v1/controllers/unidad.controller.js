@@ -425,7 +425,7 @@ export const getUnidadesController = async (req, res) => {
 
 export const getUnidadesMantenimientoController = async (req, res) => {
   try {
-    const unidades = await Unidad.find({ estado: "Mantenimiento" })
+    const unidades = await Unidad.find({ estado: "En mantenimiento" })
       .populate("equipo")
       .populate("ubicacion");
     res.status(200).json(unidades);
