@@ -41,7 +41,19 @@ const GarantiasPorVencer = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [busqueda, setBusqueda] = useState("");
-  const [indiceActual, setIndiceActual] = useState(0);
+  
+  // Estado para la página actual y cantidad de items por pantalla
+  const [paginaActual, setPaginaActual] = useState(0);
+  const [itemsPorPagina, setItemsPorPagina] = useState(window.innerWidth >= 768 ? 2 : 1);
+
+  // Escuchar el tamaño de la pantalla para ajustar la cantidad de tarjetas (1 en móvil, 2 en tablet/desktop)
+  useEffect(() => {
+    const handleResize = () => {
+      setItemsPorPagina(window.innerWidth >= 768 ? 2 : 1);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const cargarGarantias = async () => {
     const token = localStorage.getItem("token");
@@ -64,7 +76,7 @@ const GarantiasPorVencer = () => {
       }
 
       setGarantias(Array.isArray(data) ? data : []);
-      setIndiceActual(0);
+      setPaginaActual(0);
     } catch (err) {
       console.error(err);
       setError(err.message || "No se pudieron cargar las garantias");
@@ -98,19 +110,36 @@ const GarantiasPorVencer = () => {
     });
   }, [busqueda, garantias]);
 
+  // Total de páginas calculadas dinámicamente
+  const totalPaginas = Math.ceil(garantiasFiltradas.length / itemsPorPagina);
+
+  // Si busca algo y los resultados bajan, evitamos quedar en una página vacía
   useEffect(() => {
-    setIndiceActual(0);
+    if (paginaActual >= totalPaginas && totalPaginas > 0) {
+      setPaginaActual(totalPaginas - 1);
+    } else if (totalPaginas === 0) {
+      setPaginaActual(0);
+    }
+  }, [garantiasFiltradas.length, itemsPorPagina, paginaActual, totalPaginas]);
+
+  // Si el usuario tipea una nueva búsqueda, volvemos a la página 0
+  useEffect(() => {
+    setPaginaActual(0);
   }, [busqueda]);
 
   const irAnterior = () => {
-    if (indiceActual > 0) setIndiceActual(indiceActual - 1);
+    setPaginaActual((p) => Math.max(0, p - 1));
   };
 
   const irSiguiente = () => {
-    if (indiceActual < garantiasFiltradas.length - 1) setIndiceActual(indiceActual + 1);
+    setPaginaActual((p) => Math.min(totalPaginas - 1, p + 1));
   };
 
-  const garantiaActual = garantiasFiltradas[indiceActual];
+  // Obtener solo las tarjetas que corresponden a la página actual
+  const garantiasMostradas = garantiasFiltradas.slice(
+    paginaActual * itemsPorPagina,
+    (paginaActual + 1) * itemsPorPagina
+  );
 
   return (
     <div className="garantias-vencer-page">
@@ -177,52 +206,54 @@ const GarantiasPorVencer = () => {
                   type="button"
                   className="garantias-vencer-control"
                   onClick={irAnterior}
-                  disabled={indiceActual === 0}
+                  disabled={paginaActual === 0}
                 >
                   <FaChevronLeft />
                 </button>
 
                 <div className="garantias-vencer-list">
-                  <article className="garantia-vencer-item">
-                    <div className="garantia-vencer-main">
-                      <div className="garantia-vencer-icon">
-                        <FaTools />
+                  {garantiasMostradas.map((garantia) => (
+                    <article className="garantia-vencer-item" key={garantia._id}>
+                      <div className="garantia-vencer-main">
+                        <div className="garantia-vencer-icon">
+                          <FaTools />
+                        </div>
+                        <div>
+                          <h3>{garantia.identificador}</h3>
+                          <p>{getEquipoNombre(garantia)}</p>
+                          {getEquipoDetalle(garantia) && (
+                            <span>{getEquipoDetalle(garantia)}</span>
+                          )}
+                        </div>
                       </div>
-                      <div>
-                        <h3>{garantiaActual.identificador}</h3>
-                        <p>{getEquipoNombre(garantiaActual)}</p>
-                        {getEquipoDetalle(garantiaActual) && (
-                          <span>{getEquipoDetalle(garantiaActual)}</span>
-                        )}
-                      </div>
-                    </div>
 
-                    <div className="garantia-vencer-meta">
-                      <div>
-                        <FaCalendarAlt />
-                        <span>Vence {formatDate(garantiaActual.fechaFinGarantia)}</span>
+                      <div className="garantia-vencer-meta">
+                        <div>
+                          <FaCalendarAlt />
+                          <span>Vence {formatDate(garantia.fechaFinGarantia)}</span>
+                        </div>
+                        <div>
+                          <FaMapMarkerAlt />
+                          <span>{getUbicacion(garantia)}</span>
+                        </div>
                       </div>
-                      <div>
-                        <FaMapMarkerAlt />
-                        <span>{getUbicacion(garantiaActual)}</span>
-                      </div>
-                    </div>
 
-                    <div className="garantia-vencer-actions">
-                      <span className="garantia-vencer-days">
-                        {garantiaActual.diasRestantes} dia(s)
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => navigate(`/garantia/${garantiaActual._id}`)}
-                      >
-                        Ver garantia
-                      </button>
-                    </div>
-                  </article>
+                      <div className="garantia-vencer-actions">
+                        <span className="garantia-vencer-days">
+                          {garantia.diasRestantes} dia(s)
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/garantia/${garantia._id}`)}
+                        >
+                          Ver garantia
+                        </button>
+                      </div>
+                    </article>
+                  ))}
                   
                   <div className="garantias-vencer-indicator">
-                    Tarjeta {indiceActual + 1} de {garantiasFiltradas.length}
+                    Página {paginaActual + 1} de {totalPaginas}
                   </div>
                 </div>
 
@@ -230,7 +261,7 @@ const GarantiasPorVencer = () => {
                   type="button"
                   className="garantias-vencer-control"
                   onClick={irSiguiente}
-                  disabled={indiceActual === garantiasFiltradas.length - 1}
+                  disabled={paginaActual >= totalPaginas - 1}
                 >
                   <FaChevronRight />
                 </button>

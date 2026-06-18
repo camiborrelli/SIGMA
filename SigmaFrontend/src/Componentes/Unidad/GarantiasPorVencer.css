@@ -153,10 +153,11 @@
   gap: 16px;
 }
 
+/* Cambiamos la lista a Grid de 2 columnas para tablet/escritorio */
 .garantias-vencer-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
   flex: 1;
 }
 
@@ -188,7 +189,7 @@
 
 .garantia-vencer-item {
   display: grid;
-  grid-template-columns: minmax(260px, 1.3fr) minmax(240px, 1fr) auto;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) auto;
   align-items: center;
   gap: 16px;
   padding: 14px;
@@ -226,11 +227,17 @@
   color: #0f172a;
   font-size: 16px;
   font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .garantia-vencer-main p {
   color: #334155;
   font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .garantia-vencer-main span {
@@ -271,13 +278,15 @@
 }
 
 .garantias-vencer-indicator {
+  grid-column: 1 / -1; /* Hace que ocupe todo el ancho de las 2 columnas */
   text-align: center;
   margin-top: 10px;
   font-size: 14px;
   color: #64748b;
 }
 
-@media (max-width: 900px) {
+/* Modificamos el breakpoint para que la tarjeta ajuste sus proporciones mejor dentro del espacio a la mitad */
+@media (max-width: 1050px) {
   .garantia-vencer-item {
     grid-template-columns: 1fr;
     align-items: flex-start;
@@ -289,7 +298,12 @@
   }
 }
 
+/* Y si baja de Tablet (768px), volvemos a mostrar de a 1 sola tarjeta */
 @media (max-width: 768px) {
+  .garantias-vencer-list {
+    grid-template-columns: 1fr;
+  }
+  
   .garantias-vencer-page {
     padding: 18px 10px;
   }
