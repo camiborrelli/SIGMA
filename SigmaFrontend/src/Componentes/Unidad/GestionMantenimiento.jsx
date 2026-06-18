@@ -31,7 +31,7 @@ const GestionMantenimiento = () => {
       }
       if (!res.ok) throw new Error("Error al cargar unidades en mantenimiento");
       const data = await res.json();
-      setUnidades(Array.isArray(data) ? data : []);
+      setUnidades(data);
       console.log("status:", res.status, "data:", data);
     } catch (err) {
       console.error("Error al cargar unidades en mantenimiento:", err);
@@ -243,7 +243,6 @@ const GestionMantenimiento = () => {
                 🔧 Reparaciones: {garantiaUnidad.cantReparaciones || 0}
               </div>
 
-              {/* comentario */}
               <div className="gm-comment-row">
                 <textarea
                   value={comentarios[unidad._id] || ""}
@@ -260,7 +259,6 @@ const GestionMantenimiento = () => {
                 </button>
               </div>
 
-              {/* acciones */}
               <div className="gm-actions">
                 <button
                   className="gm-btn-action gm-btn-finish"
@@ -277,7 +275,6 @@ const GestionMantenimiento = () => {
                 </button>
               </div>
 
-              {/* historial */}
               {historialPrevio.length > 0 && (
                 <>
                   <span
@@ -309,40 +306,6 @@ const GestionMantenimiento = () => {
       })}
     </div>
   );
-
-  {
-    /* {garantiaSeleccionada && (
-        <div className="gm-modal">
-          <div className="gm-modal-content">
-            <h3>Garantía</h3>
-
-            <p>
-              Fecha compra:{" "}
-              {garantiaSeleccionada.fechaCompra
-                ? dayjs(garantiaSeleccionada.fechaCompra).format("DD/MM/YYYY")
-                : "-"}
-            </p>
-
-            <p>
-              Fin garantía:{" "}
-              {garantiaSeleccionada.fechaFinGarantia
-                ? dayjs(garantiaSeleccionada.fechaFinGarantia).format(
-                    "DD/MM/YYYY",
-                  )
-                : "-"}
-            </p>
-
-            <p>
-              Estado: {garantiaSeleccionada.enGarantia ? "Activa" : "Vencida"}
-            </p>
-
-            <button onClick={() => navigate(-1      )}>
-              Cerrar
-            </button>
-          </div>
-        </div>
-      )} */
-  }
 };
 
 export default GestionMantenimiento;
