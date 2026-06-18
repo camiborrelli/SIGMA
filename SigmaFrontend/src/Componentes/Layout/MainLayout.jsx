@@ -9,6 +9,7 @@ import {
   FaExclamationTriangle,
   FaRegUser,
   FaSignOutAlt,
+  FaTools,
 } from "react-icons/fa";
 import "./MainLayout.css";
 import ModalDetalleNotificacion from "./ModalDetalleNotificacion";
@@ -238,15 +239,17 @@ const MainLayout = () => {
             <VscTools />{" "}
             <span>
               {usuario?.rol === "Admin"
-                ? "Gestión de equipos y usuarios"
+                ? "Gestión"
                 : "Gestión de equipos"}
             </span>
           </button>
           <button
-            className={"btn-nav"}
+            className={`btn-nav ${
+              location.pathname === "/gestion-mantenimiento" ? "active" : ""
+            }`}
             onClick={() => navigate("/gestion-mantenimiento")}
           >
-            Gestion de Mantenimiento
+            <FaTools /> <span>Gestion de mantenimiento</span>
           </button>
           <button
             className={`btn-nav ${
@@ -318,11 +321,11 @@ const MainLayout = () => {
         </button>
         <button
           className={`mobile-footer-btn ${
-            location.pathname === "/garantias-vencer" ? "active" : ""
+            location.pathname === "/gestion-mantenimiento" ? "active" : ""
           }`}
-          onClick={() => navigate("/garantias-vencer")}
+          onClick={() => navigate("/gestion-mantenimiento")}
         >
-          <FaExclamationTriangle /> <span>Garantias</span>
+          <FaTools /> <span>Manten.</span>
         </button>
         <div className="notification-wrapper mobile-only">
           <button className="mobile-footer-btn" onClick={handleToggleDropdown}>
