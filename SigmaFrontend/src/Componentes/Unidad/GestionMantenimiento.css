@@ -1,125 +1,111 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 * {
   box-sizing: border-box;
 }
 
-.gm-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 1rem;
-}
-
-.gm-card-header h2 {
-  margin: 0;
-  padding: 0;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #111827;
-  text-transform: uppercase;
-}
-
 .gestion-mantenimiento {
   font-family: "Inter", sans-serif;
   padding: 1.5rem;
-  background: #f5f5f5;
+  background: #efefef;
   min-height: 100vh;
 }
 
 .gm-header {
   display: flex;
-  align-items: baseline;
   justify-content: space-between;
-  margin-bottom: 1.25rem;
+  align-items: center;
+  margin-bottom: 24px;
 }
 
 .gm-header h1 {
-  font-size: 20px;
-  font-weight: 600;
-  color: #1a1a1a;
   margin: 0;
-}
-
-.gm-status {
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.gm-status.activa {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.gm-status.vencida {
-  background: #fee2e2;
-  color: #991b1b;
+  font-size: 22px;
+  color: #1f2937;
 }
 
 .gm-count-pill {
+  background: #fff;
+  color: #374151;
   font-size: 13px;
-  font-weight: 500;
-  color: #854f0b;
-  background: #faeeda;
-  padding: 4px 12px;
+  font-weight: 600;
+  padding: 8px 14px;
   border-radius: 8px;
 }
 
-.gm-loading,
-.gm-empty {
-  text-align: center;
-  padding: 3rem;
-  color: #888;
-  font-size: 14px;
-}
-
-/* ── Carrusel ── */
 .gm-carousel {
   display: flex;
-  gap: 14px;
+  gap: 18px;
   overflow-x: auto;
   padding-bottom: 10px;
-  scroll-snap-type: x mandatory;
 }
 
 .gm-carousel::-webkit-scrollbar {
-  height: 6px;
+  height: 8px;
 }
+
 .gm-carousel::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 4px;
+  background: #cbd5e1;
+  border-radius: 20px;
 }
 
-/* ── Card ── */
+/* CARD */
+
 .gm-card {
-  flex: 0 0 320px;
-  scroll-snap-align: start;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  flex: 0 0 340px;
+  background: #e7e5e4;
+  border-radius: 4px;
+  padding: 18px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-.gm-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+/* HEADER */
+
+.gm-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.gm-card-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  text-transform: uppercase;
+}
+
+.gm-status {
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: white;
+}
+
+.gm-status.activa {
+  background: #64748b;
+}
+
+.gm-status.vencida {
+  background: #dc2626;
+}
+
+/* FOTO + INFO */
+
+.gm-top-section {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .gm-card-photo {
-  width: 100%;
-  height: 180px;
-  background: #f1f5f9;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  background: #d1d5db;
+  border: 1px solid #cbd5e1;
 }
 
 .gm-card-photo img {
@@ -128,284 +114,208 @@
   object-fit: cover;
 }
 
-.gm-card-body {
-  padding: 1rem 1.1rem;
+.gm-info {
+  flex: 1;
 }
 
-.gm-card-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin: 0 0 2px;
+.gm-info-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 6px;
 }
 
-.gm-card-sub {
+.gm-days {
+  color: #dc2626;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.gm-days span {
+  display: block;
   font-size: 12px;
-  color: #888;
-  margin: 0 0 10px;
+  font-weight: 500;
 }
+
+/* PROGRESS */
+
+.gm-progress {
+  height: 6px;
+  background: #d1d5db;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.gm-progress-bar {
+  height: 100%;
+  background: #dc2626;
+}
+
+/* META */
 
 .gm-meta-row {
   display: flex;
   align-items: center;
   gap: 6px;
+  color: #6b7280;
   font-size: 13px;
-  color: #555;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .gm-meta-row i {
-  font-size: 15px;
-  color: #999;
-  flex-shrink: 0;
+  font-size: 14px;
 }
 
-.gm-days-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: #fef2f2;
-  color: #991b1b;
-  font-size: 12px;
-  font-weight: 500;
-  padding: 3px 10px;
-  border-radius: 8px;
-  margin-top: 6px;
-}
-
-.gm-divider {
-  height: 1px;
-  background: #f1f5f9;
-  margin: 12px 0;
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-}
-
-.gm-comentarios-activos {
-  list-style: none;
-  margin: 0 0 10px;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-height: 100px;
-  overflow-y: auto;
-}
+/* COMENTARIO RECIENTE */
 
 .gm-comentario-item {
-  font-size: 12px;
-  background: #f8fafc;
-  border-radius: 6px;
-  padding: 6px 8px;
+  background: #f5f5f4;
+  padding: 12px;
+  border-radius: 4px;
+  margin-top: 14px;
+}
+
+.gm-comentario-header {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.gm-comentario-titulo {
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.gm-comentario-fecha {
+  font-size: 12px;
+  color: #9ca3af;
 }
 
 .gm-comentario-texto {
-  color: #ffffff;
-}
-.gm-comentario-fecha {
-  color: #aaa;
-  font-size: 11px;
-}
-
-.gm-card-body textarea {
-  width: 100%;
-  font-size: 13px;
-  font-family: "Inter", sans-serif;
-  min-height: 56px;
-  resize: vertical;
-  padding: 8px 10px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  outline: none;
-  color: #1a1a1a;
-  background: #fff;
-}
-
-.gm-card-body textarea:focus {
-  border-color: #94a3b8;
-}
-
-.gm-btn-comment {
-  margin-top: 8px;
-  width: 100%;
-  font-size: 13px;
-  font-family: "Inter", sans-serif;
-  font-weight: 600;
-  padding: 8px;
-  border-radius: 8px;
-  border: none;
-  background: #3b6d11;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.gm-btn-comment:hover {
-  background: #27500a;
-}
-.gm-btn-comment:disabled {
-  background: #94a3b8;
-  cursor: not-allowed;
-}
-
-.gm-history-toggle {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 500;
-  color: #185fa5;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-.gm-history-toggle:hover {
-  text-decoration: underline;
-}
-
-.gm-history-list {
-  list-style: none;
-  margin: 8px 0 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 160px;
-  overflow-y: auto;
-}
-
-.gm-history-item {
-  font-size: 12px;
-  border-top: 1px solid #f1f5f9;
-  padding-top: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.gm-history-fechas {
-  color: #555;
-  font-weight: 500;
-}
-.gm-history-lugar {
-  color: #888;
-}
-.gm-history-comentario {
-  color: #1a1a1a;
   font-style: italic;
+  font-size: 14px;
+  color: #374151;
 }
 
-@media (max-width: 480px) {
-  .gestion-mantenimiento {
-    padding: 1rem;
-  }
-  .gm-card {
-    flex: 0 0 78vw;
-  }
-}
+/* INPUT COMENTARIO */
 
-.gm-garantia {
+.gm-comment-row {
   display: flex;
-  align-items: center;
   gap: 6px;
-  margin: 0 1rem 0.75rem;
-  padding: 8px 10px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
+  margin-top: 14px;
 }
 
-.gm-garantia.activa {
-  background: #ecfdf5;
-  color: #166534;
-  border: 1px solid #bbf7d0;
+.gm-comment-row textarea {
+  flex: 1;
+  min-height: 44px;
+  max-height: 44px;
+  resize: none;
+  border: none;
+  background: #d6d3d1;
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 13px;
+  outline: none;
 }
 
-.gm-garantia.vencida {
-  background: #fef2f2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
+.gm-btn-send {
+  width: 44px;
+  min-width: 44px;
+  border: none;
+  background: #f5f5f4;
+  color: #dc2626;
+  font-size: 22px;
+  cursor: pointer;
+  border-radius: 4px;
 }
+
+.gm-btn-send:hover {
+  background: #e7e5e4;
+}
+
+/* BOTONES */
 
 .gm-actions {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 16px;
 }
 
 .gm-btn-action {
-  width: 100%;
   border: none;
-  border-radius: 8px;
-  padding: 10px;
-  font-size: 13px;
-  font-weight: 600;
+  height: 38px;
+  font-size: 12px;
+  font-weight: 700;
   cursor: pointer;
-  transition: 0.2s;
-}
-
-.gm-btn-comment {
-  background: #3b6d11;
-  color: white;
-}
-
-.gm-btn-comment:hover {
-  background: #27500a;
+  transition: 0.15s;
 }
 
 .gm-btn-finish {
-  background: #fd2121;
+  background: #dc2626;
   color: white;
 }
 
 .gm-btn-finish:hover {
-  background: #dc2626;
+  background: #b91c1c;
 }
 
 .gm-btn-garantia {
-  background: #f8fafc;
-  color: #334155;
-  border: 1px solid #cbd5e1;
+  background: #f5f5f4;
+  color: #111827;
 }
 
 .gm-btn-garantia:hover {
-  background: #e2e8f0;
+  background: #e7e5e4;
 }
 
-.gm-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
+/* HISTORIAL */
 
-.gm-modal-content {
-  width: min(450px, 90vw);
-  background: white;
-  border-radius: 14px;
-  padding: 1.5rem;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-}
-
-.gm-modal-content h3 {
-  margin-top: 0;
-  margin-bottom: 1rem;
-  color: #1e293b;
-}
-
-.gm-modal-content button {
-  margin-top: 1rem;
-  width: 100%;
-  border: none;
-  border-radius: 8px;
-  padding: 10px;
-  background: #334155;
-  color: white;
+.gm-history-toggle {
+  display: block;
+  margin-top: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2563eb;
   cursor: pointer;
+}
+
+.gm-history-list {
+  margin-top: 10px;
+  padding: 0;
+  list-style: none;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.gm-history-item {
+  background: white;
+  padding: 8px;
+  margin-bottom: 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.gm-history-fechas {
+  font-weight: 600;
+  color: #374151;
+}
+
+.gm-history-lugar {
+  color: #6b7280;
+}
+
+.gm-history-comentario {
+  font-style: italic;
+  color: #111827;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+  .gm-card {
+    flex: 0 0 90vw;
+  }
 }
