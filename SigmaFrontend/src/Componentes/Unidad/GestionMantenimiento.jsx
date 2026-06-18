@@ -186,7 +186,7 @@ const GestionMantenimiento = () => {
 
             const fotoSrc = buildFotoSrc(activa?.foto);
 
-            const garantia = garantias[unidad._id] || {};
+            const garantia = obtenerGarantia(unidad);
 
             const historialPrevio = (
               garantia.historialMantenimiento || []
