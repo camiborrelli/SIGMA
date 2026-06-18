@@ -13,7 +13,8 @@ const GestionMantenimiento = () => {
   const [guardando, setGuardando] = useState({});
   const [historialAbierto, setHistorialAbierto] = useState({});
   const [garantia, setGarantia] = useState({});
-  const [navigate, useNavigate] = useState(null);
+  const [navigate] = useNavigate();
+  const [garantias, setGarantias] = useState({});
 
   const fetchUnidadesMantenimiento = async () => {
     setLoading(true);
@@ -132,12 +133,12 @@ const GestionMantenimiento = () => {
   //   historialMantenimiento: unidad.historialMantenimiento || [],
   // };
 
-  const finalizarMantenimiento = async () => {
-    if (!maquinaId) return;
+  const finalizarMantenimiento = async (unidad) => {
+    if (!unidad._id) return;
     const token = localStorage.getItem("token");
     try {
       const res = await fetch(
-        `${API_URL}/unidades/mantenimiento/finalizar/${maquinaId}`,
+        `${API_URL}/unidades/mantenimiento/finalizar/${unidad._id}`,
         {
           method: "POST",
           headers: { Authorization: token ? `Bearer ${token}` : "" },
@@ -155,6 +156,21 @@ const GestionMantenimiento = () => {
       }
     } catch {
       toast.error("Error al finalizar mantenimiento");
+    }
+  };
+
+  const cantReparaciones = async (unidadId) => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`${API_URL}/unidades/${unidadId}/reparaciones`, {
+        headers,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCantReparaciones(data.cantReparaciones || 0);
+      }
+    } catch (err) {
+      console.error("Error al obtener cantidad de reparaciones:", err);
     }
   };
 
@@ -186,7 +202,7 @@ const GestionMantenimiento = () => {
 
             const fotoSrc = buildFotoSrc(activa?.foto);
 
-            const garantia = obtenerGarantia(unidad);
+            const garantia = garantias[unidad._id] || {};
 
             const historialPrevio = (
               garantia.historialMantenimiento || []
@@ -268,7 +284,7 @@ const GestionMantenimiento = () => {
                       ✅ Finalizar mantenimiento
                     </button>
 
-                    <button onClick={() => navigate(`/garantia/${unidad._id}`)}>
+                    <button onClick={() => setGarantiaSeleccionada(garantia)}>
                       🛡 Ver garantía
                     </button>
                   </div>
