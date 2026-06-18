@@ -2,7 +2,6 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { connectDB } from "./v1/db.js";
-
 import equipoRoutes from "./v1/routes/equipo.routes.js";
 import unidadRoutes from "./v1/routes/unidad.routes.js";
 import usuarioRoutes from "./v1/routes/usuario.routes.js";
@@ -17,6 +16,7 @@ await connectDB();
 iniciarMonitorGarantiasPorVencer();
 
 const allowedOrigins = [
+  "http://localhost:5173",
   "https://sigma-front-five.vercel.app",
   "https://sigma-front-git-develop-camilas-projects-2b00654e.vercel.app",
 ];
@@ -42,15 +42,15 @@ app.get("/", (req, res) => {
   });
 });
 
-app.listen(process.env.PORT || 5001, () => {
-  console.log(`Servidor corriendo en puerto ${process.env.PORT || 5001}`);
-});
-
 app.use("/unidades", unidadRoutes);
 app.use("/equipos", equipoRoutes);
 app.use("/usuarios", usuarioRoutes);
 app.use("/obras", obrasRoutes);
 app.use("/notificaciones", notificacionRoutes);
 app.use("/solicitudes", solicitudRoutes);
+
+app.listen(process.env.PORT || 5001, () => {
+  console.log(`Servidor corriendo en puerto ${process.env.PORT || 5001}`);
+});
 
 export default app;
