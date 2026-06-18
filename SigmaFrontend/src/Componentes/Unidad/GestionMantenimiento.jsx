@@ -9,33 +9,32 @@ import { useNavigate } from "react-router-dom";
 const GestionMantenimiento = () => {
   const [unidades, setUnidades] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const [comentarios, setComentarios] = useState({});
   const [guardando, setGuardando] = useState({});
   const [historialAbierto, setHistorialAbierto] = useState({});
-  const [garantia, setGarantia] = useState({});
+
   const [garantias, setGarantias] = useState({});
 
   const navigate = useNavigate();
 
   const fetchUnidadesMantenimiento = async () => {
     setLoading(true);
+
     const token = localStorage.getItem("token");
+
     try {
       const res = await fetch(`${API_URL}/unidades/mantenimiento`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
-      if (res.status === 401) {
-        window.dispatchEvent(new Event("token-expirado"));
-        throw new Error("Sesión expirada");
-      }
-      if (!res.ok) throw new Error("Error al cargar unidades en mantenimiento");
+      if (!res.ok) throw new Error();
+
       const data = await res.json();
-      setUnidades(data);
-      console.log("status:", res.status, "data:", data);
+
+      setUnidades(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error("Error al cargar unidades en mantenimiento:", err);
-      toast.error("No se pudieron cargar las unidades en mantenimiento");
+      toast.error("Error al cargar unidades");
       setUnidades([]);
     } finally {
       setLoading(false);
@@ -45,14 +44,49 @@ const GestionMantenimiento = () => {
   useEffect(() => {
     fetchUnidadesMantenimiento();
   }, []);
-  // Devuelve la entrada activa (sin fechaFin) del historial de mantenimiento
+
+  useEffect(() => {
+    if (!unidades.length) return;
+
+    const cargarGarantias = async () => {
+      const nuevas = {};
+
+      await Promise.all(
+        unidades.map(async (u) => {
+          const g = await obtenerGarantia(u._id);
+          nuevas[u._id] = g?.garantia || g || {};
+        }),
+      );
+
+      setGarantias(nuevas);
+    };
+
+    cargarGarantias();
+  }, [unidades]);
+
+  const obtenerGarantia = async (unidadId) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`${API_URL}/unidades/garantia/${unidadId}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      if (!res.ok) return null;
+
+      return await res.json();
+    } catch {
+      return null;
+    }
+  };
+
   const getEntradaActiva = (unidad) => {
     const historial = unidad.historialMantenimiento || [];
     return [...historial].reverse().find((h) => !h.fechaFin) || null;
   };
 
   const getDiasEnMantenimiento = (fechaInicio) => {
-    if (!fechaInicio) return null;
+    if (!fechaInicio) return 0;
     return dayjs().diff(dayjs(fechaInicio), "day");
   };
 
@@ -61,25 +95,26 @@ const GestionMantenimiento = () => {
     return foto.startsWith("http") ? foto : `${API_URL}/${foto}`;
   };
 
-  const handleComentarioChange = (unidadId, value) => {
-    setComentarios((prev) => ({ ...prev, [unidadId]: value }));
+  const toggleHistorial = (id) => {
+    setHistorialAbierto((p) => ({ ...p, [id]: !p[id] }));
   };
 
-  const toggleHistorial = (unidadId) => {
-    setHistorialAbierto((prev) => ({ ...prev, [unidadId]: !prev[unidadId] }));
+  const handleComentarioChange = (id, value) => {
+    setComentarios((p) => ({ ...p, [id]: value }));
   };
 
   const guardarComentario = async (unidad) => {
     const texto = (comentarios[unidad._id] || "").trim();
+
     if (!texto) {
-      toast.error("Escribí un comentario antes de guardar");
+      toast.error("Escribí un comentario");
       return;
     }
 
-    setGuardando((prev) => ({ ...prev, [unidad._id]: true }));
-    const token = localStorage.getItem("token");
     try {
-      const res = await fetch(
+      const token = localStorage.getItem("token");
+
+      await fetch(
         `${API_URL}/unidades/${unidad._id}/comentario-mantenimiento`,
         {
           method: "POST",
@@ -90,160 +125,97 @@ const GestionMantenimiento = () => {
           body: JSON.stringify({ comentario: texto }),
         },
       );
-      if (!res.ok) throw new Error();
-      toast.success("Comentario agregado");
-      setComentarios((prev) => ({ ...prev, [unidad._id]: "" }));
+
+      toast.success("Comentario guardado");
+
+      setComentarios((p) => ({ ...p, [unidad._id]: "" }));
       fetchUnidadesMantenimiento();
-    } catch (err) {
-      toast.error("Error al guardar el comentario");
-    } finally {
-      setGuardando((prev) => ({ ...prev, [unidad._id]: false }));
+    } catch {
+      toast.error("Error al guardar comentario");
     }
   };
-
-  const obtenerGarantia = async (unidad) => {
-    const token = localStorage.getItem("token");
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    try {
-      const res = await fetch(`${API_URL}/unidades/garantia/${unidad._id}`, {
-        headers,
-      });
-      if (res.status === 401) {
-        window.dispatchEvent(new Event("token-expirado"));
-        throw new Error("Sesión expirada");
-      }
-      if (!res.ok) throw new Error("Error al obtener garantía");
-      const data = await res.json();
-      setGarantia(data);
-      return data.garantia || {};
-    } catch (err) {
-      console.error("Error al obtener garantía:", err);
-      return {};
-    }
-  };
-
-  // return {
-  //   _id: unidad._id,
-  //   nombre: unidad.identificador,
-  //   fechaCompra: null,
-  //   fechaFinGarantia: null,
-  //   enGarantia: false,
-  //   diasRestantes: 0,
-  //   estado: unidad.estado,
-  //   cantReparaciones: unidad.cantReparaciones || 0,
-  //   historialMantenimiento: unidad.historialMantenimiento || [],
-  // };
 
   const finalizarMantenimiento = async (unidad) => {
-    if (!unidad._id) return;
-    const token = localStorage.getItem("token");
     try {
+      const token = localStorage.getItem("token");
+
       const res = await fetch(
         `${API_URL}/unidades/mantenimiento/finalizar/${unidad._id}`,
         {
           method: "POST",
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         },
       );
-      if (!res.ok) throw new Error();
-      toast.success("Mantenimiento finalizado");
-      // refrescar datos
-    } catch {
-      toast.error("Error al finalizar mantenimiento");
-    }
-  };
 
-  const cantReparaciones = async (unidadId) => {
-    const token = localStorage.getItem("token");
-    try {
-      const res = await fetch(`${API_URL}/unidades/${unidadId}/reparaciones`, {
-        headers,
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setCantReparaciones(data.cantReparaciones || 0);
-      }
-    } catch (err) {
-      console.error("Error al obtener cantidad de reparaciones:", err);
+      if (!res.ok) throw new Error();
+
+      toast.success("Finalizado");
+
+      fetchUnidadesMantenimiento();
+    } catch {
+      toast.error("Error al finalizar");
     }
   };
 
   return (
     <div className="gm-carousel">
-      {unidades.map((unidad) => {
-        const activa = getEntradaActiva(unidad);
-        const dias = getDiasEnMantenimiento(activa?.fechaInicio);
-        const fotoSrc = buildFotoSrc(activa?.foto);
+      {Array.isArray(unidades) &&
+        unidades.map((unidad) => {
+          const activa = getEntradaActiva(unidad);
+          const dias = getDiasEnMantenimiento(activa?.fechaInicio);
+          const fotoSrc = buildFotoSrc(activa?.foto);
 
-        const abierto = historialAbierto[unidad._id] || false;
-        const historialPrevio =
-          unidad.historialMantenimiento?.filter((h) => h.fechaFin) || [];
+          const garantiaUnidad = garantias[unidad._id] || {};
+          const enGarantia = garantiaUnidad?.enGarantia === true;
 
-        const garantiaUnidad = garantias[unidad._id] || {};
+          const historialPrevio =
+            unidad.historialMantenimiento?.filter((h) => h.fechaFin) || [];
 
-        return (
-          <div key={unidad._id} className="gm-card">
-            <div className="gm-card-header">
-              <h2>{unidad.nombre}</h2>
+          const abierto = historialAbierto[unidad._id] || false;
 
-              <span
-                className={`gm-status ${
-                  garantiaUnidad.enGarantia ? "activa" : "vencida"
-                }`}
-              >
-                {garantiaUnidad.enGarantia ? "GARANTÍA ACTIVA" : "SIN GARANTÍA"}
-              </span>
-            </div>
+          return (
+            <div key={unidad._id} className="gm-card">
+              <div className="gm-card-header">
+                <h2>{unidad.nombre || unidad._id}</h2>
 
-            <div className="gm-top-section">
-              <div className="gm-card-photo">
-                {fotoSrc ? (
-                  <img src={fotoSrc} alt={unidad.nombre} />
-                ) : (
-                  <i className="ti ti-photo-off" />
-                )}
+                <span
+                  className={`gm-status ${enGarantia ? "activa" : "vencida"}`}
+                >
+                  {enGarantia ? "GARANTÍA ACTIVA" : "SIN GARANTÍA"}
+                </span>
               </div>
 
-              <div className="gm-info">
-                <div className="gm-info-title">Mantenimiento en progreso</div>
+              <div className="gm-top-section">
+                <div className="gm-card-photo">
+                  {fotoSrc ? (
+                    <img src={fotoSrc} alt={unidad.nombre} />
+                  ) : (
+                    <i className="ti ti-photo-off" />
+                  )}
+                </div>
 
-                <div className="gm-days">
-                  {dias || 0}
-                  <span>días</span>
+                <div className="gm-info">
+                  <div className="gm-info-title">Mantenimiento</div>
+                  <div className="gm-days">
+                    {dias}
+                    <span>días</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="gm-progress">
-              <div
-                className="gm-progress-bar"
-                style={{
-                  width: `${Math.min(((dias || 0) / 30) * 100, 100)}%`,
-                }}
-              />
-            </div>
+              <div className="gm-card-body">
+                <div>📍 {activa?.destino || "Sin destino"}</div>
+                <div>👤 {activa?.usuario || "Sin responsable"}</div>
+                <div>
+                  📅{" "}
+                  {activa?.fechaInicio
+                    ? dayjs(activa.fechaInicio).format("DD/MM/YYYY")
+                    : "Sin fecha"}
+                </div>
+                <div>
+                  🔧 Reparaciones: {garantiaUnidad.cantReparaciones || 0}
+                </div>
 
-            <div className="gm-card-body">
-              <div className="gm-meta-row">
-                📍 {activa?.destino || "Sin destino"}
-              </div>
-
-              <div className="gm-meta-row">
-                👤 {activa?.usuario || "Sin responsable"}
-              </div>
-
-              <div className="gm-meta-row">
-                📅{" "}
-                {activa?.fechaInicio
-                  ? dayjs(activa.fechaInicio).format("DD/MM/YYYY")
-                  : "Sin fecha"}
-              </div>
-
-              <div className="gm-meta-row">
-                🔧 Reparaciones: {garantiaUnidad.cantReparaciones || 0}
-              </div>
-
-              <div className="gm-comment-row">
                 <textarea
                   value={comentarios[unidad._id] || ""}
                   onChange={(e) =>
@@ -251,59 +223,37 @@ const GestionMantenimiento = () => {
                   }
                 />
 
-                <button
-                  className="gm-btn-send"
-                  onClick={() => guardarComentario(unidad)}
-                >
-                  ➤
-                </button>
-              </div>
+                <button onClick={() => guardarComentario(unidad)}>➤</button>
 
-              <div className="gm-actions">
-                <button
-                  className="gm-btn-action gm-btn-finish"
-                  onClick={() => finalizarMantenimiento(unidad)}
-                >
-                  Finalizar
-                </button>
+                <div className="gm-actions">
+                  <button onClick={() => finalizarMantenimiento(unidad)}>
+                    Finalizar
+                  </button>
 
-                <button
-                  className="gm-btn-action gm-btn-garantia"
-                  onClick={() => navigate(`/garantia/${unidad._id}`)}
-                >
-                  Garantía
-                </button>
-              </div>
+                  <button onClick={() => navigate(`/garantia/${unidad._id}`)}>
+                    Garantía
+                  </button>
+                </div>
 
-              {historialPrevio.length > 0 && (
-                <>
-                  <span
-                    className="gm-history-toggle"
-                    onClick={() => toggleHistorial(unidad._id)}
-                  >
-                    {abierto
-                      ? "Ocultar historial"
-                      : `Ver historial (${historialPrevio.length})`}
-                  </span>
+                {historialPrevio.length > 0 && (
+                  <>
+                    <span onClick={() => toggleHistorial(unidad._id)}>
+                      {abierto ? "Ocultar historial" : "Ver historial"}
+                    </span>
 
-                  {abierto && (
-                    <ul className="gm-history-list">
-                      {historialPrevio
-                        .slice()
-                        .reverse()
-                        .map((h, idx) => (
-                          <li key={idx} className="gm-history-item">
-                            {h.destino}
-                          </li>
+                    {abierto && (
+                      <ul>
+                        {historialPrevio.map((h, i) => (
+                          <li key={i}>{h.destino}</li>
                         ))}
-                    </ul>
-                  )}
-                </>
-              )}
+                      </ul>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
     </div>
   );
 };
