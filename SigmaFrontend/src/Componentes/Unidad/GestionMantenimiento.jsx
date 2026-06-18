@@ -13,8 +13,9 @@ const GestionMantenimiento = () => {
   const [guardando, setGuardando] = useState({});
   const [historialAbierto, setHistorialAbierto] = useState({});
   const [garantia, setGarantia] = useState({});
-  const [navigate] = useNavigate();
   const [garantias, setGarantias] = useState({});
+
+  const navigate = useNavigate();
 
   const fetchUnidadesMantenimiento = async () => {
     setLoading(true);
