@@ -83,6 +83,8 @@ const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
   const indiceFin = indiceInicio + porPagina;
   const unidadesPaginadas = equiposFiltrados.slice(indiceInicio, indiceFin);
 
+  console.log(estadoFilter);
+
   return (
     <div className="modal-filtros-overlay" onClick={cerrarModal}>
       <div
@@ -91,6 +93,14 @@ const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
       >
         {equiposFiltrados.length === 1 ? (
           <h2>Unidad {estadoFilter}</h2>
+        ) : estadoFilter == "Disponible" ? (
+          <h2>Unidades Disponibles</h2>
+        ) : estadoFilter == "Asignada" ? (
+          <h2>Unidades Asignadas</h2>
+        ) : estadoFilter == "Mantenimiento" ? (
+          <h2>Unidades en Mantenimiento</h2>
+        ) : estadoFilter == "De Baja" ? (
+          <h2>Unidades Dadas de Baja</h2>
         ) : (
           <h2>Unidades {estadoFilter + "s"}</h2>
         )}
@@ -109,7 +119,26 @@ const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
               <tr key={unidad.identificador}>
                 <td>{unidad.identificador}</td>
                 <td>{unidad.equipo?.nombre || "Sin equipo"}</td>
-                <td>{unidad.estado}</td>
+                {estadoFilter === "Disponible" && (
+                  <td>
+                    <div className="estado-disponible">{unidad.estado}</div>
+                  </td>
+                )}
+                {estadoFilter === "Asignada" && (
+                  <td>
+                    <div className="estado-asignado">{unidad.estado}</div>
+                  </td>
+                )}
+                {estadoFilter === "Mantenimiento" && (
+                  <td>
+                    <div className="estado-mantenimiento">{unidad.estado}</div>
+                  </td>
+                )}
+                {estadoFilter === "De Baja" && (
+                  <td>
+                    <div className="estado-baja">{unidad.estado}</div>
+                  </td>
+                )}
                 <td>{unidad.ubicacion?.nombre || "Sin asignar"}</td>
               </tr>
             ))}

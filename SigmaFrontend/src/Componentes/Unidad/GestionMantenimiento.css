@@ -285,6 +285,12 @@
   display: block;
 }
 
+.gm-card-photo:hover {
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
 .gm-card-photo svg {
   width: 28px;
   height: 28px;
@@ -636,4 +642,22 @@
   .gm-comment-form button {
     width: 100%;
   }
+}
+
+.gm-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.gm-modal-content img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
 }

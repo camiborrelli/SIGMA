@@ -84,8 +84,8 @@
   .modal-filtros-content {
     padding: 16px;
   }
-  
-  .table-filtros th, 
+
+  .table-filtros th,
   .table-filtros td {
     padding: 8px 6px;
     font-size: 13px;
@@ -120,7 +120,7 @@
 }
 
 .paginacion-filtros button:hover:not(:disabled) {
-  background: #991b1b; 
+  background: #991b1b;
 }
 
 .paginacion-filtros button:disabled {
@@ -134,4 +134,43 @@
   color: #333;
   font-weight: 500;
   user-select: none;
+}
+
+.estado-disponible {
+  background-color: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.estado-asignado {
+  background-color: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.estado-mantenimiento {
+  background-color: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.estado-baja {
+  background-color: rgba(107, 114, 128, 0.12);
+  color: #5b616b;
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+@media (min-width: 900px) {
+  .modal-filtros-content {
+    width: 80%;
+    max-width: 800px;
+  }
 }

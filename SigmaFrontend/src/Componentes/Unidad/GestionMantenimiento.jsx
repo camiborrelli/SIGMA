@@ -29,6 +29,7 @@ const GestionMantenimiento = () => {
   const [finalizando, setFinalizando] = useState({});
   const [historialAbierto, setHistorialAbierto] = useState({});
   const [garantias, setGarantias] = useState({});
+  const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
 
   const navigate = useNavigate();
 
@@ -341,7 +342,11 @@ const GestionMantenimiento = () => {
                 <div className="gm-card-main">
                   <div className="gm-card-photo">
                     {fotoSrc ? (
-                      <img src={fotoSrc} alt={nombreUnidad} />
+                      <img
+                        src={fotoSrc}
+                        alt={nombreUnidad}
+                        onClick={() => setImagenSeleccionada(fotoSrc)}
+                      />
                     ) : (
                       <FaImage />
                     )}
@@ -487,6 +492,14 @@ const GestionMantenimiento = () => {
             );
           })}
         </section>
+      )}
+
+      {imagenSeleccionada && (
+        <div className="gm-modal" onClick={() => setImagenSeleccionada(null)}>
+          <div className="gm-modal-content">
+            <img src={imagenSeleccionada} alt="Vista ampliada" />
+          </div>
+        </div>
       )}
     </div>
   );

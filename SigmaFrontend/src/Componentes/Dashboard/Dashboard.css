@@ -340,7 +340,7 @@
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.15s ease;
-  min-width: 0; 
+  min-width: 0;
 }
 
 .garantia-dashboard-item:hover {
@@ -381,7 +381,7 @@
   cursor: pointer;
   transition: background 0.2s ease;
   white-space: nowrap;
-  width: fit-content; 
+  width: fit-content;
   flex: 0 0 auto;
 }
 
@@ -538,4 +538,9 @@
   .btn-ver-mapa-hidden {
     display: none;
   }
+}
+
+.btn-link:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: scale3d(1.05, 1.05, 1.05);
 }
