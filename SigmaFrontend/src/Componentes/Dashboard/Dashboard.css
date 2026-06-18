@@ -283,44 +283,118 @@
   margin-top: 4px;
 }
 
+/* ==========================================
+   ESTILOS DEL CARRUSEL DE GARANTÍAS
+   ========================================== */
+
+.dashboard-garantias-carousel-container {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+}
+
 .garantias-dashboard-list {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(3, 1fr); /* 3 COLUMNAS EN DESKTOP */
+  gap: 12px;
+  flex: 1;
+}
+
+.dashboard-carousel-btn {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c90036;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.dashboard-carousel-btn:hover:not(:disabled) {
+  background: #fef2f2;
+  border-color: #c90036;
+}
+
+.dashboard-carousel-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.dashboard-carousel-indicator {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #64748b;
 }
 
 .garantia-dashboard-item {
-  min-height: 82px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  background: #ffffff;
-  padding: 12px;
-  color: #334155;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 6px;
   text-align: left;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 12px 16px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: background 0.15s ease;
+  min-width: 0; 
 }
 
 .garantia-dashboard-item:hover {
-  border-color: #c90036;
-  background: #fff7f9;
+  background: #edf2f7;
 }
 
 .garantia-dashboard-id {
+  font-weight: 700;
   color: #0f172a;
-  font-weight: 800;
-  font-size: 15px;
 }
 
-.garantia-dashboard-item strong {
-  color: #b91c1c;
-  font-size: 12px;
+.garantia-dashboard-name {
+  color: #475569;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0 10px;
 }
+
+.garantia-dashboard-days {
+  color: #b91c1c;
+  background: #fef2f2;
+  padding: 4px 8px;
+  border-radius: 99px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* BOTÓN "VER TODAS" COMPACTO EN DESKTOP/TABLET */
+.btn.btn-ver-todas-dashboard {
+  border: none;
+  border-radius: 6px;
+  background: #c90036;
+  color: #ffffff;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn.btn-ver-todas-dashboard:hover {
+  background: #a6002d;
+}
+
+/* ==========================================
+   FILTROS
+   ========================================== */
 
 .filters-top {
   display: flex;
@@ -357,6 +431,10 @@
   display: none;
 }
 
+/* ==========================================
+   MEDIA QUERIES - RESPONSIVE
+   ========================================== */
+
 @media (max-width: 1024px) {
   .container {
     padding: 30px 20px;
@@ -373,7 +451,13 @@
   .topbar {
     padding: 12px 20px;
   }
+
+  /* 2 COLUMNAS EN TABLET */
+  .garantias-dashboard-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
+
 @media (max-width: 768px) {
   .container {
     padding: 16px 10px;
@@ -421,10 +505,6 @@
     align-items: stretch;
   }
 
-  .garantias-dashboard-list {
-    grid-template-columns: 1fr;
-  }
-
   .summary-card {
     flex-direction: column;
     align-items: flex-start;
@@ -454,6 +534,17 @@
 
   .mobile-footer-btn span {
     font-size: 10px;
+  }
+
+  /* 1 COLUMNA EN MÓVIL */
+  .garantias-dashboard-list {
+    grid-template-columns: 1fr;
+  }
+
+  /* BOTÓN "VER TODAS" MÁS GRANDE EN MÓVIL */
+  .btn.btn-ver-todas-dashboard {
+    padding: 10px 16px;
+    font-size: 14px;
   }
 }
 
