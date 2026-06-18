@@ -25,7 +25,9 @@ const getEquipoNombre = (garantia) => {
 const getEquipoDetalle = (garantia) => {
   const equipo = garantia.equipo;
   if (!equipo || typeof equipo !== "object") return "";
-  return [equipo.codigo, equipo.modelo, equipo.tipo].filter(Boolean).join(" | ");
+  return [equipo.codigo, equipo.modelo, equipo.tipo]
+    .filter(Boolean)
+    .join(" | ");
 };
 
 const getUbicacion = (garantia) => {
@@ -42,7 +44,9 @@ const GarantiasPorVencer = () => {
   const [error, setError] = useState("");
   const [busqueda, setBusqueda] = useState("");
   const [paginaActual, setPaginaActual] = useState(0);
-  const [itemsPorPagina, setItemsPorPagina] = useState(window.innerWidth >= 768 ? 2 : 1);
+  const [itemsPorPagina, setItemsPorPagina] = useState(
+    window.innerWidth >= 768 ? 2 : 1,
+  );
 
   useEffect(() => {
     const handleResize = () => {
@@ -131,13 +135,13 @@ const GarantiasPorVencer = () => {
 
   const garantiasMostradas = garantiasFiltradas.slice(
     paginaActual * itemsPorPagina,
-    (paginaActual + 1) * itemsPorPagina
+    (paginaActual + 1) * itemsPorPagina,
   );
 
   return (
     <div className="garantias-vencer-page">
       <section className="garantias-vencer-header">
-        <div>
+        <div className="garantias-title">
           <p className="garantias-vencer-eyebrow">Alertas de garantia</p>
           <h1>Garantias por vencer</h1>
           <p>
@@ -206,7 +210,10 @@ const GarantiasPorVencer = () => {
 
                 <div className="garantias-vencer-list">
                   {garantiasMostradas.map((garantia) => (
-                    <article className="garantia-vencer-item" key={garantia._id}>
+                    <article
+                      className="garantia-vencer-item"
+                      key={garantia._id}
+                    >
                       <div className="garantia-vencer-main">
                         <div className="garantia-vencer-icon">
                           <FaTools />
@@ -223,7 +230,9 @@ const GarantiasPorVencer = () => {
                       <div className="garantia-vencer-meta">
                         <div>
                           <FaCalendarAlt />
-                          <span>Vence {formatDate(garantia.fechaFinGarantia)}</span>
+                          <span>
+                            Vence {formatDate(garantia.fechaFinGarantia)}
+                          </span>
                         </div>
                         <div>
                           <FaMapMarkerAlt />
@@ -244,7 +253,7 @@ const GarantiasPorVencer = () => {
                       </div>
                     </article>
                   ))}
-                  
+
                   <div className="garantias-vencer-indicator">
                     Página {paginaActual + 1} de {totalPaginas}
                   </div>

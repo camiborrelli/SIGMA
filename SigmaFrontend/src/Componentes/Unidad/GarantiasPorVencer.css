@@ -154,10 +154,16 @@
 }
 
 .garantias-vencer-list {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 30px;
   flex: 1;
+}
+
+.garantias-title {
+  margin: 0 auto;
+  text-align: center;
 }
 
 .garantias-vencer-control {
@@ -187,14 +193,14 @@
 }
 
 .garantia-vencer-item {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 16px;
+  background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  background: #ffffff;
+  flex-direction: column;
+  gap: 16px;
   min-height: 180px;
+  padding: 8px;
+  display: flex;
 }
 
 .garantia-vencer-main {
@@ -289,7 +295,7 @@
   .garantias-vencer-list {
     grid-template-columns: 1fr;
   }
-  
+
   .garantias-vencer-page {
     padding: 18px 10px;
   }
