@@ -11,6 +11,7 @@ const GestionMantenimiento = () => {
   const [comentarios, setComentarios] = useState({});
   const [guardando, setGuardando] = useState({});
   const [historialAbierto, setHistorialAbierto] = useState({});
+  const [garantia, setGarantia] = useState({});
 
   const fetchUnidadesMantenimiento = async () => {
     setLoading(true);
@@ -96,13 +97,73 @@ const GestionMantenimiento = () => {
     }
   };
 
+  const obtenerGarantia = async (unidad) => {
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    try {
+      const res = await fetch(`${API_URL}/unidades/${unidad._id}/garantia`, {
+        headers,
+      });
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesión expirada");
+      }
+      if (!res.ok) throw new Error("Error al obtener garantía");
+      const data = await res.json();
+      setGarantia(data);
+      return data.garantia || {};
+    } catch (err) {
+      console.error("Error al obtener garantía:", err);
+      return {};
+    }
+  };
+
+  // return {
+  //   _id: unidad._id,
+  //   nombre: unidad.identificador,
+  //   fechaCompra: null,
+  //   fechaFinGarantia: null,
+  //   enGarantia: false,
+  //   diasRestantes: 0,
+  //   estado: unidad.estado,
+  //   cantReparaciones: unidad.cantReparaciones || 0,
+  //   historialMantenimiento: unidad.historialMantenimiento || [],
+  // };
+
+  const finalizarMantenimiento = async () => {
+    if (!maquinaId) return;
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(
+        `${API_URL}/unidades/mantenimiento/finalizar/${maquinaId}`,
+        {
+          method: "POST",
+          headers: { Authorization: token ? `Bearer ${token}` : "" },
+        },
+      );
+      if (!res.ok) throw new Error();
+      toast.success("Mantenimiento finalizado");
+      // refrescar datos
+      const res2 = await fetch(`${API_URL}/unidades/garantia/${maquinaId}`, {
+        headers: { Authorization: token ? `Bearer ${token}` : "" },
+      });
+      if (res2.ok) {
+        const data = await res2.json();
+        setGarantia(data);
+      }
+    } catch {
+      toast.error("Error al finalizar mantenimiento");
+    }
+  };
+
   return (
     <div className="gestion-mantenimiento">
       <div className="gm-header">
         <h1>Gestión de mantenimiento</h1>
+
         <span className="gm-count-pill">
-          {unidades.length} unidad{unidades.length !== 1 ? "es" : ""} en
-          mantenimiento
+          {unidades.length} unidad
+          {unidades.length !== 1 ? "es" : ""} en mantenimiento
         </span>
       </div>
 
@@ -118,80 +179,75 @@ const GestionMantenimiento = () => {
         <div className="gm-carousel">
           {unidades.map((unidad) => {
             const activa = getEntradaActiva(unidad);
+
             const dias = getDiasEnMantenimiento(activa?.fechaInicio);
+
             const fotoSrc = buildFotoSrc(activa?.foto);
+
+            const garantia = garantias[unidad._id] || {};
+
             const historialPrevio = (
-              unidad.historialMantenimiento || []
+              garantia.historialMantenimiento || []
             ).filter((h) => h.fechaFin);
+
             const abierto = !!historialAbierto[unidad._id];
 
             return (
               <div key={unidad._id} className="gm-card">
                 <h2>{unidad.nombre}</h2>
+
+                <div
+                  className={`gm-garantia ${
+                    garantia.enGarantia ? "activa" : "vencida"
+                  }`}
+                >
+                  🛡{" "}
+                  {garantia.enGarantia
+                    ? `Garantía activa (${garantia.diasRestantes} días)`
+                    : "Garantía vencida"}
+                </div>
+
                 <div className="gm-card-photo">
                   {fotoSrc ? (
-                    <img
-                      src={fotoSrc}
-                      alt={`Estado de ${unidad.nombre}`}
-                      onClick={() => window.open(fotoSrc, "_blank")}
-                    />
+                    <img src={fotoSrc} alt={unidad.nombre} />
                   ) : (
-                    <i className="ti ti-photo-off" aria-hidden="true" />
+                    <i className="ti ti-photo-off" />
                   )}
                 </div>
 
                 <div className="gm-card-body">
                   <div className="gm-meta-row">
-                    <i className="ti ti-map-pin" aria-hidden="true" />
-                    {activa?.destino || "Lugar no especificado"}
+                    📍 {activa?.destino || "Sin destino"}
                   </div>
+
                   <div className="gm-meta-row">
-                    <i className="ti ti-user" aria-hidden="true" />
-                    {activa?.usuario || "Responsable no especificado"}
+                    👤 {activa?.usuario || "Sin responsable"}
                   </div>
+
                   <div className="gm-meta-row">
-                    <i className="ti ti-calendar" aria-hidden="true" />
+                    📅
                     {activa?.fechaInicio
-                      ? `Desde ${dayjs(activa.fechaInicio).format(
-                          "DD/MM/YYYY",
-                        )}`
-                      : "Sin fecha de inicio"}
+                      ? dayjs(activa.fechaInicio).format("DD/MM/YYYY")
+                      : "Sin fecha"}
                   </div>
+
                   <div className="gm-meta-row">
-                    <i className="ti ti-clock" aria-hidden="true" />
-                    Cantidad de reparaciones: {unidad.cantidadReparaciones || 0}
-                  </div>
-                  <div className="gm-meta-row">
-                    <i className="ti ti-shield" aria-hidden="true" /> Garantía
-                    Activa:{" "}
-                    {unidad.garantia.fechaFin
-                      ? dayjs(unidad.garantia.fechaFin).isAfter(dayjs())
-                        ? "Sí"
-                        : "No"
-                      : "No especificada"}
+                    🔧 Reparaciones: {garantia.cantReparaciones || 0}
                   </div>
 
                   {dias !== null && (
-                    <span className="gm-days-badge">
-                      <i className="ti ti-clock" aria-hidden="true" />
-                      {dias} día{dias !== 1 ? "s" : ""}
-                    </span>
+                    <span className="gm-days-badge">⏱ {dias} días</span>
                   )}
 
                   <div className="gm-divider" />
 
-                  {activa?.comentarios && activa.comentarios.length > 0 && (
-                    <ul className="gm-comentarios-activos">
-                      {activa.comentarios.map((c, idx) => (
-                        <li key={idx} className="gm-comentario-item">
-                          <span className="gm-comentario-texto">{c.texto}</span>
-                          <span className="gm-comentario-fecha">
-                            {dayjs(c.fecha).format("DD/MM HH:mm")}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  {activa?.comentarios?.map((c, idx) => (
+                    <div key={idx} className="gm-comentario-item">
+                      <strong>{dayjs(c.fecha).format("DD/MM HH:mm")}</strong>
+
+                      <p>{c.texto}</p>
+                    </div>
+                  ))}
 
                   <textarea
                     placeholder="Agregar comentario..."
@@ -200,15 +256,20 @@ const GestionMantenimiento = () => {
                       handleComentarioChange(unidad._id, e.target.value)
                     }
                   />
-                  <button
-                    className="gm-btn-comment"
-                    onClick={() => guardarComentario(unidad)}
-                    disabled={guardando[unidad._id]}
-                  >
-                    {guardando[unidad._id]
-                      ? "Guardando..."
-                      : "Guardar comentario"}
-                  </button>
+
+                  <div className="gm-actions">
+                    <button onClick={() => guardarComentario(unidad)}>
+                      💬 Agregar comentario
+                    </button>
+
+                    <button onClick={() => finalizarMantenimiento(unidad)}>
+                      ✅ Finalizar mantenimiento
+                    </button>
+
+                    <button onClick={() => setGarantiaSeleccionada(garantia)}>
+                      🛡 Ver garantía
+                    </button>
+                  </div>
 
                   {historialPrevio.length > 0 && (
                     <>
@@ -227,24 +288,7 @@ const GestionMantenimiento = () => {
                             .slice()
                             .reverse()
                             .map((h, idx) => (
-                              <li key={idx} className="gm-history-item">
-                                <span className="gm-history-fechas">
-                                  {dayjs(h.fechaInicio).format("DD/MM/YYYY")} —{" "}
-                                  {dayjs(h.fechaFin).format("DD/MM/YYYY")}
-                                </span>
-                                {h.destino && (
-                                  <span className="gm-history-lugar">
-                                    {h.destino}
-                                  </span>
-                                )}
-                                {h.comentarios && h.comentarios.length > 0 && (
-                                  <span className="gm-history-comentario">
-                                    {h.comentarios
-                                      .map((c) => c.texto)
-                                      .join(" · ")}
-                                  </span>
-                                )}
-                              </li>
+                              <li key={idx}>{h.destino}</li>
                             ))}
                         </ul>
                       )}
@@ -254,6 +298,38 @@ const GestionMantenimiento = () => {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {garantiaSeleccionada && (
+        <div className="gm-modal">
+          <div className="gm-modal-content">
+            <h3>Garantía</h3>
+
+            <p>
+              Fecha compra:{" "}
+              {garantiaSeleccionada.fechaCompra
+                ? dayjs(garantiaSeleccionada.fechaCompra).format("DD/MM/YYYY")
+                : "-"}
+            </p>
+
+            <p>
+              Fin garantía:{" "}
+              {garantiaSeleccionada.fechaFinGarantia
+                ? dayjs(garantiaSeleccionada.fechaFinGarantia).format(
+                    "DD/MM/YYYY",
+                  )
+                : "-"}
+            </p>
+
+            <p>
+              Estado: {garantiaSeleccionada.enGarantia ? "Activa" : "Vencida"}
+            </p>
+
+            <button onClick={() => setGarantiaSeleccionada(null)}>
+              Cerrar
+            </button>
+          </div>
         </div>
       )}
     </div>

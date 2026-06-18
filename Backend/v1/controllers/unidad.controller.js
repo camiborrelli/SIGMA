@@ -490,10 +490,15 @@ export const agregarComentarioMantenimientoController = async (req, res) => {
         .json({ error: "La unidad no está en mantenimiento" });
     }
 
+    if (!ultimoRegistro.comentarios) {
+      ultimoRegistro.comentarios = [];
+    }
+
     ultimoRegistro.comentarios.push({
       texto: comentario,
       fecha: new Date(),
     });
+
     await unidad.save();
     res.status(200).json(unidad);
   } catch (error) {
