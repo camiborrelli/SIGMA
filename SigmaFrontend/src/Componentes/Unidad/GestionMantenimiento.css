@@ -32,33 +32,46 @@
   padding: 8px 14px;
   border-radius: 8px;
 }
-
 .gm-carousel {
   display: flex;
-  gap: 18px;
+  gap: 16px;
   overflow-x: auto;
-  padding-bottom: 10px;
+  padding: 10px 4px 20px;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
+/* ocultar scrollbar */
 .gm-carousel::-webkit-scrollbar {
-  height: 8px;
+  height: 6px;
 }
 
 .gm-carousel::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 20px;
+  border-radius: 10px;
+}
+
+.gm-carousel::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 /* CARD */
 
 .gm-card {
-  flex: 0 0 340px;
-  background: #e7e5e4;
-  border-radius: 4px;
-  padding: 18px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  flex: 0 0 320px;
+  scroll-snap-align: start;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transition: transform 0.2s ease;
 }
 
+.gm-card:hover {
+  transform: translateY(-4px);
+}
 /* HEADER */
 
 .gm-card-header {
