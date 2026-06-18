@@ -41,12 +41,9 @@ const GarantiasPorVencer = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [busqueda, setBusqueda] = useState("");
-  
-  // Estado para la página actual y cantidad de items por pantalla
   const [paginaActual, setPaginaActual] = useState(0);
   const [itemsPorPagina, setItemsPorPagina] = useState(window.innerWidth >= 768 ? 2 : 1);
 
-  // Escuchar el tamaño de la pantalla para ajustar la cantidad de tarjetas (1 en móvil, 2 en tablet/desktop)
   useEffect(() => {
     const handleResize = () => {
       setItemsPorPagina(window.innerWidth >= 768 ? 2 : 1);
@@ -110,10 +107,8 @@ const GarantiasPorVencer = () => {
     });
   }, [busqueda, garantias]);
 
-  // Total de páginas calculadas dinámicamente
   const totalPaginas = Math.ceil(garantiasFiltradas.length / itemsPorPagina);
 
-  // Si busca algo y los resultados bajan, evitamos quedar en una página vacía
   useEffect(() => {
     if (paginaActual >= totalPaginas && totalPaginas > 0) {
       setPaginaActual(totalPaginas - 1);
@@ -122,7 +117,6 @@ const GarantiasPorVencer = () => {
     }
   }, [garantiasFiltradas.length, itemsPorPagina, paginaActual, totalPaginas]);
 
-  // Si el usuario tipea una nueva búsqueda, volvemos a la página 0
   useEffect(() => {
     setPaginaActual(0);
   }, [busqueda]);
@@ -135,7 +129,6 @@ const GarantiasPorVencer = () => {
     setPaginaActual((p) => Math.min(totalPaginas - 1, p + 1));
   };
 
-  // Obtener solo las tarjetas que corresponden a la página actual
   const garantiasMostradas = garantiasFiltradas.slice(
     paginaActual * itemsPorPagina,
     (paginaActual + 1) * itemsPorPagina

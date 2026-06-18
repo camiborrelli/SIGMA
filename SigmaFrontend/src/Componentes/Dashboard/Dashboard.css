@@ -283,10 +283,6 @@
   margin-top: 4px;
 }
 
-/* ==========================================
-   ESTILOS DEL CARRUSEL DE GARANTÍAS
-   ========================================== */
-
 .dashboard-garantias-carousel-container {
   display: flex;
   align-items: center;
@@ -296,7 +292,7 @@
 
 .garantias-dashboard-list {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 COLUMNAS EN DESKTOP */
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   flex: 1;
 }
@@ -393,10 +389,6 @@
   background: #a6002d;
 }
 
-/* ==========================================
-   FILTROS
-   ========================================== */
-
 .filters-top {
   display: flex;
   gap: 20px;
@@ -432,10 +424,6 @@
   display: none;
 }
 
-/* ==========================================
-   MEDIA QUERIES - RESPONSIVE
-   ========================================== */
-
 @media (max-width: 1024px) {
   .container {
     padding: 30px 20px;
@@ -453,7 +441,6 @@
     padding: 12px 20px;
   }
 
-  /* 2 COLUMNAS EN TABLET */
   .garantias-dashboard-list {
     grid-template-columns: repeat(2, 1fr);
   }

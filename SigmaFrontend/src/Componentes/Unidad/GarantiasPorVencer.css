@@ -153,7 +153,6 @@
   gap: 16px;
 }
 
-/* Lista a Grid de 2 columnas para tablet/escritorio */
 .garantias-vencer-list {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -187,7 +186,6 @@
   opacity: 0.3;
 }
 
-/* Tarjeta estructurada en columna para evitar que se aplaste en pantallas grandes */
 .garantia-vencer-item {
   display: flex;
   flex-direction: column;
@@ -196,7 +194,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   background: #ffffff;
-  min-height: 180px; /* Asegura que ambas tarjetas tengan la misma altura mínima */
+  min-height: 180px;
 }
 
 .garantia-vencer-main {
@@ -264,7 +262,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: auto; /* Esto empuja los botones hacia el borde inferior */
+  margin-top: auto;
   gap: 12px;
 }
 
@@ -280,14 +278,13 @@
 }
 
 .garantias-vencer-indicator {
-  grid-column: 1 / -1; /* Ocupa todo el ancho de las 2 columnas */
+  grid-column: 1 / -1;
   text-align: center;
   margin-top: 10px;
   font-size: 14px;
   color: #64748b;
 }
 
-/* Móviles: Vuelve a mostrar de a 1 sola tarjeta */
 @media (max-width: 768px) {
   .garantias-vencer-list {
     grid-template-columns: 1fr;

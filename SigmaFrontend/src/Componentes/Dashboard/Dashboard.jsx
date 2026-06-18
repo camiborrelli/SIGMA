@@ -3,7 +3,6 @@ import ListadoGeneral from "../Equipo/ListadoGeneral";
 import ListadoUsuarios from "../Usuario/ListadoUsuarios";
 import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";
-
 import RegistrarEquipo from "../Equipo/RegistrarEquipo";
 import RegistroObra from "../Obra/RegistroObra";
 import RegistrarUnidad from "../Unidad/RegistrarUnidad";
