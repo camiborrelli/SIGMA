@@ -44,13 +44,18 @@ const GarantiasPorVencer = () => {
   const [error, setError] = useState("");
   const [busqueda, setBusqueda] = useState("");
   const [paginaActual, setPaginaActual] = useState(0);
-  const [itemsPorPagina, setItemsPorPagina] = useState(
-    window.innerWidth >= 768 ? 2 : 1,
-  );
+
+  const getItemsPorPagina = () => {
+    if (window.innerWidth >= 1024) return 4; // Desktop
+    if (window.innerWidth >= 768) return 3;  // Tablet
+    return 1;                                // Mobile
+  };
+
+  const [itemsPorPagina, setItemsPorPagina] = useState(getItemsPorPagina());
 
   useEffect(() => {
     const handleResize = () => {
-      setItemsPorPagina(window.innerWidth >= 768 ? 2 : 1);
+      setItemsPorPagina(getItemsPorPagina());
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
