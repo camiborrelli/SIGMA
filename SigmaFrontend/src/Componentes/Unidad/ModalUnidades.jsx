@@ -450,8 +450,8 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
 
   return (
     <>
-      <div className="modal-overlay">
-        <div className="modal-content">
+      <div className="modal-overlay modal-unidades-overlay">
+        <div className="modal-content modal-unidades-content">
           <h2>Unidades de {equipo.nombre}</h2>
 
           <div className="filtros">
