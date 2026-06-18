@@ -7,6 +7,8 @@ import {
   FaRedo,
   FaSearch,
   FaTools,
+  FaChevronLeft,
+  FaChevronRight,
 } from "react-icons/fa";
 import { API_URL } from "../../../api";
 import "./GarantiasPorVencer.css";
@@ -39,6 +41,7 @@ const GarantiasPorVencer = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [busqueda, setBusqueda] = useState("");
+  const [indiceActual, setIndiceActual] = useState(0);
 
   const cargarGarantias = async () => {
     const token = localStorage.getItem("token");
@@ -61,6 +64,7 @@ const GarantiasPorVencer = () => {
       }
 
       setGarantias(Array.isArray(data) ? data : []);
+      setIndiceActual(0);
     } catch (err) {
       console.error(err);
       setError(err.message || "No se pudieron cargar las garantias");
@@ -93,6 +97,20 @@ const GarantiasPorVencer = () => {
         .some((campo) => String(campo).toLowerCase().includes(texto));
     });
   }, [busqueda, garantias]);
+
+  useEffect(() => {
+    setIndiceActual(0);
+  }, [busqueda]);
+
+  const irAnterior = () => {
+    if (indiceActual > 0) setIndiceActual(indiceActual - 1);
+  };
+
+  const irSiguiente = () => {
+    if (indiceActual < garantiasFiltradas.length - 1) setIndiceActual(indiceActual + 1);
+  };
+
+  const garantiaActual = garantiasFiltradas[indiceActual];
 
   return (
     <div className="garantias-vencer-page">
@@ -148,51 +166,75 @@ const GarantiasPorVencer = () => {
         )}
 
         {!loading && !error && garantias.length > 0 && (
-          <div className="garantias-vencer-list">
+          <div>
             {garantiasFiltradas.length === 0 ? (
               <p className="garantias-vencer-state">
                 No hay resultados para esa busqueda.
               </p>
             ) : (
-              garantiasFiltradas.map((garantia) => (
-                <article className="garantia-vencer-item" key={garantia._id}>
-                  <div className="garantia-vencer-main">
-                    <div className="garantia-vencer-icon">
-                      <FaTools />
-                    </div>
-                    <div>
-                      <h3>{garantia.identificador}</h3>
-                      <p>{getEquipoNombre(garantia)}</p>
-                      {getEquipoDetalle(garantia) && (
-                        <span>{getEquipoDetalle(garantia)}</span>
-                      )}
-                    </div>
-                  </div>
+              <div className="garantias-vencer-carousel">
+                <button
+                  type="button"
+                  className="garantias-vencer-control"
+                  onClick={irAnterior}
+                  disabled={indiceActual === 0}
+                >
+                  <FaChevronLeft />
+                </button>
 
-                  <div className="garantia-vencer-meta">
-                    <div>
-                      <FaCalendarAlt />
-                      <span>Vence {formatDate(garantia.fechaFinGarantia)}</span>
+                <div className="garantias-vencer-list">
+                  <article className="garantia-vencer-item">
+                    <div className="garantia-vencer-main">
+                      <div className="garantia-vencer-icon">
+                        <FaTools />
+                      </div>
+                      <div>
+                        <h3>{garantiaActual.identificador}</h3>
+                        <p>{getEquipoNombre(garantiaActual)}</p>
+                        {getEquipoDetalle(garantiaActual) && (
+                          <span>{getEquipoDetalle(garantiaActual)}</span>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <FaMapMarkerAlt />
-                      <span>{getUbicacion(garantia)}</span>
-                    </div>
-                  </div>
 
-                  <div className="garantia-vencer-actions">
-                    <span className="garantia-vencer-days">
-                      {garantia.diasRestantes} dia(s)
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => navigate(`/garantia/${garantia._id}`)}
-                    >
-                      Ver garantia
-                    </button>
+                    <div className="garantia-vencer-meta">
+                      <div>
+                        <FaCalendarAlt />
+                        <span>Vence {formatDate(garantiaActual.fechaFinGarantia)}</span>
+                      </div>
+                      <div>
+                        <FaMapMarkerAlt />
+                        <span>{getUbicacion(garantiaActual)}</span>
+                      </div>
+                    </div>
+
+                    <div className="garantia-vencer-actions">
+                      <span className="garantia-vencer-days">
+                        {garantiaActual.diasRestantes} dia(s)
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/garantia/${garantiaActual._id}`)}
+                      >
+                        Ver garantia
+                      </button>
+                    </div>
+                  </article>
+                  
+                  <div className="garantias-vencer-indicator">
+                    Tarjeta {indiceActual + 1} de {garantiasFiltradas.length}
                   </div>
-                </article>
-              ))
+                </div>
+
+                <button
+                  type="button"
+                  className="garantias-vencer-control"
+                  onClick={irSiguiente}
+                  disabled={indiceActual === garantiasFiltradas.length - 1}
+                >
+                  <FaChevronRight />
+                </button>
+              </div>
             )}
           </div>
         )}
