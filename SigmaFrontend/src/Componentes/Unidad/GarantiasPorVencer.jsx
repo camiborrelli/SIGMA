@@ -148,7 +148,7 @@ const GarantiasPorVencer = () => {
         )}
 
         {!loading && !error && garantias.length > 0 && (
-          <div className="garantias-vencer-carousel">
+          <div className="garantias-vencer-list">
             {garantiasFiltradas.length === 0 ? (
               <p className="garantias-vencer-state">
                 No hay resultados para esa busqueda.
