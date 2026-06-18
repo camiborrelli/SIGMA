@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/es";
 import { API_URL } from "../../../api";
 import "./GestionMantenimiento.css";
+import { useNavigate } from "react-router-dom";
 
 const GestionMantenimiento = () => {
   const [unidades, setUnidades] = useState([]);
@@ -12,6 +13,7 @@ const GestionMantenimiento = () => {
   const [guardando, setGuardando] = useState({});
   const [historialAbierto, setHistorialAbierto] = useState({});
   const [garantia, setGarantia] = useState({});
+  const [navigate, useNavigate] = useState(null);
 
   const fetchUnidadesMantenimiento = async () => {
     setLoading(true);
@@ -266,7 +268,7 @@ const GestionMantenimiento = () => {
                       ✅ Finalizar mantenimiento
                     </button>
 
-                    <button onClick={() => setGarantiaSeleccionada(garantia)}>
+                    <button onClick={() => navigate(`/garantia/${unidad._id}`)}>
                       🛡 Ver garantía
                     </button>
                   </div>
@@ -301,7 +303,7 @@ const GestionMantenimiento = () => {
         </div>
       )}
 
-      {garantiaSeleccionada && (
+      {/* {garantiaSeleccionada && (
         <div className="gm-modal">
           <div className="gm-modal-content">
             <h3>Garantía</h3>
@@ -326,12 +328,12 @@ const GestionMantenimiento = () => {
               Estado: {garantiaSeleccionada.enGarantia ? "Activa" : "Vencida"}
             </p>
 
-            <button onClick={() => setGarantiaSeleccionada(null)}>
+            <button onClick={() => navigate(-1      )}>
               Cerrar
             </button>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
