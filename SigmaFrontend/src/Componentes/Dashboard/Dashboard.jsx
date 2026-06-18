@@ -34,11 +34,10 @@ const Dashboard = () => {
 
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // Lógica para detectar cuántos ítems mostrar según la pantalla
   const getItemsPorPagina = () => {
-    if (window.innerWidth >= 1024) return 3; // Desktop
-    if (window.innerWidth >= 768) return 2;  // Tablet
-    return 1;                                // Móvil
+    if (window.innerWidth >= 1024) return 3;
+    if (window.innerWidth >= 768) return 2;
+    return 1;                               
   };
 
   const [paginaGarantia, setPaginaGarantia] = useState(0);
@@ -142,7 +141,6 @@ const Dashboard = () => {
     fetchGarantiasPorVencer();
   };
 
-  // Lógica de segmentación para el carrusel
   const totalPaginasGarantia = Math.ceil(garantiasPorVencer.length / itemsPorPagina);
   const garantiasVisibles = garantiasPorVencer.slice(
     paginaGarantia * itemsPorPagina,

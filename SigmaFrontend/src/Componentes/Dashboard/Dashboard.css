@@ -374,7 +374,6 @@
   white-space: nowrap;
 }
 
-/* BOTÓN "VER TODAS" COMPACTO EN DESKTOP/TABLET */
 .btn.btn-ver-todas-dashboard {
   border: none;
   border-radius: 6px;
@@ -386,6 +385,8 @@
   cursor: pointer;
   transition: background 0.2s ease;
   white-space: nowrap;
+  width: fit-content; 
+  flex: 0 0 auto;
 }
 
 .btn.btn-ver-todas-dashboard:hover {
@@ -540,7 +541,6 @@
     grid-template-columns: 1fr;
   }
 
-  /* BOTÓN "VER TODAS" MÁS GRANDE EN MÓVIL */
   .btn.btn-ver-todas-dashboard {
     padding: 10px 16px;
     font-size: 14px;
