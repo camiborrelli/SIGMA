@@ -65,3 +65,9 @@
   display: 0 auto;
   margin-top: 60px;
 }
+
+@media (min-width: 768px) {
+  .card {
+    width: 400px;
+  }
+}
