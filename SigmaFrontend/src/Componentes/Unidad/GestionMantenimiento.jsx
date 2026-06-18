@@ -176,7 +176,7 @@ const GestionMantenimiento = () => {
           return (
             <div key={unidad._id} className="gm-card">
               <div className="gm-card-header">
-                <h2>{unidad.nombre || unidad._id}</h2>
+                <h2>{unidad.nombre || garantiaUnidad.nombre}</h2>
 
                 <span
                   className={`gm-status ${enGarantia ? "activa" : "vencida"}`}
@@ -249,6 +249,32 @@ const GestionMantenimiento = () => {
                       </ul>
                     )}
                   </>
+                )}
+
+                {activa?.comentarios?.length > 0 && (
+                  <div className="gm-comentarios-section">
+                    <div className="gm-comentarios-title">
+                      Últimos comentarios
+                    </div>
+
+                    <div className="gm-comentarios-list">
+                      {activa.comentarios
+                        .slice(-3) // últimos 3
+                        .reverse()
+                        .map((c, i) => (
+                          <div key={i} className="gm-comentario-card">
+                            <div className="gm-comentario-meta">
+                              {c.usuario || "Usuario"} ·{" "}
+                              {c.fecha
+                                ? dayjs(c.fecha).format("DD/MM HH:mm")
+                                : ""}
+                            </div>
+
+                            <div className="gm-comentario-text">{c.texto}</div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
