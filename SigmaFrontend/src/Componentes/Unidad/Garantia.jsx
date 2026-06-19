@@ -17,6 +17,7 @@ const Garantia = ({ id: propId }) => {
   const params = useParams();
   const navigate = useNavigate();
   const id = propId || params.id;
+  const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
 
   const [garantia, setGarantia] = useState(null);
   const [maquinariaNombre, setMaquinariaNombre] = useState("");
@@ -307,38 +308,40 @@ const Garantia = ({ id: propId }) => {
           </>
         )}
       </div>
-      <div className="garantia-acciones">
-        {String(garantia?.estado || "")
-          .toLowerCase()
-          .includes("mantenimiento") ? (
-          <button
-            className="btn-asign"
-            onClick={() => {
-              finalizarMantenimiento();
-            }}
-          >
-            FINALIZAR MANTENIMIENTO
-          </button>
-        ) : (
-          <button
-            className="btn-asign"
-            onClick={() => {
-              const est = String(garantia?.estado || "").toLowerCase();
-              if (est.includes("mantenimiento")) {
-                toast.error("La unidad ya está en mantenimiento.");
-                return;
-              }
-              setShowModal(true);
-            }}
-          >
-            ENVIAR A MANTENIMIENTO
-          </button>
-        )}
+      {usuario?.rol === "Admin" && garantia && (
+        <div className="garantia-acciones">
+          {String(garantia?.estado || "")
+            .toLowerCase()
+            .includes("mantenimiento") ? (
+            <button
+              className="btn-asign"
+              onClick={() => {
+                finalizarMantenimiento();
+              }}
+            >
+              FINALIZAR MANTENIMIENTO
+            </button>
+          ) : (
+            <button
+              className="btn-asign"
+              onClick={() => {
+                const est = String(garantia?.estado || "").toLowerCase();
+                if (est.includes("mantenimiento")) {
+                  toast.error("La unidad ya está en mantenimiento.");
+                  return;
+                }
+                setShowModal(true);
+              }}
+            >
+              ENVIAR A MANTENIMIENTO
+            </button>
+          )}
 
-        <button className="btn-cancel" onClick={() => navigate(-1)}>
-          CANCELAR
-        </button>
-      </div>
+          <button className="btn-cancel" onClick={() => navigate(-1)}>
+            CANCELAR
+          </button>
+        </div>
+      )}
 
       {showModal && (
         <AsignarMantenimientoUnidad

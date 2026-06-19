@@ -32,6 +32,9 @@ const ListadoGeneral = ({
 
   const [verDetalleStock, setVerDetalleStock] = useState(false);
 
+  const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
+  const rolUsuario = usuario ? usuario.rol : null;
+
   useEffect(() => {
     const actualizarCantidad = () => {
       const width = window.innerWidth;
@@ -184,27 +187,44 @@ const ListadoGeneral = ({
     header: "Acciones",
     accessor: (row) => (
       <div className="acciones-fila">
-        <button
-          className="icon-btn ver"
-          title="Ver unidades"
-          onClick={() => setEquipoSeleccionado(row)}
-        >
-          <FaEye />
-        </button>
-        <button
-          className="icon-btn add"
-          title="Registrar unidad"
-          onClick={() => registrarUnidad(row._id || row.id)}
-        >
-          <FaPlus />
-        </button>
-        <button
-          className="icon-btn edit"
-          title="Editar equipo"
-          onClick={() => setEquipoEditar(row)}
-        >
-          <FaEdit />
-        </button>
+        {rolUsuario !== "Admin" && (
+          <button
+            className="icon-btn-unidades-usuario"
+            title="Ver unidades"
+            onClick={() => setEquipoSeleccionado(row)}
+          >
+            <FaEye /> Ver unidades
+          </button>
+        )}
+        {rolUsuario === "Admin" && (
+          <>
+            <button
+              className="icon-btn ver"
+              title="Ver unidades"
+              onClick={() => setEquipoSeleccionado(row)}
+            >
+              <FaEye />
+            </button>
+          </>
+        )}
+        {rolUsuario === "Admin" && (
+          <>
+            <button
+              className="icon-btn add"
+              title="Registrar unidad"
+              onClick={() => registrarUnidad(row._id || row.id)}
+            >
+              <FaPlus />
+            </button>
+            <button
+              className="icon-btn edit"
+              title="Editar equipo"
+              onClick={() => setEquipoEditar(row)}
+            >
+              <FaEdit />
+            </button>
+          </>
+        )}
       </div>
     ),
     className: "col-acciones",
@@ -297,6 +317,7 @@ const ListadoGeneral = ({
                   >
                     <FaEye /> Ver Unidades
                   </button>
+
                   <button
                     className="icon-btn add"
                     title="Registrar unidad"

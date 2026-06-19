@@ -40,6 +40,9 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const [modalFechaMasiva, setModalFechaMasiva] = useState(false);
   const [modalObraMasiva, setModalObraMasiva] = useState(false);
 
+  const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
+  const rol = usuario?.rol || "";
+
   const cerrarTodos = () => {
     setUnidadMantenimiento(null);
     setUnidadBaja(null);
@@ -368,84 +371,89 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           ? row.ubicacion.nombre || "Sin asignar"
           : row.ubicacion || "Sin asignar",
     },
-    {
-      header: "Acciones",
-      accessor: (row) => (
-        <div className="actions">
-          {seleccionMultiple ? (
-            <label className="check-multiple">
-              <input
-                type="checkbox"
-                checked={unidadesSeleccionadas.includes(String(row._id))}
-                onChange={() => toggleSeleccionUnidad(row._id)}
-              />
-              Seleccionar
-            </label>
-          ) : (
-            <>
-              <button
-                onClick={() => {
-                  cerrarTodos();
-                  setUnidadAsignar(row);
-                }}
-              >
-                📍
-              </button>
-              <button
-                onClick={() => {
-                  cerrarTodos();
-                  const ok = enviarAMantenimiento(row);
-                  if (ok) {
-                    onClose();
-                    navigate(`/garantia/${row._id}`);
-                  }
-                }}
-              >
-                🛠
-              </button>
-              <button
-                onClick={() => {
-                  cerrarTodos();
-                  setUnidadBaja(row);
-                }}
-              >
-                🚫
-              </button>
-              <button
-                onClick={() => {
-                  cerrarTodos();
 
-                  if (row.fechaCompra) {
-                    setUnidadFechaExistente(row);
-                  } else {
-                    setUnidadFecha(row);
-                  }
-                }}
-              >
-                <FaRegCalendarPlus />
-              </button>
-              <button
-                onClick={() => {
-                  cerrarTodos();
-                  setUnidadDescripcion(row);
-                }}
-              >
-                <FaRegFileAlt title="Editar descripción" />
-              </button>
+    ...(rol === "Admin"
+      ? [
+          {
+            header: "Acciones",
+            accessor: (row) => (
+              <div className="actions">
+                {seleccionMultiple ? (
+                  <label className="check-multiple">
+                    <input
+                      type="checkbox"
+                      checked={unidadesSeleccionadas.includes(String(row._id))}
+                      onChange={() => toggleSeleccionUnidad(row._id)}
+                    />
+                    Seleccionar
+                  </label>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => {
+                        cerrarTodos();
+                        setUnidadAsignar(row);
+                      }}
+                    >
+                      📍
+                    </button>
+                    <button
+                      onClick={() => {
+                        cerrarTodos();
+                        const ok = enviarAMantenimiento(row);
+                        if (ok) {
+                          onClose();
+                          navigate(`/garantia/${row._id}`);
+                        }
+                      }}
+                    >
+                      🛠
+                    </button>
+                    <button
+                      onClick={() => {
+                        cerrarTodos();
+                        setUnidadBaja(row);
+                      }}
+                    >
+                      🚫
+                    </button>
+                    <button
+                      onClick={() => {
+                        cerrarTodos();
 
-              <button
-                onClick={() => {
-                  cerrarTodos();
-                  setUnidadEtiqueta(row);
-                }}
-              >
-                <FaTag title="Editar etiqueta" />
-              </button>
-            </>
-          )}
-        </div>
-      ),
-    },
+                        if (row.fechaCompra) {
+                          setUnidadFechaExistente(row);
+                        } else {
+                          setUnidadFecha(row);
+                        }
+                      }}
+                    >
+                      <FaRegCalendarPlus />
+                    </button>
+                    <button
+                      onClick={() => {
+                        cerrarTodos();
+                        setUnidadDescripcion(row);
+                      }}
+                    >
+                      <FaRegFileAlt title="Editar descripción" />
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        cerrarTodos();
+                        setUnidadEtiqueta(row);
+                      }}
+                    >
+                      <FaTag title="Editar etiqueta" />
+                    </button>
+                  </>
+                )}
+              </div>
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (

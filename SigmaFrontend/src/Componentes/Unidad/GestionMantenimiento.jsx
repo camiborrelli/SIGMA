@@ -18,6 +18,7 @@ import {
 } from "react-icons/fa";
 import { API_URL } from "../../../api";
 import "./GestionMantenimiento.css";
+import { IoSend } from "react-icons/io5";
 
 dayjs.locale("es");
 
@@ -405,19 +406,21 @@ const GestionMantenimiento = () => {
                     Comentario
                   </label>
 
-                  <textarea
-                    id={`comentario-${unidad._id}`}
-                    value={comentarios[unidad._id] || ""}
-                    onChange={(e) =>
-                      handleComentarioChange(unidad._id, e.target.value)
-                    }
-                    placeholder="Agregar novedad, diagnostico o pendiente"
-                    rows={3}
-                  />
+                  <div className="gm-comment-textarea">
+                    <textarea
+                      id={`comentario-${unidad._id}`}
+                      value={comentarios[unidad._id] || ""}
+                      onChange={(e) =>
+                        handleComentarioChange(unidad._id, e.target.value)
+                      }
+                      placeholder="Agregar novedad, diagnostico o pendiente"
+                      rows={3}
+                    />
 
-                  <button type="submit" disabled={guardando[unidad._id]}>
-                    {guardando[unidad._id] ? "Guardando..." : "Guardar"}
-                  </button>
+                    <button type="submit" disabled={guardando[unidad._id]}>
+                      {guardando[unidad._id] ? "Guardando..." : <IoSend />}
+                    </button>
+                  </div>
                 </form>
 
                 {comentariosActivos.length > 0 && (

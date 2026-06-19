@@ -389,8 +389,9 @@
 }
 
 .gm-comment-form textarea {
-  width: 100%;
-  min-height: 92px;
+  width: 90%;
+  height: 60px;
+  /* min-height: 92px; */
   resize: vertical;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
@@ -409,6 +410,11 @@
   box-shadow: 0 0 0 3px rgba(201, 0, 54, 0.12);
 }
 
+.gm-comment-textarea {
+  display: flex;
+  gap: 10px;
+}
+
 .gm-comment-form button {
   align-self: flex-end;
   min-height: 38px;
@@ -418,6 +424,7 @@
   color: #ffffff;
   font-size: 13px;
   font-weight: 800;
+  margin-bottom: 10px;
 }
 
 .gm-comment-form button:hover:not(:disabled) {

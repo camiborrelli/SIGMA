@@ -276,16 +276,30 @@ const Mapa = () => {
                           )}
                           {obra.estado}
                         </span>{" "}
-                        <button
-                          className="btn-editar-obra"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            seleccionarObra(obra);
-                            setVerModalEditarObra(true);
-                          }}
-                        >
-                          <FaEdit />
-                        </button>
+                        {rolUsuario === "Admin" && (
+                          <button
+                            className="btn-editar-obra"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              seleccionarObra(obra);
+                              setVerModalEditarObra(true);
+                            }}
+                          >
+                            <FaEdit />
+                          </button>
+                        )}
+                        {rolUsuario === "Admin" && (
+                          <button
+                            className="btn-eliminar-obra"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setObraAEliminar(obra);
+                              setVerModalEliminar(true);
+                            }}
+                          >
+                            <FaTrash />
+                          </button>
+                        )}
                         {esInactivaCard && (
                           <button
                             className="btn-reactivar-sutil-box"
@@ -523,12 +537,14 @@ const Mapa = () => {
               </div>
 
               <div className="detalle-acciones">
-                <button
-                  className="btn-finalizar-obra"
-                  onClick={() => setVerModalFinalizar(true)}
-                >
-                  Finalizar Obra
-                </button>
+                {rolUsuario === "Admin" && (
+                  <button
+                    className="btn-finalizar-obra"
+                    onClick={() => setVerModalFinalizar(true)}
+                  >
+                    Finalizar Obra
+                  </button>
+                )}
 
                 <button
                   onClick={() => setTrasladarEquiposModal(true)}

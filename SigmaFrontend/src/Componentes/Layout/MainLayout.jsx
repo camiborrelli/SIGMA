@@ -276,19 +276,19 @@ const MainLayout = () => {
           >
             <VscTools />{" "}
             <span>
-              {usuario?.rol === "Admin"
-                ? "Gestión"
-                : "Gestión de equipos"}
+              {usuario?.rol === "Admin" ? "Gestión" : "Gestión de equipos"}
             </span>
           </button>
-          <button
-            className={`btn-nav ${
-              location.pathname === "/gestion-mantenimiento" ? "active" : ""
-            }`}
-            onClick={() => navigate("/gestion-mantenimiento")}
-          >
-            <FaTools /> <span>Gestion de mantenimiento</span>
-          </button>
+          {usuario?.rol === "Admin" && (
+            <button
+              className={`btn-nav ${
+                location.pathname === "/gestion-mantenimiento" ? "active" : ""
+              }`}
+              onClick={() => navigate("/gestion-mantenimiento")}
+            >
+              <FaTools /> <span>Gestion de mantenimiento</span>
+            </button>
+          )}
           <button
             className={`btn-nav ${
               location.pathname === "/garantias-vencer" ? "active" : ""
