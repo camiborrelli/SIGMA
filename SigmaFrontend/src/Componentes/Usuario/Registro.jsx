@@ -47,9 +47,40 @@ const Registro = ({ setIsLogin }) => {
       return;
     }
 
-    toast.success("Usuario registrado correctamente");
-    setIsLogin(true);
-    navigate("/dashboard");
+    toast.success("Usuario registrado correctamente. Iniciando sesión...");
+
+    try {
+      const loginRes = await fetch(`${API_URL}/usuarios/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: registerData.email,
+          password: registerData.password,
+        }),
+      });
+
+      const loginResult = await loginRes.json();
+
+      if (loginRes.ok) {
+
+        localStorage.setItem("token", loginResult.token);
+
+        if (loginResult.usuario) {
+          localStorage.setItem("usuario", JSON.stringify(loginResult.usuario));
+        }
+
+        navigate("/dashboard");
+
+      } else {
+
+        setIsLogin(true);
+        navigate("/");
+      }
+    } catch (err) {
+      console.error("Error en auto-login:", err);
+      setIsLogin(true);
+      navigate("/");
+    }
 
     setRegisterData({
       nombre: "",
@@ -64,7 +95,6 @@ const Registro = ({ setIsLogin }) => {
     <div className="container">
       <div className="card">
         <h2>Registro de usuario</h2>
-        {/* <p className="subtitle">Crea tu cuenta</p> */}
 
         <form onSubmit={handleRegister}>
           <label>Nombre</label>
