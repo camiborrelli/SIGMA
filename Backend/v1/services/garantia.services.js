@@ -26,6 +26,13 @@ const escapeHtml = (value = "") =>
     return entities[char];
   });
 
+const normalizarDiasAviso = (dias = DIAS_AVISO_GARANTIA) => {
+  const numeroDias = Number(dias);
+  return Number.isFinite(numeroDias)
+    ? Math.max(1, numeroDias)
+    : DIAS_AVISO_GARANTIA;
+};
+
 export const calcularFechaFinGarantia = (fechaCompra) => {
   const fechaFin = new Date(fechaCompra);
   fechaFin.setFullYear(fechaFin.getFullYear() + 1);
@@ -98,9 +105,7 @@ const normalizarGarantia = (unidad, ahora = new Date()) => {
 export const obtenerGarantiasPorVencer = async (
   dias = DIAS_AVISO_GARANTIA,
 ) => {
-  const diasAviso = Number.isFinite(Number(dias))
-    ? Math.max(1, Number(dias))
-    : DIAS_AVISO_GARANTIA;
+  const diasAviso = normalizarDiasAviso(dias);
 
   const unidades = await Unidad.find({
     fechaCompra: { $exists: true, $ne: null },
@@ -138,7 +143,7 @@ const crearMensajeNotificacion = (garantia) => {
   )}. Faltan ${garantia.diasRestantes} dia(s).`;
 };
 
-const crearMensajeCorreo = (garantias) => {
+const crearMensajeCorreo = (garantias, diasAviso = DIAS_AVISO_GARANTIA) => {
   const items = garantias
     .map((garantia) => {
       const equipo = escapeHtml(getNombreEquipo(garantia.equipo));
@@ -161,7 +166,7 @@ const crearMensajeCorreo = (garantias) => {
     .join("");
 
   return `
-    <p>Hay ${garantias.length} garantia(s) que vencen dentro de los proximos ${DIAS_AVISO_GARANTIA} dias.</p>
+    <p>Hay ${garantias.length} garantia(s) que vencen dentro de los proximos ${diasAviso} dias.</p>
     <ul>${items}</ul>
   `;
 };
@@ -169,7 +174,8 @@ const crearMensajeCorreo = (garantias) => {
 export const notificarGarantiasPorVencer = async (
   dias = DIAS_AVISO_GARANTIA,
 ) => {
-  const garantias = await obtenerGarantiasPorVencer(dias);
+  const diasAviso = normalizarDiasAviso(dias);
+  const garantias = await obtenerGarantiasPorVencer(diasAviso);
 
   if (garantias.length === 0) {
     return {
@@ -192,38 +198,57 @@ export const notificarGarantiasPorVencer = async (
   const erroresCorreo = [];
 
   for (const admin of admins) {
-    const garantiasNuevas = [];
+    const garantiasParaCorreo = [];
+    const notificacionesParaMarcar = [];
 
     for (const garantia of garantias) {
-      const existe = await Notificacion.exists({
+      const filtroNotificacion = {
         usuario: admin._id,
         tipo: "garantia_por_vencer",
         unidadId: garantia._id,
         fechaVencimientoGarantia: garantia.fechaFinGarantia,
-      });
+      };
 
-      if (existe) continue;
+      let notificacion = await Notificacion.findOne(filtroNotificacion)
+        .select("_id correoEnviado")
+        .lean();
 
-      await Notificacion.create({
-        usuario: admin._id,
-        mensaje: crearMensajeNotificacion(garantia),
-        tipo: "garantia_por_vencer",
-        unidadId: garantia._id,
-        fechaVencimientoGarantia: garantia.fechaFinGarantia,
-      });
+      if (!notificacion) {
+        notificacion = await Notificacion.create({
+          usuario: admin._id,
+          mensaje: crearMensajeNotificacion(garantia),
+          tipo: "garantia_por_vencer",
+          unidadId: garantia._id,
+          fechaVencimientoGarantia: garantia.fechaFinGarantia,
+          correoEnviado: false,
+        });
 
-      notificacionesCreadas += 1;
-      garantiasNuevas.push(garantia);
+        notificacionesCreadas += 1;
+      }
+
+      if (!notificacion.correoEnviado) {
+        garantiasParaCorreo.push(garantia);
+        notificacionesParaMarcar.push(notificacion._id);
+      }
     }
 
-    if (!admin.email || garantiasNuevas.length === 0) continue;
+    if (!admin.email || garantiasParaCorreo.length === 0) continue;
 
     try {
       await enviarCorreo({
         destino: admin.email,
         asunto: "Garantias por vencer - SIGMA",
-        mensaje: crearMensajeCorreo(garantiasNuevas),
+        mensaje: crearMensajeCorreo(garantiasParaCorreo, diasAviso),
       });
+      await Notificacion.updateMany(
+        { _id: { $in: notificacionesParaMarcar } },
+        {
+          $set: {
+            correoEnviado: true,
+            correoEnviadoAt: new Date(),
+          },
+        },
+      );
       correosEnviados += 1;
     } catch (error) {
       erroresCorreo.push({
@@ -254,7 +279,10 @@ export const iniciarMonitorGarantiasPorVencer = () => {
   const ejecutar = async () => {
     try {
       const resultado = await notificarGarantiasPorVencer();
-      if (resultado.notificacionesCreadas > 0) {
+      if (
+        resultado.notificacionesCreadas > 0 ||
+        resultado.correosEnviados > 0
+      ) {
         console.log("Avisos de garantia por vencer:", resultado);
       }
     } catch (error) {
