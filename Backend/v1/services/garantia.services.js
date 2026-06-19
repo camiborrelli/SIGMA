@@ -188,7 +188,6 @@ export const notificarGarantiasPorVencer = async (
 
   const admins = await Usuario.find({
     rol: "Admin",
-    estado: "Activo",
   })
     .select("nombre apellido email")
     .lean();
