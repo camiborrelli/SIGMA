@@ -26,6 +26,15 @@ const NotificacionSchema = new mongoose.Schema({
     type: Date,
   },
 
+  correoEnviado: {
+    type: Boolean,
+    default: false,
+  },
+
+  correoEnviadoAt: {
+    type: Date,
+  },
+
   leida: {
     type: Boolean,
     default: false,

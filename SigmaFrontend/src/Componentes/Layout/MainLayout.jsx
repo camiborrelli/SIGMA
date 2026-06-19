@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import logo from "../../assets/LogoSinFondo.png";
@@ -100,7 +100,7 @@ const MainLayout = () => {
     }
   };
 
-  const cargarNotificaciones = async () => {
+  const cargarNotificaciones = useCallback(async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
     try {
@@ -115,7 +115,33 @@ const MainLayout = () => {
     } catch (error) {
       console.error("Error al cargar notificaciones:", error);
     }
-  };
+  }, []);
+
+  const revisarGarantiasPorVencer = useCallback(async () => {
+    if (usuario?.rol !== "Admin") return;
+
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${API_URL}/unidades/garantias/revisar?dias=30`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("SesiÃ³n expirada");
+      }
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Error al revisar garantias por vencer");
+      }
+    } catch (error) {
+      console.error("Error al revisar garantias por vencer:", error);
+    }
+  }, [usuario?.rol]);
 
   const marcarComoLeidas = async () => {
     try {
@@ -165,7 +191,13 @@ const MainLayout = () => {
   };
 
   useEffect(() => {
-    cargarNotificaciones();
+    const inicializarNotificaciones = async () => {
+      await revisarGarantiasPorVencer();
+      await cargarNotificaciones();
+    };
+
+    inicializarNotificaciones();
+
     const handleClickOutside = (event) => {
       if (
         headerRef.current &&
@@ -176,9 +208,15 @@ const MainLayout = () => {
         setShowDropdown(false);
       }
     };
+
+    const intervaloNotificaciones = setInterval(cargarNotificaciones, 60000);
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      clearInterval(intervaloNotificaciones);
+    };
+  }, [cargarNotificaciones, revisarGarantiasPorVencer]);
 
   const unreadCount = notificaciones.filter((n) => !n.leida).length;
 
