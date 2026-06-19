@@ -47,8 +47,8 @@ const AgregarFechaCompraModal = ({ unidad, onClose, onUpdated }) => {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-card">
+    <div className="modal-overlay unidad-child-modal-overlay">
+      <div className="modal-card unidad-child-modal-card">
         <h3>Agregar fecha de compra</h3>
 
         <p>

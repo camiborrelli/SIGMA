@@ -5,8 +5,8 @@ const FechaCompraExistenteModal = ({ unidad, onClose }) => {
   if (!unidad) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-card-fecha">
+    <div className="modal-overlay unidad-child-modal-overlay">
+      <div className="modal-card-fecha unidad-child-modal-card">
         <div className="modal-header-fecha">
           <FaCalendarCheck />
           <span>Fecha registrada</span>

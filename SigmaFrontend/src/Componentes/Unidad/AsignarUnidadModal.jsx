@@ -81,8 +81,8 @@ const AsignarUnidadModal = ({ unidad, onClose, onUpdated }) => {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-card">
+    <div className="modal-overlay unidad-child-modal-overlay">
+      <div className="modal-card unidad-child-modal-card">
         <h2>Asignar Unidad</h2>
 
         <p>

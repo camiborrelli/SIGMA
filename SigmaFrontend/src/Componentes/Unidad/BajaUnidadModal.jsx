@@ -48,8 +48,8 @@ const BajaUnidadModal = ({ unidad, onClose, onUpdated }) => {
   const yaBaja = unidad.estado === "Dada de Baja";
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-card">
+    <div className="modal-overlay unidad-child-modal-overlay">
+      <div className="modal-card unidad-child-modal-card">
         <h2>Dar de baja unidad</h2>
 
         {yaBaja ? (

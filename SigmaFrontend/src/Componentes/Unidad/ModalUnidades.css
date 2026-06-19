@@ -630,3 +630,11 @@
   background: #f1f5f9 !important;
   z-index: 5;
 }
+
+.modal-overlay.unidad-child-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 110000;
+  background: rgba(0, 0, 0, 0.6);
+}
+
