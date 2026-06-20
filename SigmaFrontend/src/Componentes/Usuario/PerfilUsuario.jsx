@@ -69,15 +69,6 @@ const PerfilUsuario = () => {
                 <button onClick={() => setMostrarCambiarContrasenia(true)}>
                   Cambiar Contraseña <TbLockPassword />
                 </button>
-
-                <button
-                  className="btn-edit"
-                  onClick={() =>
-                    alert("Funcionalidad de edición de perfil en desarrollo")
-                  }
-                >
-                  Editar Perfil
-                </button>
               </>
             ) : (
               <p>Usuario no encontrado</p>

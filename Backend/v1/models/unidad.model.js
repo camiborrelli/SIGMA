@@ -32,6 +32,7 @@ const UnidadSchema = new Schema({
         {
           texto: String,
           fecha: { type: Date, default: Date.now },
+          usuario: { type: String, default: null },
         },
       ],
     },

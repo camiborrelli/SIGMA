@@ -469,7 +469,7 @@ export const getUnidadesMantenimientoController = async (req, res) => {
 export const agregarComentarioMantenimientoController = async (req, res) => {
   try {
     const { id } = req.params;
-    const { comentario } = req.body;
+    const { comentario, usuario } = req.body;
 
     if (!comentario) {
       return res.status(400).json({ error: "Debe proporcionar un comentario" });
@@ -494,10 +494,16 @@ export const agregarComentarioMantenimientoController = async (req, res) => {
       ultimoRegistro.comentarios = [];
     }
 
+    console.log("usuario recibido en req.body:", usuario);
+    console.log("typeof usuario:", typeof usuario);
+
     ultimoRegistro.comentarios.push({
       texto: comentario,
       fecha: new Date(),
+      usuario: usuario,
     });
+
+    console.log("Comentario agregado al mantenimiento:", comentario);
 
     await unidad.save();
     res.status(200).json(unidad);
@@ -506,5 +512,46 @@ export const agregarComentarioMantenimientoController = async (req, res) => {
     res
       .status(500)
       .json({ error: "Error al agregar comentario de mantenimiento" });
+  }
+};
+
+export const eliminarComentarioMantenimientoController = async (req, res) => {
+  try {
+    const { id, comentarioId } = req.params;
+
+    const unidad = await Unidad.findById(id);
+    if (!unidad) {
+      return res.status(404).json({ error: "Unidad no encontrada" });
+    }
+
+    //Busco el último registro de mantenimiento y verifico que esté en curso
+    const ultimoRegistro =
+      unidad.historialMantenimiento[unidad.historialMantenimiento.length - 1];
+
+    if (!ultimoRegistro || ultimoRegistro.fechaFin) {
+      return res
+        .status(400)
+        .json({ error: "La unidad no está en mantenimiento" });
+    }
+
+    // Busco el comentario por su ID
+    const comentarioIndex = ultimoRegistro.comentarios.findIndex(
+      (c) => c._id.toString() === comentarioId,
+    );
+
+    if (comentarioIndex === -1) {
+      return res.status(404).json({ error: "Comentario no encontrado" });
+    }
+
+    // Elimino el comentario
+    ultimoRegistro.comentarios.splice(comentarioIndex, 1);
+
+    await unidad.save();
+    res.status(200).json(unidad);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "Error al eliminar comentario de mantenimiento" });
   }
 };

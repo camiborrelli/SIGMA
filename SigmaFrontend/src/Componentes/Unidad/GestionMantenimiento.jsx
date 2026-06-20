@@ -19,6 +19,7 @@ import {
 import { API_URL } from "../../../api";
 import "./GestionMantenimiento.css";
 import { IoSend } from "react-icons/io5";
+import { CiCircleRemove } from "react-icons/ci";
 
 dayjs.locale("es");
 
@@ -167,6 +168,14 @@ const GestionMantenimiento = () => {
 
     try {
       const token = localStorage.getItem("token");
+      const usuarioGuardado = JSON.parse(localStorage.getItem("usuario"));
+
+      const bodyAEnviar = {
+        comentario: texto,
+        usuario: usuarioGuardado?.nombre || "Anónimo",
+      };
+      console.log("body que se va a enviar:", bodyAEnviar);
+
       const res = await fetch(
         `${API_URL}/unidades/${unidad._id}/comentario-mantenimiento`,
         {
@@ -175,7 +184,10 @@ const GestionMantenimiento = () => {
             "Content-Type": "application/json",
             Authorization: token ? `Bearer ${token}` : "",
           },
-          body: JSON.stringify({ comentario: texto }),
+          body: JSON.stringify({
+            comentario: texto,
+            usuario: usuarioGuardado.nombre || "Anónimo",
+          }),
         },
       );
 
@@ -222,6 +234,29 @@ const GestionMantenimiento = () => {
       toast.error("Error al finalizar");
     } finally {
       setFinalizando((p) => ({ ...p, [unidad._id]: false }));
+    }
+  };
+
+  const eliminarComentario = async (comentarioId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(
+        `${API_URL}/unidades/mantenimiento/comentario/${comentarioId}`,
+        {
+          method: "DELETE",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        },
+      );
+      if (res.status === 401) {
+        window.dispatchEvent(new Event("token-expirado"));
+        throw new Error("Sesion expirada");
+      }
+      if (!res.ok) throw new Error();
+
+      toast.success("Comentario eliminado");
+      fetchUnidadesMantenimiento();
+    } catch {
+      toast.error("Error al eliminar comentario");
     }
   };
 
@@ -434,7 +469,11 @@ const GestionMantenimiento = () => {
                         .map((c, i) => (
                           <div key={i} className="gm-comment">
                             <span>{formatFechaHora(c.fecha)}</span>
-                            <p>{c.texto}</p>
+                            <p className="gm-comment-text">{c.texto}</p> -{" "}
+                            {/* <p>{c.usuario || "Anónimo"}</p> */}
+                            <button onClick={() => eliminarComentario(c._id)}>
+                              <CiCircleRemove className="eliminar-commentario" />
+                            </button>
                           </div>
                         ))}
                     </div>

@@ -23,6 +23,7 @@ import {
   getUnidadesMantenimientoController,
   agregarComentarioMantenimientoController,
   revisarGarantiasPorVencerController,
+  eliminarComentarioMantenimientoController,
 } from "../controllers/unidad.controller.js";
 import { verificarToken } from "../middlewares/auth.js";
 import { soloAdmin } from "../middlewares/roles.js";
@@ -107,5 +108,10 @@ router.put(
   actualizarDescripcionUnidadController,
 );
 router.put("/etiqueta/:id", verificarToken, actualizarEtiquetaUnidadController);
+router.delete(
+  "/mantenimiento/comentario/:id",
+  verificarToken,
+  eliminarComentarioMantenimientoController,
+);
 
 export default router;
