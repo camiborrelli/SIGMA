@@ -6,6 +6,7 @@ import {
   finalizarObraServices,
   reactivarObraServices,
   editarObraServices,
+  editarObra,
 } from "../services/obra.services.js";
 import mongoose from "mongoose";
 import Obra from "../models/obra.model.js";
@@ -201,5 +202,29 @@ export const cambiarNombreObraController = async (req, res) => {
   } catch (error) {
     console.error("Error en cambiarNombreObraController:", error);
     res.status(500).json({ error: "Error al actualizar el nombre de la obra" });
+  }
+};
+
+export const editarObraController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre, fechaInicio, fechaFin } = req.body;
+
+    const datosParaActualizar = {};
+    if (nombre !== undefined && nombre !== "")
+      datosParaActualizar.nombre = nombre;
+    if (fechaInicio !== undefined && fechaInicio !== "")
+      datosParaActualizar.fechaInicio = fechaInicio;
+    if (fechaFin !== undefined && fechaFin !== "")
+      datosParaActualizar.fechaFin = fechaFin;
+
+    const obraActualizada = await editarObra(id, datosParaActualizar);
+    res.status(200).json({
+      message: "Obra actualizada correctamente",
+      obra: obraActualizada,
+    });
+  } catch (error) {
+    console.error("Error en editarObraController:", error);
+    res.status(500).json({ error: "Error al actualizar la obra" });
   }
 };

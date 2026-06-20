@@ -143,3 +143,13 @@ export const editarObraServices = async (id, nombre) => {
 
   return obra;
 };
+
+export const editarObra = async (id, datosParaActualizar) => {
+  const obraActualizada = await Obra.findByIdAndUpdate(
+    id,
+    { $set: datosParaActualizar }, //actualizar solo los campos que se completen
+    { new: true },
+  );
+
+  return obraActualizada;
+};

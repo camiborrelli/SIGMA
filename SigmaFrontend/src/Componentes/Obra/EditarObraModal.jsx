@@ -5,6 +5,8 @@ import { API_URL } from "../../../api";
 
 const EditarObraModal = ({ obra, onClose, onUpdated }) => {
   const [nombre, setNombre] = useState(obra.nombre);
+  const [fechaInicio, setFechaInicio] = useState(obra.fechaInicio);
+  const [fechaFin, setFechaFin] = useState(obra.fechaFin);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -13,17 +15,15 @@ const EditarObraModal = ({ obra, onClose, onUpdated }) => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(
-        `${API_URL}/obras/editar/${obra._id || obra.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ nombre }),
+      const res = await fetch(`${API_URL}/obras/${obra._id || obra.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      );
+
+        body: JSON.stringify({ nombre, fechaInicio, fechaFin }),
+      });
 
       if (res.status === 401) {
         window.dispatchEvent(new Event("token-expirado"));
@@ -49,7 +49,7 @@ const EditarObraModal = ({ obra, onClose, onUpdated }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-header-custom">
-          <h2>Cambiar el nombre de la obra</h2>
+          <h2>Cambiar los datos de la obra</h2>
         </div>
 
         <form onSubmit={handleSubmit} className="editar-obra-form">
@@ -58,6 +58,18 @@ const EditarObraModal = ({ obra, onClose, onUpdated }) => {
             type="text"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
+          />
+          <label>Nueva fecha de inicio</label>
+          <input
+            type="date"
+            value={fechaInicio ? fechaInicio.split("T")[0] : ""}
+            onChange={(e) => setFechaInicio(e.target.value)}
+          />
+          <label>Nueva fecha de fin</label>
+          <input
+            type="date"
+            value={fechaFin ? fechaFin.split("T")[0] : ""}
+            onChange={(e) => setFechaFin(e.target.value)}
             required
           />
 

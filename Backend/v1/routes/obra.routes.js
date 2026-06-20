@@ -8,6 +8,7 @@ import {
   finalizarObraController,
   reactivarObraController,
   cambiarNombreObraController,
+  editarObraController,
 } from "../controllers/obra.controller.js";
 import { verificarToken } from "../middlewares/auth.js";
 import { validateBody } from "../middlewares/validation.middleware.js";
@@ -28,5 +29,6 @@ router.get("/:id", verificarToken, getObraPorIdController);
 router.delete("/:id", verificarToken, eliminarObraController);
 router.patch("/reactivar/:id", verificarToken, reactivarObraController);
 router.put("/editar/:id", verificarToken, cambiarNombreObraController);
+router.put("/:id", verificarToken, editarObraController);
 
 export default router;
