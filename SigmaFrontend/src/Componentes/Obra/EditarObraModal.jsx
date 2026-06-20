@@ -70,7 +70,6 @@ const EditarObraModal = ({ obra, onClose, onUpdated }) => {
             type="date"
             value={fechaFin ? fechaFin.split("T")[0] : ""}
             onChange={(e) => setFechaFin(e.target.value)}
-            required
           />
 
           <div className="modal-actions">

@@ -211,12 +211,23 @@ export const editarObraController = async (req, res) => {
     const { nombre, fechaInicio, fechaFin } = req.body;
 
     const datosParaActualizar = {};
+
     if (nombre !== undefined && nombre !== "")
       datosParaActualizar.nombre = nombre;
-    if (fechaInicio !== undefined && fechaInicio !== "")
-      datosParaActualizar.fechaInicio = fechaInicio;
-    if (fechaFin !== undefined && fechaFin !== "")
-      datosParaActualizar.fechaFin = fechaFin;
+
+    if (fechaInicio) {
+      let fechaI = new Date(fechaInicio);
+      // fechaI.setUTCHours(0, 0, 0, 0); // normalizar a medianoche UTC
+      // fechaI.setDate(fechaI.getDate() + 1); // ✔ sumar un día para compensar desfase
+      datosParaActualizar.fechaInicio = fechaI;
+    }
+
+    if (fechaFin) {
+      let fechaF = new Date(fechaFin);
+      // fechaF.setUTCHours(0, 0, 0, 0);
+      // fechaF.setDate(fechaF.getDate() + 1);
+      datosParaActualizar.fechaFin = fechaF;
+    }
 
     const obraActualizada = await editarObra(id, datosParaActualizar);
     res.status(200).json({

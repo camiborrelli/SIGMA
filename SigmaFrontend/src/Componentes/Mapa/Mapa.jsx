@@ -260,11 +260,19 @@ const Mapa = () => {
                         {obra.fechaInicio
                           ? new Date(obra.fechaInicio).toLocaleDateString(
                               "es-ES",
+                              {
+                                timeZone: "UTC",
+                              },
                             )
                           : "Sin fecha"}{" "}
                         •{" "}
                         {obra.fechaFin
-                          ? new Date(obra.fechaFin).toLocaleDateString("es-ES")
+                          ? new Date(obra.fechaFin).toLocaleDateString(
+                              "es-ES",
+                              {
+                                timeZone: "UTC",
+                              },
+                            )
                           : "Sin fecha"}
                       </p>
 
@@ -411,6 +419,9 @@ const Mapa = () => {
                     {detalleObra.fechaInicio
                       ? new Date(detalleObra.fechaInicio).toLocaleDateString(
                           "es-ES",
+                          {
+                            timeZone: "UTC",
+                          },
                         )
                       : "-"}
                   </span>
@@ -423,6 +434,9 @@ const Mapa = () => {
                     {detalleObra.fechaFin
                       ? new Date(detalleObra.fechaFin).toLocaleDateString(
                           "es-ES",
+                          {
+                            timeZone: "UTC",
+                          },
                         )
                       : "-"}
                   </span>
@@ -457,23 +471,32 @@ const Mapa = () => {
                           {renderIconoEstadoEquipo(unidad.estado || "Asignado")}
                           {unidad.estado || "Asignado"}
                         </span>
-                        <button
-                          onClick={() => quitarUnidad(unidad._id)}
-                          disabled={estaEliminando}
-                          className="btn-quitar-unidad"
-                        >
-                          {estaEliminando ? (
-                            <FiRefreshCcw
-                              className="spinner"
-                              style={{ animation: "spin 1s linear infinite" }}
-                            />
-                          ) : (
-                            <CiCircleRemove
-                              style={{ fontSize: "1.25rem", color: "#c0392b" }}
-                              title="Quitar máquina"
-                            />
-                          )}
-                        </button>
+                        {usuario?.rol === "Admin" && (
+                          <>
+                            <button
+                              onClick={() => quitarUnidad(unidad._id)}
+                              disabled={estaEliminando}
+                              className="btn-quitar-unidad"
+                            >
+                              {estaEliminando ? (
+                                <FiRefreshCcw
+                                  className="spinner"
+                                  style={{
+                                    animation: "spin 1s linear infinite",
+                                  }}
+                                />
+                              ) : (
+                                <CiCircleRemove
+                                  style={{
+                                    fontSize: "1.25rem",
+                                    color: "#c0392b",
+                                  }}
+                                  title="Quitar máquina"
+                                />
+                              )}
+                            </button>
+                          </>
+                        )}
                       </div>
                     );
                   })
