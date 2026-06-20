@@ -33,6 +33,8 @@ const GestionMantenimiento = () => {
   const [garantias, setGarantias] = useState({});
   const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
 
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+
   const navigate = useNavigate();
 
   const fetchUnidadesMantenimiento = async () => {
@@ -168,11 +170,10 @@ const GestionMantenimiento = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const usuarioGuardado = JSON.parse(localStorage.getItem("usuario"));
 
       const bodyAEnviar = {
         comentario: texto,
-        usuario: usuarioGuardado?.nombre || "Anónimo",
+        usuario: usuario?.nombre || "Anónimo",
       };
       console.log("body que se va a enviar:", bodyAEnviar);
 
@@ -186,7 +187,7 @@ const GestionMantenimiento = () => {
           },
           body: JSON.stringify({
             comentario: texto,
-            usuario: usuarioGuardado.nombre || "Anónimo",
+            usuario: usuario?.nombre || "Anónimo",
           }),
         },
       );
@@ -237,7 +238,7 @@ const GestionMantenimiento = () => {
     }
   };
 
-  const eliminarComentario = async (comentarioId) => {
+  const eliminarComentario = async (comentarioId, unidadId) => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
@@ -468,10 +469,27 @@ const GestionMantenimiento = () => {
                         .reverse()
                         .map((c, i) => (
                           <div key={i} className="gm-comment">
-                            <span>{formatFechaHora(c.fecha)}</span>
-                            <p className="gm-comment-text">{c.texto}</p> -{" "}
+                            <div className="gm-comment-content">
+                              <span>{formatFechaHora(c.fecha)}</span>
+                              <p className="gm-comment-text">
+                                {c.texto} -{" "}
+                              </p>{" "}
+                            </div>
                             {/* <p>{c.usuario || "Anónimo"}</p> */}
-                            <button onClick={() => eliminarComentario(c._id)}>
+
+                            <button
+                              style={{
+                                marginLeft: "auto",
+                                background: "transparent",
+                                color: "#e11d48",
+                                border: "none",
+                                cursor: "pointer",
+                                fontSize: 24,
+                              }}
+                              onClick={() =>
+                                eliminarComentario(c._id, unidad._id)
+                              }
+                            >
                               <CiCircleRemove className="eliminar-commentario" />
                             </button>
                           </div>

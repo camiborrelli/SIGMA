@@ -461,6 +461,16 @@
   padding: 8px 10px;
   background: #f8fafc;
   border-radius: 0 6px 6px 0;
+  display: flex;
+}
+
+.gm-comment-content {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 4px;
+  /* flex: 1; */
+  justify-content: space-between;
+  text-align: right;
 }
 
 .gm-comment span {

@@ -60,6 +60,11 @@ router.post(
 router.post("/agregar/:equipoId", verificarToken, agregarUnidadController);
 
 router.post("/asignar/:id", verificarToken, asignarUnidadController);
+
+router.delete(
+  "/:id/mantenimiento/comentario/:comentarioId",
+  eliminarComentarioMantenimientoController,
+);
 router.delete("/:id", verificarToken, eliminarUnidadController);
 
 router.get(
@@ -108,9 +113,5 @@ router.put(
   actualizarDescripcionUnidadController,
 );
 router.put("/etiqueta/:id", verificarToken, actualizarEtiquetaUnidadController);
-router.delete(
-  "/:id/mantenimiento/comentario/:comentarioId",
-  eliminarComentarioMantenimientoController,
-);
 
 export default router;
