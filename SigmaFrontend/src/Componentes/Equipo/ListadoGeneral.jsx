@@ -317,21 +317,24 @@ const ListadoGeneral = ({
                   >
                     <FaEye /> Ver Unidades
                   </button>
-
-                  <button
-                    className="icon-btn add"
-                    title="Registrar unidad"
-                    onClick={() => registrarUnidad(eq._id || eq.id)}
-                  >
-                    <FaPlus /> Añadir
-                  </button>
-                  <button
-                    className="icon-btn edit"
-                    title="Editar equipo"
-                    onClick={() => setEquipoEditar(eq)}
-                  >
-                    <FaEdit /> Editar
-                  </button>
+                  {usuario?.rol === "Admin" && (
+                    <>
+                      <button
+                        className="icon-btn add"
+                        title="Registrar unidad"
+                        onClick={() => registrarUnidad(eq._id || eq.id)}
+                      >
+                        <FaPlus /> Añadir
+                      </button>
+                      <button
+                        className="icon-btn edit"
+                        title="Editar equipo"
+                        onClick={() => setEquipoEditar(eq)}
+                      >
+                        <FaEdit /> Editar
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             ))}

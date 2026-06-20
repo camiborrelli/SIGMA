@@ -18,7 +18,7 @@ import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import EditarObraModal from "../Obra/EditarObraModal";
 import { FaEdit } from "react-icons/fa";
 import { API_URL } from "../../../api";
-import { FaTrash } from "react-icons/fa";
+// import { FaTrash } from "react-icons/fa";
 
 let DefaultIcon = L.icon({
   iconUrl: markerIcon,
@@ -41,8 +41,9 @@ const Mapa = () => {
   const [verModalReactivar, setVerModalReactivar] = useState(false);
   const [obraAReactivar, setObraAReactivar] = useState(null);
   const [removingIds, setRemovingIds] = useState([]);
-  const [rolUsuario, setRolUsuario] = useState("");
   const [verModalEditarObra, setVerModalEditarObra] = useState(false);
+
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
 
   const bounds = [
     [-35.9, -58.5],
@@ -71,11 +72,6 @@ const Mapa = () => {
 
   useEffect(() => {
     fetchObras();
-    const user = JSON.parse(localStorage.getItem("usuario"));
-    const rol = user?.rol;
-    if (rol) {
-      setRolUsuario(rol);
-    }
   }, []);
 
   const obrasFiltradas = obras.filter((obra) => {
@@ -265,7 +261,7 @@ const Mapa = () => {
                               },
                             )
                           : "Sin fecha"}{" "}
-                        •{" "}
+                        -{" "}
                         {obra.fechaFin
                           ? new Date(obra.fechaFin).toLocaleDateString(
                               "es-ES",
@@ -285,42 +281,44 @@ const Mapa = () => {
                           )}
                           {obra.estado}
                         </span>{" "}
-                        {rolUsuario === "Admin" && (
-                          <button
-                            className="btn-editar-obra"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              seleccionarObra(obra);
-                              setVerModalEditarObra(true);
-                            }}
-                          >
-                            <FaEdit />
-                          </button>
-                        )}
-                        {rolUsuario === "Admin" && (
-                          <button
-                            className="btn-eliminar-obra"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setObraAEliminar(obra);
-                              setVerModalEliminar(true);
-                            }}
-                          >
-                            <FaTrash />
-                          </button>
-                        )}
-                        {esInactivaCard && (
-                          <button
-                            className="btn-reactivar-sutil-box"
-                            title="Reactivar obra"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setObraAReactivar(obra);
-                              setVerModalReactivar(true);
-                            }}
-                          >
-                            <FiRefreshCcw />
-                          </button>
+                        {usuario?.rol === "Admin" && (
+                          <div className="acciones-admin">
+                            <button
+                              className="btn-editar-obra"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                seleccionarObra(obra);
+                                setVerModalEditarObra(true);
+                              }}
+                            >
+                              <FaEdit />
+                            </button>
+
+                            {/* <button
+                              className="btn-eliminar-obra"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setObraAEliminar(obra);
+                                setVerModalEliminar(true);
+                              }}
+                            >
+                              <FaTrash />
+                            </button> */}
+
+                            {esInactivaCard && (
+                              <button
+                                className="btn-reactivar-sutil-box"
+                                title="Reactivar obra"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setObraAReactivar(obra);
+                                  setVerModalReactivar(true);
+                                }}
+                              >
+                                <FiRefreshCcw />
+                              </button>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>
@@ -561,7 +559,7 @@ const Mapa = () => {
               </div>
 
               <div className="detalle-acciones">
-                {rolUsuario === "Admin" && (
+                {usuario?.rol === "Admin" && (
                   <button
                     className="btn-finalizar-obra"
                     onClick={() => setVerModalFinalizar(true)}
@@ -574,7 +572,7 @@ const Mapa = () => {
                   onClick={() => setTrasladarEquiposModal(true)}
                   className="btn-exportar-equipos"
                 >
-                  {rolUsuario === "Admin"
+                  {usuario?.rol === "Admin"
                     ? "Trasladar equipos"
                     : "Solicitar traslado"}
                 </button>
@@ -601,7 +599,7 @@ const Mapa = () => {
         onClose={() => setTrasladarEquiposModal(false)}
         obraOrigen={detalleObra}
         obras={obras}
-        rolUsuario={rolUsuario}
+        rolUsuario={usuario?.rol}
         onSuccess={async () => {
           setTrasladarEquiposModal(false);
           setObraSeleccionada(null);

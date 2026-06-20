@@ -36,7 +36,7 @@ const Dashboard = () => {
   const getItemsPorPagina = () => {
     if (window.innerWidth >= 1024) return 3;
     if (window.innerWidth >= 768) return 2;
-    return 1;                               
+    return 1;
   };
 
   const [paginaGarantia, setPaginaGarantia] = useState(0);
@@ -113,7 +113,9 @@ const Dashboard = () => {
     const token = localStorage.getItem("token");
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     try {
-      const res = await fetch(`${API_URL}/unidades/garantias/por-vencer`, { headers });
+      const res = await fetch(`${API_URL}/unidades/garantias/por-vencer`, {
+        headers,
+      });
       if (res.status === 401) {
         window.dispatchEvent(new Event("token-expirado"));
         throw new Error("Sesion expirada");
@@ -140,10 +142,12 @@ const Dashboard = () => {
     fetchGarantiasPorVencer();
   };
 
-  const totalPaginasGarantia = Math.ceil(garantiasPorVencer.length / itemsPorPagina);
+  const totalPaginasGarantia = Math.ceil(
+    garantiasPorVencer.length / itemsPorPagina,
+  );
   const garantiasVisibles = garantiasPorVencer.slice(
     paginaGarantia * itemsPorPagina,
-    (paginaGarantia + 1) * itemsPorPagina
+    (paginaGarantia + 1) * itemsPorPagina,
   );
 
   const anteriorGarantia = () => {
@@ -164,13 +168,13 @@ const Dashboard = () => {
 
         {rol === "Admin" && (
           <div className="inicio-acciones">
-            <button className="btn btn-acciones">Registro de acciones</button>
             <button className="btn btn-register" onClick={registrarEquipo}>
               + Nuevo equipo
             </button>
             <button className="btn btn-register" onClick={registrarObra}>
               + Nueva obra
             </button>
+            <button className="btn btn-acciones">Registro de acciones</button>
           </div>
         )}
       </div>

@@ -540,7 +540,27 @@
   }
 }
 
+@media (max-width: 600px) {
+  .inicio-acciones {
+    flex-direction: column;
+    width: 100%;
+    gap: 1px;
+  }
+
+  .dashboard-section-heading {
+    display: flex;
+    flex-direction: row;
+  }
+}
+
 .btn-link:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transform: scale3d(1.05, 1.05, 1.05);
+}
+
+@media (max-width: 900px) {
+  .dashboard-section-heading {
+    display: flex;
+    flex-direction: row;
+  }
 }

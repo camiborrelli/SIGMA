@@ -484,9 +484,13 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
                 </option>
               ))}
             </select>
-            <button className="btn-seleccion" onClick={toggleModoSeleccion}>
-              {seleccionMultiple ? "Cancelar selección" : "Selección múltiple"}
-            </button>
+            {rol === "Admin" && (
+              <button className="btn-seleccion" onClick={toggleModoSeleccion}>
+                {seleccionMultiple
+                  ? "Cancelar selección"
+                  : "Selección múltiple"}
+              </button>
+            )}
           </div>
 
           {seleccionMultiple && (

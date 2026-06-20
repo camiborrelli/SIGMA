@@ -357,14 +357,16 @@ const MainLayout = () => {
         >
           <TfiMapAlt /> <span>Mapa</span>
         </button>
-        <button
-          className={`mobile-footer-btn ${
-            location.pathname === "/gestion-mantenimiento" ? "active" : ""
-          }`}
-          onClick={() => navigate("/gestion-mantenimiento")}
-        >
-          <FaTools /> <span>Manten.</span>
-        </button>
+        {usuario?.rol === "Admin" && (
+          <button
+            className={`mobile-footer-btn ${
+              location.pathname === "/gestion-mantenimiento" ? "active" : ""
+            }`}
+            onClick={() => navigate("/gestion-mantenimiento")}
+          >
+            <FaTools /> <span>Manten.</span>
+          </button>
+        )}
         <div className="notification-wrapper mobile-only">
           <button className="mobile-footer-btn" onClick={handleToggleDropdown}>
             <div className="icon-badge-wrapper">
