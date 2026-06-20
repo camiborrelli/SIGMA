@@ -241,7 +241,7 @@ const GestionMantenimiento = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `${API_URL}/unidades/mantenimiento/comentario/${comentarioId}`,
+        `${API_URL}/unidades/${unidadId}/mantenimiento/comentario/${comentarioId}`,
         {
           method: "DELETE",
           headers: token ? { Authorization: `Bearer ${token}` } : {},

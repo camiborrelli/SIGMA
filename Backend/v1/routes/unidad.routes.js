@@ -109,8 +109,7 @@ router.put(
 );
 router.put("/etiqueta/:id", verificarToken, actualizarEtiquetaUnidadController);
 router.delete(
-  "/mantenimiento/comentario/:id",
-  verificarToken,
+  "/:id/mantenimiento/comentario/:comentarioId",
   eliminarComentarioMantenimientoController,
 );
 
