@@ -41,33 +41,33 @@ const ListadoUsuarios = () => {
     setPaginaActual(1);
   }, [usuariosPorPagina]);
 
-  useEffect(() => {
-    const fetchUsuarios = async () => {
-      setLoading(true);
-      const token = localStorage.getItem("token");
+  const fetchUsuarios = async () => {
+    setLoading(true);
+    const token = localStorage.getItem("token");
 
-      try {
-        const res = await fetch(`${API_URL}/usuarios`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    try {
+      const res = await fetch(`${API_URL}/usuarios`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-        const data = await res.json();
+      const data = await res.json();
 
-        if (!res.ok) {
-          setError(data.error || "Error al obtener usuarios");
-          setUsuarios([]);
-        } else {
-          setUsuarios(data.usuarios);
-        }
-      } catch (err) {
-        setError("Error de conexión");
-      } finally {
-        setLoading(false);
+      if (!res.ok) {
+        setError(data.error || "Error al obtener usuarios");
+        setUsuarios([]);
+      } else {
+        setUsuarios(data.usuarios);
       }
-    };
+    } catch (err) {
+      setError("Error de conexión");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchUsuarios();
   }, []);
 
@@ -118,7 +118,7 @@ const ListadoUsuarios = () => {
         return;
       }
       toast.success("Rol cambiado a Admin correctamente");
-      setUsuarios((prev) => prev.filter((u) => u._id !== id));
+      fetchUsuarios(); // 👈 en vez de filtrar localmente
     } catch (err) {
       alert("Error de conexión");
     }
@@ -141,9 +141,9 @@ const ListadoUsuarios = () => {
         return;
       }
       toast.success("Usuario dado de baja correctamente");
-      setUsuarios((prev) => prev.filter((u) => u._id !== id));
       setShowModalBaja(false);
       setUsuarioABaja(null);
+      fetchUsuarios(); // 👈
     } catch (err) {
       alert("Error de conexión");
     }
@@ -166,7 +166,7 @@ const ListadoUsuarios = () => {
         return;
       }
       toast.success("Usuario reactivado correctamente");
-      setUsuarios((prev) => prev.filter((u) => u._id !== id));
+      fetchUsuarios(); // 👈
     } catch (err) {
       toast.error("Error de conexión");
     }
