@@ -466,8 +466,8 @@
 
 .gm-comment-content {
   display: flex;
-  flex-direction: row-reverse;
-  gap: 4px;
+  flex-direction: row;
+  gap: 10px;
   /* flex: 1; */
   justify-content: space-between;
   text-align: right;
@@ -481,11 +481,11 @@
   margin-bottom: 4px;
 }
 
-.gm-comment p {
-  margin: 0;
+.gm-comment-text {
   color: #0f172a;
   font-size: 13px;
-  line-height: 1.45;
+  font-weight: 500;
+  margin: 0;
   overflow-wrap: anywhere;
 }
 
@@ -658,6 +658,15 @@
 
   .gm-comment-form button {
     width: 100%;
+  }
+
+  .gm-comment-content {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    /* flex: 1; */
+    justify-content: space-between;
+    text-align: right;
   }
 }
 

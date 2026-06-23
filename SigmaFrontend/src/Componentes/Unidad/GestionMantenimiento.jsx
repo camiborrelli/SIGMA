@@ -471,9 +471,7 @@ const GestionMantenimiento = () => {
                           <div key={i} className="gm-comment">
                             <div className="gm-comment-content">
                               <span>{formatFechaHora(c.fecha)}</span>
-                              <p className="gm-comment-text">
-                                {c.texto} -{" "}
-                              </p>{" "}
+                              <p className="gm-comment-text">{c.texto}</p>{" "}
                             </div>
                             {/* <p>{c.usuario || "Anónimo"}</p> */}
 

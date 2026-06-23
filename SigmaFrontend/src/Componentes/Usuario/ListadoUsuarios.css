@@ -59,7 +59,9 @@
   color: #0f172a;
 }
 
-.btn-cambiar-rol, .btn-dar-baja, .btn-reactivar {
+.btn-cambiar-rol,
+.btn-dar-baja,
+.btn-reactivar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
