@@ -83,7 +83,6 @@ const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
   const indiceFin = indiceInicio + porPagina;
   const unidadesPaginadas = equiposFiltrados.slice(indiceInicio, indiceFin);
 
-  console.log(estadoFilter);
 
   return (
     <div className="modal-filtros-overlay" onClick={cerrarModal}>
