@@ -18,6 +18,17 @@ import PerfilUsuario from "./Componentes/Usuario/PerfilUsuario";
 import ModalTokenExpirado from "./Componentes/Usuario/ModalTokenExpirado";
 import GestionMantenimiento from "./Componentes/Unidad/GestionMantenimiento";
 
+const tokenVigente = (token) => {
+  if (!token) return false;
+
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.exp * 1000 > Date.now();
+  } catch (error) {
+    return false;
+  }
+};
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [usuario, setUsuario] = useState(null);
@@ -27,14 +38,19 @@ function App() {
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("usuario");
 
-    if (token && user) {
+    if (tokenVigente(token) && user) {
       setIsAuthenticated(true);
       setUsuario(JSON.parse(user));
+    } else {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
     }
   }, []);
 
   useEffect(() => {
     const manejarTokenExpirado = () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
       setSesionExpirada(true);
       setIsAuthenticated(false);
       setUsuario(null);

@@ -49,6 +49,8 @@ const Registro = ({ setIsLogin }) => {
 
     toast.success("Usuario registrado correctamente. Iniciando sesión...");
 
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     try {
       const loginRes = await fetch(`${API_URL}/usuarios/login`, {
         method: "POST",

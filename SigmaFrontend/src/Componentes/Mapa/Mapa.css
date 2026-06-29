@@ -443,34 +443,56 @@
   min-width: 380px;
   height: 100%;
   overflow-y: auto;
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid var(--color-border);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+  border-radius: 8px;
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
   display: flex;
   flex-direction: column;
 }
 
 .detalle-top {
-  background-color: var(--color-brand-red);
-  padding: 22px 24px;
+  background:
+    linear-gradient(135deg, rgba(17, 24, 39, 0.22), rgba(17, 24, 39, 0)),
+    var(--color-brand-red);
+  padding: 24px 24px 26px 24px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   position: relative;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.detalle-top::after {
+  content: "";
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.detalle-info {
+  min-width: 0;
+  padding-right: 16px;
 }
 
 .detalle-top h2 {
-  margin: 0 0 4px 0;
-  font-size: 19px;
-  font-weight: 700;
+  margin: 0 0 8px 0;
+  font-size: 21px;
+  font-weight: 800;
   color: #ffffff;
+  line-height: 1.18;
+  overflow-wrap: anywhere;
 }
 
 .detalle-ubicacion {
-  margin: 0 0 14px 0;
-  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 16px 0;
+  color: rgba(255, 255, 255, 0.88);
   font-size: 13px;
+  line-height: 1.45;
+  max-width: 285px;
 }
 
 .btn-cerrar-detalle {
@@ -485,74 +507,95 @@
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  padding: 20px 24px;
+  gap: 12px;
+  padding: 18px 20px 14px 20px;
 }
 
 .stat-card {
-  background: #f8fafc;
-  border-radius: 10px;
-  padding: 12px;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 14px 12px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  border: 1px solid #e2e8f0;
+  gap: 10px;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.045);
 }
 
 .stat-icon-circle {
   font-size: 16px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 34px;
 }
 .stat-icon-circle.m-icon {
   background: #fee2e2;
+  color: #991b1b;
 }
 .stat-icon-circle.h-icon {
   background: #dcfce7;
+  color: #166534;
+}
+
+.stat-meta {
+  min-width: 0;
 }
 
 .stat-meta .numero {
-  font-size: 20px;
-  font-weight: 700;
+  display: block;
+  font-size: 22px;
+  font-weight: 800;
   color: #111827;
   line-height: 1;
 }
 
 .stat-meta .label-stat {
-  font-size: 12px;
+  display: block;
+  margin-top: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
   color: var(--color-text-muted);
+  line-height: 1.2;
 }
 
 .info-obra-fechas-box {
-  padding: 0 24px 16px 24px;
-  border-bottom: 1px solid #f1f5f9;
+  margin: 0 20px 4px 20px;
+  padding: 14px 14px 6px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
 }
 
 .fecha-item-row {
   display: flex;
   align-items: center;
   font-size: 13px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  min-height: 30px;
 }
 
 .fecha-icon-svg {
-  color: #9ca3af;
+  color: #c90036;
   margin-right: 10px;
   font-size: 14px;
+  flex: 0 0 auto;
 }
 
 .fecha-item-row .label-fecha {
   color: var(--color-text-muted);
-  width: 110px;
+  width: 100px;
+  font-weight: 600;
 }
 
 .fecha-item-row .valor-fecha {
   font-weight: 600;
   color: #111827;
+  margin-left: auto;
+  text-align: right;
 }
 
 .seccion-equipos {
