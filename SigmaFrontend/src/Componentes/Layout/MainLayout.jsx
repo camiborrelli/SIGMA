@@ -35,6 +35,11 @@ const MainLayout = () => {
     navigate("/");
   };
 
+  const obtenerMensajeError = async (res, fallback) => {
+    const data = await res.json().catch(() => ({}));
+    return data.error || data.message || fallback;
+  };
+
   const procesarSolicitud = async (solicitudId, aprobado) => {
     try {
       const token = localStorage.getItem("token");
@@ -55,7 +60,11 @@ const MainLayout = () => {
         throw new Error("Sesión expirada");
       }
 
-      if (!res.ok) throw new Error((await res.json()).error);
+      if (!res.ok) {
+        throw new Error(
+          await obtenerMensajeError(res, "Error al procesar la solicitud"),
+        );
+      }
 
       toast.success(
         `Solicitud ${aprobado ? "aprobada" : "rechazada"} con éxito`,
@@ -88,7 +97,11 @@ const MainLayout = () => {
         throw new Error("Sesión expirada");
       }
 
-      if (!res.ok) throw new Error("Error al confirmar entrega");
+      if (!res.ok) {
+        throw new Error(
+          await obtenerMensajeError(res, "Error al confirmar entrega"),
+        );
+      }
 
       toast.success("Entrega confirmada con éxito");
 

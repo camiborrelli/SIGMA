@@ -95,7 +95,7 @@ router.post(
   verificarToken,
   quitarUnidadDeObraController,
 );
-router.post("/trasladar", verificarToken, trasladarUnidadesController);
+router.post("/trasladar", verificarToken, soloAdmin, trasladarUnidadesController);
 router.post(
   "/asignar-obra-multiples",
   verificarToken,

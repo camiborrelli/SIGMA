@@ -21,6 +21,9 @@ const ModalDetalleNotificacion = ({
   if (!isOpen || !solicitud) return null;
 
   const esAdmin = rolUsuario === "Admin";
+  const estadoSolicitud = solicitud.estado || "";
+  const puedeProcesar = esAdmin && estadoSolicitud === "Pendiente";
+  const puedeConfirmar = !esAdmin && estadoSolicitud === "Aprobada";
 
   return (
     <div className="modal-overlay-notif" onClick={onClose}>
@@ -110,9 +113,9 @@ const ModalDetalleNotificacion = ({
             <tbody>
               {solicitud.unidades?.map((unidad) => (
                 <tr key={unidad._id}>
-                  <td>{unidad.identificador}</td>
-                  <td>{unidad.equipo.nombre}</td>
-                  <td>{unidad.equipo.tipo}</td>
+                  <td>{unidad.identificador || "-"}</td>
+                  <td>{unidad.equipo?.nombre || unidad.nombreEquipo || "Sin equipo"}</td>
+                  <td>{unidad.equipo?.tipo || unidad.tipoClase || "-"}</td>
 
                   <td>
                     <span className="estado-chip">{unidad.estado}</span>
@@ -139,7 +142,7 @@ const ModalDetalleNotificacion = ({
           </button>
 
           <div className="acciones">
-            {esAdmin ? (
+            {puedeProcesar ? (
               <>
                 <div className="btn-group">
                   <button className="btn-rechazar" onClick={onRechazar}>
@@ -153,12 +156,12 @@ const ModalDetalleNotificacion = ({
                   </button>
                 </div>
               </>
-            ) : (
+            ) : puedeConfirmar ? (
               <button className="btn-aprobar" onClick={onConfirmarEntrega}>
                 <FaCheck />
                 Confirmar entrega
               </button>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

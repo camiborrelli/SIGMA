@@ -105,6 +105,11 @@ const TrasladarUnidadesModal = ({
         });
 
         const data = await res.json();
+        if (res.status === 401) {
+          window.dispatchEvent(new Event("token-expirado"));
+          throw new Error("SesiÃ³n expirada");
+        }
+
         if (!res.ok)
           throw new Error(data.error || "Error al enviar la solicitud");
         toast.success(

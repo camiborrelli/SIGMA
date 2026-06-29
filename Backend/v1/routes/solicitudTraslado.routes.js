@@ -5,12 +5,13 @@ import {
   confirmarEntrega,
 } from "../controllers/solicitudTraslado.controller.js";
 import { verificarToken } from "../middlewares/auth.js";
+import { soloAdmin } from "../middlewares/roles.js";
 
 const router = express.Router();
 
 router.post("/traslado", verificarToken, crearSolicitudTraslado);
 
-router.put("/traslado/:id/procesar", verificarToken, procesarSolicitudTraslado);
+router.put("/traslado/:id/procesar", verificarToken, soloAdmin, procesarSolicitudTraslado);
 
 router.post("/traslado/confirmar-entrega", verificarToken, confirmarEntrega);
 
