@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 import SolicitudTraslado from "../models/SolicitudTraslado.js";
-import Notificacion from "../models/Notificacion.js";
 import Unidad from "../models/unidad.model.js";
 import Usuario from "../models/usuario.model.js";
 import Obra from "../models/obra.model.js";
 import AccionUsuario from "../models/accionUsuario.model.js";
 import { enviarCorreo } from "../services/email.service.js";
+import { crearNotificacionService } from "./notificacion.services.js";
 
 const idsUnicos = (ids = []) => [...new Set(ids.map((id) => String(id)))];
 
@@ -88,7 +88,7 @@ export const crearSolicitudTrasladoService = async ({
 
   await Promise.all(
     admins.map(async (admin) => {
-      await Notificacion.create({
+      await crearNotificacionService({
         usuario: admin._id,
         mensaje,
         tipo: "solicitud",
@@ -148,7 +148,7 @@ export const procesarSolicitudTrasladoService = async ({
     ? `Tu solicitud de traslado a "${solicitud.obraDestino.nombre}" fue autorizada por el administrador ${admin.nombre} ${admin.apellido}.`
     : `Tu solicitud de traslado a "${solicitud.obraDestino.nombre}" fue rechazada por el administrador ${admin.nombre} ${admin.apellido}.`;
 
-  await Notificacion.create({
+  await crearNotificacionService({
     usuario: solicitud.funcionario._id,
     mensaje,
     tipo: aprobado ? "solicitud_aprobada" : "respuesta",
@@ -224,7 +224,7 @@ export const confirmarEntregaService = async ({ solicitudId, funcionarioId }) =>
   if (adminId) {
     const mensaje = `El funcionario ${funcionario.nombre} ${funcionario.apellido} confirmo la entrega de equipos en la obra "${solicitud.obraDestino.nombre}".`;
 
-    await Notificacion.create({
+    await crearNotificacionService({
       usuario: adminId,
       mensaje,
       tipo: "respuesta",

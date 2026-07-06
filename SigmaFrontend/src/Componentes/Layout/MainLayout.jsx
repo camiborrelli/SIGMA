@@ -26,6 +26,7 @@ const MainLayout = () => {
 
   const headerRef = useRef(null);
   const footerRef = useRef(null);
+  const notificacionUrlProcesadaRef = useRef(null);
 
   const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
 
@@ -202,6 +203,33 @@ const MainLayout = () => {
       setShowDropdown(false);
     }
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const notificacionParam = params.get("notificacion");
+    const solicitudParam = params.get("solicitud");
+    const lookupKey = notificacionParam || solicitudParam;
+
+    if (
+      !lookupKey ||
+      notificacionUrlProcesadaRef.current === lookupKey ||
+      notificaciones.length === 0
+    ) {
+      return;
+    }
+
+    const notificacion = notificaciones.find((n) => {
+      const solicitudId =
+        typeof n.solicitudId === "object" ? n.solicitudId?._id : n.solicitudId;
+
+      return n._id === notificacionParam || solicitudId === solicitudParam;
+    });
+
+    if (!notificacion) return;
+
+    notificacionUrlProcesadaRef.current = lookupKey;
+    handleNotificacionClick(notificacion);
+  }, [location.search, notificaciones]);
 
   useEffect(() => {
     const inicializarNotificaciones = async () => {

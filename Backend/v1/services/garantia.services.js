@@ -2,6 +2,7 @@ import Unidad from "../models/unidad.model.js";
 import Usuario from "../models/usuario.model.js";
 import Notificacion from "../models/Notificacion.js";
 import { enviarCorreo } from "./email.service.js";
+import { crearNotificacionService } from "./notificacion.services.js";
 
 const DIAS_AVISO_GARANTIA = 30;
 const MS_DIA = 24 * 60 * 60 * 1000;
@@ -213,7 +214,7 @@ export const notificarGarantiasPorVencer = async (
         .lean();
 
       if (!notificacion) {
-        notificacion = await Notificacion.create({
+        notificacion = await crearNotificacionService({
           usuario: admin._id,
           mensaje: crearMensajeNotificacion(garantia),
           tipo: "garantia_por_vencer",

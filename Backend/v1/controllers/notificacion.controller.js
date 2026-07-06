@@ -1,6 +1,8 @@
-import { 
-  obtenerNotificacionesService, 
-  marcarNotificacionesLeidasService
+import {
+  obtenerNotificacionesService,
+  marcarNotificacionesLeidasService,
+  registrarPushTokenService,
+  eliminarPushTokenService,
 } from "../services/notificacion.services.js";
 
 export const obtenerNotificaciones = async (req, res) => {
@@ -18,9 +20,42 @@ export const marcarNotificacionesLeidas = async (req, res) => {
   try {
     const usuarioId = req.usuario.id;
     await marcarNotificacionesLeidasService(usuarioId);
-    res.status(200).json({ message: "Notificaciones marcadas como leídas correctamente" });
+    res
+      .status(200)
+      .json({ message: "Notificaciones marcadas como leidas correctamente" });
   } catch (error) {
     console.error("Error en marcarNotificacionesLeidas:", error);
     res.status(500).json({ error: "Error al actualizar las notificaciones" });
+  }
+};
+
+export const registrarPushToken = async (req, res) => {
+  try {
+    const usuarioId = req.usuario.id;
+    const pushToken = await registrarPushTokenService(usuarioId, req.body);
+
+    res.status(200).json({
+      message: "Token push registrado correctamente",
+      pushToken,
+    });
+  } catch (error) {
+    res.status(400).json({
+      error: error.message || "Error al registrar el token push",
+    });
+  }
+};
+
+export const eliminarPushToken = async (req, res) => {
+  try {
+    const usuarioId = req.usuario.id;
+    await eliminarPushTokenService(usuarioId, req.body?.token);
+
+    res.status(200).json({
+      message: "Token push eliminado correctamente",
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message || "Error al eliminar el token push",
+    });
   }
 };
