@@ -158,9 +158,12 @@ export const getGarantiasPorVencerController = async (req, res) => {
 
 export const revisarGarantiasPorVencerController = async (req, res) => {
   try {
+    console.log("INICIO REVISION GARANTIAS");
     const resultado = await notificarGarantiasPorVencer(req.query.dias);
+     console.log("RESULTADO GARANTIAS:", resultado);
     res.status(200).json(resultado);
   } catch (error) {
+    console.error("ERROR COMPLETO GARANTIAS:", error);
     console.error(error);
     res.status(500).json({
       error: "Error al revisar garantias por vencer",
