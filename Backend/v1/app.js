@@ -9,6 +9,9 @@ import obraRoutes from "./routes/obra.routes.js";
 import notificacionRoutes from "./routes/notificacion.routes.js";
 import solicitudRoutes from "./routes/solicitudTraslado.routes.js";
 import cronRoutes from "./routes/cron.routes.js";
+import { getAccionesUsuarioController } from "./controllers/accionUsuario.controller.js";
+import { verificarToken } from "./middlewares/auth.js";
+import { soloAdmin } from "./middlewares/roles.js";
 import { iniciarMonitorGarantiasPorVencer } from "./services/garantia.services.js";
 import { connectDB } from "./db.js";
 
@@ -41,6 +44,13 @@ app.use(
 );
 
 app.use(express.json());
+
+app.get(
+  "/accionesUsuario",
+  verificarToken,
+  soloAdmin,
+  getAccionesUsuarioController,
+);
 
 app.use("/unidades", unidadRoutes);
 app.use("/equipos", equipoRoutes);

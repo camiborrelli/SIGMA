@@ -7,6 +7,7 @@ import RegistrarEquipo from "../Equipo/RegistrarEquipo";
 import RegistroObra from "../Obra/RegistroObra";
 import RegistrarUnidad from "../Unidad/RegistrarUnidad";
 import ModalFiltros from "../Unidad/ModalFiltros";
+import ModalAcciones from "../Usuario/ModalAccionesUsuarios";
 
 import { VscTools } from "react-icons/vsc";
 import {
@@ -30,6 +31,7 @@ const Dashboard = () => {
   const [isUnidadModalOpen, setIsUnidadModalOpen] = useState(false);
   const [selectedEquipoId, setSelectedEquipoId] = useState("");
   const [filtroSeleccionado, setFiltroSeleccionado] = useState("");
+  const [isModalAccionesOpen, setIsModalAccionesOpen] = useState(false);
 
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -137,6 +139,7 @@ const Dashboard = () => {
 
   const registrarEquipo = () => setIsEquipoModalOpen(true);
   const registrarObra = () => setIsObraModalOpen(true);
+  const registrarAccion = () => setIsModalAccionesOpen(true);
   const refrescarDatosUnidades = () => {
     fetchStatsUnidades();
     fetchGarantiasPorVencer();
@@ -174,7 +177,9 @@ const Dashboard = () => {
             <button className="btn btn-register" onClick={registrarObra}>
               + Nueva obra
             </button>
-            <button className="btn btn-acciones">Registro de acciones</button>
+            <button className="btn btn-acciones" onClick={registrarAccion}>
+              Registro de acciones
+            </button>
           </div>
         )}
       </div>
@@ -418,6 +423,12 @@ const Dashboard = () => {
         <ModalFiltros
           estadoFilter={filtroSeleccionado}
           setEstadoFilter={setFiltroSeleccionado}
+        />
+      )}
+      {isModalAccionesOpen && (
+        <ModalAcciones
+          isOpen={isModalAccionesOpen}
+          onClose={() => setIsModalAccionesOpen(false)}
         />
       )}
     </div>

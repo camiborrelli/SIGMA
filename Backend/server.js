@@ -9,6 +9,9 @@ import obrasRoutes from "./v1/routes/obra.routes.js";
 import notificacionRoutes from "./v1/routes/notificacion.routes.js";
 import solicitudRoutes from "./v1/routes/solicitudTraslado.routes.js";
 import cronRoutes from "./v1/routes/cron.routes.js";
+import { getAccionesUsuarioController } from "./v1/controllers/accionUsuario.controller.js";
+import { verificarToken } from "./v1/middlewares/auth.js";
+import { soloAdmin } from "./v1/middlewares/roles.js";
 import { iniciarMonitorGarantiasPorVencer } from "./v1/services/garantia.services.js";
 
 const app = express();
@@ -42,6 +45,13 @@ app.get("/", (req, res) => {
   });
 });
 
+app.get(
+  "/accionesUsuario",
+  verificarToken,
+  soloAdmin,
+  getAccionesUsuarioController,
+);
+
 app.use("/unidades", unidadRoutes);
 app.use("/equipos", equipoRoutes);
 app.use("/usuarios", usuarioRoutes);
@@ -50,8 +60,19 @@ app.use("/notificaciones", notificacionRoutes);
 app.use("/solicitudes", solicitudRoutes);
 app.use("/cron", cronRoutes);
 
-app.listen(process.env.PORT || 5001, () => {
-  console.log(`Servidor corriendo en puerto ${process.env.PORT || 5001}`);
+const PORT = process.env.PORT || 5001;
+
+const server = app.listen(PORT, () => {
+  console.log(`Servidor corriendo en puerto ${PORT}`);
+});
+
+server.on("error", (error) => {
+  if (error.code === "EADDRINUSE") {
+    console.error(`El puerto ${PORT} ya esta en uso`);
+    process.exit(1);
+  }
+
+  throw error;
 });
 
 export default app;
