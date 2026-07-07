@@ -38,7 +38,7 @@ export const enviarCorreo = async ({ destino, asunto, mensaje }) => {
       ? mensaje
       : `<p>${mensaje}</p>`;
 
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: `SIGMA <${process.env.EMAIL_USER}>`,
       to: destino,
       subject: asunto,
@@ -50,7 +50,21 @@ export const enviarCorreo = async ({ destino, asunto, mensaje }) => {
       `,
     });
 
-    console.log(`Correo enviado a: ${destino}`);
+    console.log("Correo procesado por SMTP:", {
+      destino,
+      messageId: info.messageId,
+      accepted: info.accepted,
+      rejected: info.rejected,
+      response: info.response,
+    });
+
+    if (Array.isArray(info.rejected) && info.rejected.length > 0) {
+      throw new Error(
+        `El servidor de correo rechazo el envio a: ${info.rejected.join(", ")}`,
+      );
+    }
+
+    return info;
   } catch (error) {
     console.error("Error enviando correo:", error.message);
     throw error;
