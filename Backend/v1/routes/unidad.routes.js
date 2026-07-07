@@ -74,6 +74,10 @@ router.get(
 );
 router.post(
   "/garantias/revisar",
+  (req, res, next) => {
+    console.log("LLEGÓ A /garantias/revisar");
+    next();
+  },
   verificarToken,
   soloAdmin,
   revisarGarantiasPorVencerController,
