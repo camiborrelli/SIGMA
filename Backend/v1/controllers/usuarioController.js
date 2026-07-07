@@ -7,6 +7,8 @@ import {
   cambiarContraseniaUsuario,
   reactivarUsuarioService,
   getUsuarioPorEmail,
+  solicitarRecuperacionContraseniaService,
+  restablecerContraseniaConTokenService,
 } from "../services/usuario.service.js";
 import bcrypt from "bcrypt";
 import Usuario from "../models/usuario.model.js";
@@ -174,6 +176,54 @@ export const verificarEmail = async (req, res) => {
   }
 };
 
+export const solicitarRecuperacionContrasenia = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const resultado = await solicitarRecuperacionContraseniaService(email);
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    console.error("Error en solicitarRecuperacionContrasenia:", error);
+    res.status(500).json({
+      error: error.message || "Error al solicitar recuperacion de contrasenia",
+    });
+  }
+};
+
+export const restablecerContrasenia = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { nuevaContrasenia, confirmarContrasenia } = req.body;
+
+    if (!nuevaContrasenia || !confirmarContrasenia) {
+      return res.status(400).json({
+        error: "La nueva contrasenia y su confirmacion son requeridas",
+      });
+    }
+
+    if (nuevaContrasenia !== confirmarContrasenia) {
+      return res.status(400).json({ error: "Las contrasenias no coinciden" });
+    }
+
+    const usuarioActualizado = await restablecerContraseniaConTokenService(
+      token,
+      nuevaContrasenia,
+    );
+
+    const { password, ...usuarioSinPassword } = usuarioActualizado.toObject();
+
+    res.status(200).json({
+      message: "Contrasenia restablecida correctamente",
+      usuario: usuarioSinPassword,
+    });
+  } catch (error) {
+    console.error("Error en restablecerContrasenia:", error);
+    res.status(400).json({
+      error: error.message || "Error al restablecer contrasenia",
+    });
+  }
+};
+
 export const cambiarContraseniaSinLogin = async (req, res) => {
   try {
     const { id } = req.params;
@@ -223,11 +273,9 @@ export const cambiarContrasenia = async (req, res) => {
     const { confirmarContrasenia } = req.body;
 
     if (!nuevaContrasenia || !confirmarContrasenia) {
-      return res
-        .status(400)
-        .json({
-          error: "La nueva contraseña y su confirmación son requeridas",
-        });
+      return res.status(400).json({
+        error: "La nueva contraseña y su confirmación son requeridas",
+      });
     }
 
     if (nuevaContrasenia !== confirmarContrasenia) {

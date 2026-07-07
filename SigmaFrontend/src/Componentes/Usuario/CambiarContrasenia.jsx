@@ -11,6 +11,23 @@ const CambiarContrasenia = ({ isOpen, onClose, desdePerfil = false }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loadingRecovery, setLoadingRecovery] = useState(false);
   const [passwordEmail, setPasswordEmail] = useState("");
+  const [solicitudEnviada, setSolicitudEnviada] = useState(false);
+
+  const readResponsePayload = async (response) => {
+    const contentType = response.headers.get("content-type") || "";
+
+    if (contentType.includes("application/json")) {
+      return response.json();
+    }
+
+    const text = await response.text();
+
+    try {
+      return JSON.parse(text);
+    } catch {
+      return { error: text };
+    }
+  };
 
   useEffect(() => {
     if (!isOpen) return;
@@ -23,8 +40,60 @@ const CambiarContrasenia = ({ isOpen, onClose, desdePerfil = false }) => {
     } else {
       setRecoveryStep(1);
       setUsuarioId(null);
+      setSolicitudEnviada(false);
     }
   }, [isOpen, desdePerfil]);
+
+  const handleSolicitarRecuperacion = async (e) => {
+    e.preventDefault();
+
+    const email = recoveryEmail.trim();
+
+    if (!email) {
+      toast.error("Por favor ingresa tu correo electrónico");
+      return;
+    }
+
+    setLoadingRecovery(true);
+
+    try {
+      const res = await fetch(`${API_URL}/usuarios/recuperar-contrasenia`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          frontendUrl: window.location.origin,
+        }),
+      });
+
+      const data = await readResponsePayload(res);
+
+      if (!res.ok) {
+        if (res.status === 404) {
+          toast.error(
+            "El backend no tiene habilitada la ruta de recuperación de contraseña.",
+          );
+          return;
+        }
+
+        toast.error(
+          data.error || "No se pudo enviar el correo de recuperación",
+        );
+        return;
+      }
+
+      setSolicitudEnviada(true);
+      toast.success(
+        data.message ||
+          "Te enviamos un correo con las instrucciones para cambiar tu contraseña",
+      );
+    } catch (error) {
+      console.error("Error al solicitar recuperación:", error);
+      toast.error(error.message || "Error de conexión");
+    } finally {
+      setLoadingRecovery(false);
+    }
+  };
 
   const handleVerificarEmail = async (e) => {
     e.preventDefault();
@@ -41,12 +110,7 @@ const CambiarContrasenia = ({ isOpen, onClose, desdePerfil = false }) => {
         }),
       });
 
-      const data = await res.json();
-
-      if (res.status === 401) {
-        window.dispatchEvent(new Event("token-expirado"));
-        throw new Error("Sesión expirada");
-      }
+      const data = await readResponsePayload(res);
 
       if (!res.ok) {
         toast.error(data.error || "Email no registrado");
@@ -94,7 +158,7 @@ const CambiarContrasenia = ({ isOpen, onClose, desdePerfil = false }) => {
         },
       );
 
-      const data = await res.json();
+      const data = await readResponsePayload(res);
 
       if (!res.ok) {
         toast.error(data.error || "Error al cambiar contraseña");
@@ -118,6 +182,7 @@ const CambiarContrasenia = ({ isOpen, onClose, desdePerfil = false }) => {
     setUsuarioId(null);
     setNewPassword("");
     setConfirmPassword("");
+    setSolicitudEnviada(false);
     onClose();
   };
 
@@ -128,14 +193,80 @@ const CambiarContrasenia = ({ isOpen, onClose, desdePerfil = false }) => {
     setRecoveryEmail("");
     setConfirmPassword("");
     setPasswordEmail("");
+    setSolicitudEnviada(false);
   };
 
   if (!isOpen) return null;
 
+  if (!desdePerfil && solicitudEnviada) {
+    return (
+      <div className="modal-overlay-password">
+        <div className="cambiar-contrasenia-modal recovery-success-modal">
+          <h3>Revisa tu correo</h3>
+          <p>
+            Si la cuenta existe, te enviamos un enlace para cambiar la
+            contraseña.
+          </p>
+
+          <div className="recovery-success-box">
+            <span className="recovery-success-title">Correo enviado</span>
+            <span className="recovery-success-text">
+              Sigue las instrucciones del mensaje para definir una nueva
+              contraseña.
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleCerrarModal}
+            className="btn-cancel"
+          >
+            Cerrar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="modal-overlay-password">
       <div className="cambiar-contrasenia-modal">
-        {recoveryStep === 1 ? (
+        {!desdePerfil ? (
+          <form onSubmit={handleSolicitarRecuperacion}>
+            <h3>Recuperar contraseña</h3>
+
+            <p>
+              Ingresa tu correo electrónico y te enviaremos un enlace para
+              cambiar tu contraseña.
+            </p>
+
+            <input
+              type="email"
+              placeholder="Correo electrónico"
+              value={recoveryEmail}
+              onChange={(e) => setRecoveryEmail(e.target.value)}
+              disabled={loadingRecovery}
+            />
+
+            <button
+              type="submit"
+              disabled={loadingRecovery}
+              className="btn-change"
+            >
+              {loadingRecovery
+                ? "Enviando..."
+                : "Enviar correo de recuperación"}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleCerrarModal}
+              className="btn-cancel"
+            >
+              Cerrar
+            </button>
+          </form>
+        ) : recoveryStep === 1 ? (
           <form onSubmit={handleVerificarEmail}>
             <h3>Recuperar contraseña</h3>
 

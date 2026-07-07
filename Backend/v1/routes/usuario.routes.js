@@ -8,6 +8,8 @@ import {
   reactivarUsuario,
   cambiarContrasenia,
   verificarEmail,
+  solicitarRecuperacionContrasenia,
+  restablecerContrasenia,
   cambiarContraseniaSinLogin,
 } from "../controllers/usuarioController.js";
 import { getAccionesUsuarioController } from "../controllers/accionUsuario.controller.js";
@@ -20,6 +22,8 @@ const router = express.Router();
 router.post("/register", register);
 router.post("/login", login);
 router.post("/verificar-email", verificarEmail);
+router.post("/recuperar-contrasenia", solicitarRecuperacionContrasenia);
+router.post("/restablecer-contrasenia/:token", restablecerContrasenia);
 
 router.get(
   "/accionesUsuario",

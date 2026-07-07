@@ -34,6 +34,14 @@ export const UsuarioSchema = new Schema(
       enum: ["Activo", "Inactivo"],
       default: "Activo",
     },
+    resetPasswordToken: {
+      type: String,
+      default: null,
+    },
+    resetPasswordExpires: {
+      type: Date,
+      default: null,
+    },
     pushTokens: [
       {
         token: {

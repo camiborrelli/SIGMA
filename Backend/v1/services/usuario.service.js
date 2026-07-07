@@ -1,6 +1,20 @@
 import Usuario from "../models/usuario.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
+import { enviarCorreo } from "./email.service.js";
+
+const DEFAULT_FRONTEND_URL = "https://sigma-front-five.vercel.app";
+
+const obtenerBaseUrlSistema = () =>
+  (
+    process.env.SIGMA_FRONTEND_URL ||
+    process.env.FRONTEND_URL ||
+    DEFAULT_FRONTEND_URL
+  ).replace(/\/+$/, "");
+
+const construirUrlRecuperacion = (token) =>
+  `${obtenerBaseUrlSistema()}/restablecer-contrasenia?token=${token}`;
 
 export const registrarUsuario = async (data) => {
   const { nombre, apellido, email, password, rol } = data;
@@ -135,4 +149,81 @@ export const getUsuarioPorEmail = async (email) => {
   } catch (err) {
     throw err;
   }
+};
+
+export const solicitarRecuperacionContraseniaService = async (email) => {
+  if (!email) {
+    throw new Error("El email es requerido");
+  }
+
+  const emailNormalizado = email.trim().toLowerCase();
+  const usuario = await Usuario.findOne({ email: emailNormalizado });
+
+  if (!usuario) {
+    return {
+      mensaje:
+        "Si el correo existe en el sistema, recibirás un enlace para restablecer la contraseña",
+    };
+  }
+
+  const token = crypto.randomBytes(32).toString("hex");
+  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+  const expiracion = new Date(Date.now() + 60 * 60 * 1000);
+
+  usuario.resetPasswordToken = tokenHash;
+  usuario.resetPasswordExpires = expiracion;
+  await usuario.save();
+
+  const enlace = construirUrlRecuperacion(token);
+
+  await enviarCorreo({
+    destino: usuario.email,
+    asunto: "Recuperacion de contrasenia - SIGMA",
+    mensaje: `
+      <p>Hola ${usuario.nombre},</p>
+      <p>Recibimos una solicitud para restablecer tu contrasenia.</p>
+      <p>Haz clic en este enlace para continuar:</p>
+      <p><a href="${enlace}">${enlace}</a></p>
+      <p>Este enlace vence en 1 hora.</p>
+      <p>Si no solicitaste este cambio, ignora este correo.</p>
+    `,
+  });
+
+  return {
+    mensaje:
+      "Si el correo existe en el sistema, recibirás un enlace para restablecer la contraseña",
+  };
+};
+
+export const restablecerContraseniaConTokenService = async (
+  token,
+  nuevaContrasenia,
+) => {
+  if (!token) {
+    throw new Error("El token es requerido");
+  }
+
+  if (!nuevaContrasenia || nuevaContrasenia.length < 6) {
+    throw new Error("La contraseña debe tener al menos 6 caracteres");
+  }
+
+  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+  const usuario = await Usuario.findOne({
+    resetPasswordToken: tokenHash,
+    resetPasswordExpires: { $gt: new Date() },
+  });
+
+  if (!usuario) {
+    throw new Error("El enlace de recuperacion es invalido o expiro");
+  }
+
+  const passwordHash = await bcrypt.hash(nuevaContrasenia, 10);
+  usuario.password = passwordHash;
+  usuario.resetPasswordToken = null;
+  usuario.resetPasswordExpires = null;
+
+  await usuario.save();
+
+  return usuario;
 };

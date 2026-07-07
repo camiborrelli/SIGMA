@@ -126,6 +126,38 @@
   width: 100%;
   padding: 20px;
 }
+
+.recovery-success-modal {
+  text-align: center;
+}
+
+.recovery-success-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  margin-bottom: 18px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #eff6ff 0%, #f8fbff 100%);
+  border: 1px solid #bfdbfe;
+}
+
+.recovery-success-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1d4ed8;
+}
+
+.recovery-success-text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #334155;
+}
+
+.recovery-success-modal .btn-cancel {
+  margin-top: 4px;
+}
+
 @keyframes slideIn {
   from {
     opacity: 0;
