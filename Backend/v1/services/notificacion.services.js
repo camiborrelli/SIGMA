@@ -161,6 +161,7 @@ export const eliminarPushTokenService = async (usuarioId, token) => {
 };
 
 export const enviarPushANotificacionService = async (notificacion) => {
+  console.log("=== ENVIANDO PUSH ===");
   try {
     const notificacionPlana = serializarNotificacion(notificacion);
     const usuario = await Usuario.findById(notificacionPlana.usuario)
