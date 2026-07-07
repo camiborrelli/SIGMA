@@ -203,7 +203,7 @@ export const enviarPushANotificacionService = async (
         .filter(esExpoPushTokenValido);
     }
 
-    if (tokens.length === 0) return;
+    if (tokens.length === 0){console.log("⚠️ Usuario sin push tokens:", notificacionPlana.usuario); return;} ;
 
     const data = {
       url: notificacionPlana.url,
