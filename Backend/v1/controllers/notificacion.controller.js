@@ -31,14 +31,24 @@ export const marcarNotificacionesLeidas = async (req, res) => {
 
 export const registrarPushToken = async (req, res) => {
   try {
+    console.log("Registrando push token");
+    console.log("Usuario:", req.usuario?._id);
+    console.log("Body:", req.body);
+
     const usuarioId = req.usuario.id;
-    const pushToken = await registrarPushTokenService(usuarioId, req.body);
+
+    const pushToken = await registrarPushTokenService(
+      usuarioId,
+      req.body,
+    );
 
     res.status(200).json({
       message: "Token push registrado correctamente",
       pushToken,
     });
   } catch (error) {
+    console.error("Error registrando push token:", error);
+
     res.status(400).json({
       error: error.message || "Error al registrar el token push",
     });
