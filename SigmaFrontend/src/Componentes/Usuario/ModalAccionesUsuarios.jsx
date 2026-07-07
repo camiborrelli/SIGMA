@@ -3,8 +3,11 @@ import toast from "react-hot-toast";
 import { API_URL } from "../../../api";
 import "./ModalAccionesUsuarios.css";
 
+const ITEMS_POR_PAGINA = 10;
+
 const ModalAcciones = ({ isOpen, onClose }) => {
   const [acciones, setAcciones] = useState([]);
+  const [paginaActual, setPaginaActual] = useState(1);
 
   useEffect(() => {
     // if (!isOpen) return;
@@ -49,7 +52,25 @@ const ModalAcciones = ({ isOpen, onClose }) => {
     };
   }, [isOpen, onClose]);
 
+  useEffect(() => {
+    setPaginaActual(1);
+  }, [acciones.length]);
+
   if (!isOpen) return null;
+
+  const totalPaginas = Math.ceil(acciones.length / ITEMS_POR_PAGINA);
+  const accionesVisibles = acciones.slice(
+    (paginaActual - 1) * ITEMS_POR_PAGINA,
+    paginaActual * ITEMS_POR_PAGINA,
+  );
+
+  const irPaginaAnterior = () => {
+    setPaginaActual((pagina) => Math.max(1, pagina - 1));
+  };
+
+  const irPaginaSiguiente = () => {
+    setPaginaActual((pagina) => Math.min(totalPaginas, pagina + 1));
+  };
 
   return (
     <div className="modal-overlay">
@@ -59,28 +80,56 @@ const ModalAcciones = ({ isOpen, onClose }) => {
         {acciones.length === 0 ? (
           <p>No hay acciones registradas.</p>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Usuario</th>
-                <th>Acción</th>
-                <th>Fecha</th>
-              </tr>
-            </thead>
-            <tbody>
-              {acciones.map((accion) => (
-                <tr key={accion._id}>
-                  <td>
-                    {typeof accion.usuario === "object"
-                      ? `${accion.usuario.nombre} ${accion.usuario.apellido}`
-                      : accion.usuario}
-                  </td>
-                  <td>{accion.accion}</td>
-                  <td>{new Date(accion.fecha).toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <>
+            <div className="tabla-wrapper modal-acciones-tabla">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Usuario</th>
+                    <th>Acción</th>
+                    <th>Fecha</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {accionesVisibles.map((accion) => (
+                    <tr key={accion._id}>
+                      <td>
+                        {typeof accion.usuario === "object"
+                          ? `${accion.usuario.nombre} ${accion.usuario.apellido}`
+                          : accion.usuario}
+                      </td>
+                      <td>{accion.accion}</td>
+                      <td>{new Date(accion.fecha).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {totalPaginas > 1 && (
+              <div className="paginacion-modal-acciones">
+                <button
+                  type="button"
+                  onClick={irPaginaAnterior}
+                  disabled={paginaActual === 1}
+                >
+                  ←
+                </button>
+
+                <span>
+                  Página {paginaActual} de {totalPaginas}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={irPaginaSiguiente}
+                  disabled={paginaActual === totalPaginas}
+                >
+                  →
+                </button>
+              </div>
+            )}
+          </>
         )}
 
         <div className="acciones">
