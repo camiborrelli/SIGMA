@@ -4,6 +4,12 @@ import Usuario from "../models/usuario.model.js";
 const EXPO_PUSH_URL = "https://exp.host/--/api/v2/push/send";
 const DEFAULT_FRONTEND_URL = "https://sigma-front-five.vercel.app";
 const NOTIFICATION_CHANNEL_ID = "sigma-alerts";
+const TIPOS_REENVIO_PUSH = [
+  "garantia_por_vencer",
+  "solicitud",
+  "solicitud_aprobada",
+  "respuesta",
+];
 
 const obtenerBaseUrlSistema = () =>
   (
@@ -123,30 +129,46 @@ export const registrarPushTokenService = async (usuarioId, data = {}) => {
     throw new Error("Token push invalido");
   }
 
+  const ahora = new Date();
+  const plataforma = ["android", "ios", "web"].includes(platform)
+    ? platform
+    : "unknown";
+
   await Usuario.updateMany(
     { _id: { $ne: usuarioId }, "pushTokens.token": token },
     { $pull: { pushTokens: { token } } },
   );
 
-  await Usuario.updateOne(
-    { _id: usuarioId },
-    { $pull: { pushTokens: { token } } },
+  const resultadoActualizacion = await Usuario.updateOne(
+    { _id: usuarioId, "pushTokens.token": token },
+    {
+      $set: {
+        "pushTokens.$.platform": plataforma,
+        "pushTokens.$.deviceName": deviceName || "",
+        "pushTokens.$.lastSeenAt": ahora,
+      },
+    },
   );
 
   const pushToken = {
     token,
-    platform: ["android", "ios", "web"].includes(platform)
-      ? platform
-      : "unknown",
-    deviceName,
-    createdAt: new Date(),
-    lastSeenAt: new Date(),
+    platform: plataforma,
+    deviceName: deviceName || "",
+    createdAt: ahora,
+    lastSeenAt: ahora,
   };
 
-  await Usuario.updateOne(
-    { _id: usuarioId },
-    { $push: { pushTokens: pushToken } },
-  );
+  const tokenYaRegistrado =
+    (resultadoActualizacion.matchedCount ?? resultadoActualizacion.n ?? 0) > 0;
+
+  if (!tokenYaRegistrado) {
+    await Usuario.updateOne(
+      { _id: usuarioId },
+      { $push: { pushTokens: pushToken } },
+    );
+
+    await reenviarPushPendientes(usuarioId, token);
+  }
 
   return pushToken;
 };
@@ -160,17 +182,26 @@ export const eliminarPushTokenService = async (usuarioId, token) => {
   );
 };
 
-export const enviarPushANotificacionService = async (notificacion) => {
+export const enviarPushANotificacionService = async (
+  notificacion,
+  tokensObjetivo = null,
+) => {
   console.log("=== ENVIANDO PUSH ===");
   try {
     const notificacionPlana = serializarNotificacion(notificacion);
-    const usuario = await Usuario.findById(notificacionPlana.usuario)
-      .select("pushTokens")
-      .lean();
+    let tokens = Array.isArray(tokensObjetivo)
+      ? tokensObjetivo.filter(esExpoPushTokenValido)
+      : [];
 
-    const tokens = (usuario?.pushTokens || [])
-      .map((item) => item.token)
-      .filter(esExpoPushTokenValido);
+    if (!Array.isArray(tokensObjetivo)) {
+      const usuario = await Usuario.findById(notificacionPlana.usuario)
+        .select("pushTokens")
+        .lean();
+
+      tokens = (usuario?.pushTokens || [])
+        .map((item) => item.token)
+        .filter(esExpoPushTokenValido);
+    }
 
     if (tokens.length === 0) return;
 
@@ -200,6 +231,20 @@ export const enviarPushANotificacionService = async (notificacion) => {
     console.error("No se pudo enviar push de notificacion:", error.message);
   }
 };
+
+async function reenviarPushPendientes(usuarioId, token) {
+  const notificaciones = await Notificacion.find({
+    usuario: usuarioId,
+    tipo: { $in: TIPOS_REENVIO_PUSH },
+    leida: false,
+  })
+    .sort({ createdAt: -1 })
+    .limit(10);
+
+  for (const notificacion of notificaciones.reverse()) {
+    await enviarPushANotificacionService(notificacion, [token]);
+  }
+}
 
 export const crearNotificacionService = async (data) => {
   const notificacion = await Notificacion.create(data);

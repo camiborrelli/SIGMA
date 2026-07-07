@@ -148,6 +148,8 @@ export const procesarSolicitudTrasladoService = async ({
     ? `Tu solicitud de traslado a "${solicitud.obraDestino.nombre}" fue autorizada por el administrador ${admin.nombre} ${admin.apellido}.`
     : `Tu solicitud de traslado a "${solicitud.obraDestino.nombre}" fue rechazada por el administrador ${admin.nombre} ${admin.apellido}.`;
 
+  await solicitud.save();
+
   await crearNotificacionService({
     usuario: solicitud.funcionario._id,
     mensaje,
@@ -165,8 +167,6 @@ export const procesarSolicitudTrasladoService = async ({
       "respuesta de solicitud",
     );
   }
-
-  await solicitud.save();
 
   return solicitud;
 };

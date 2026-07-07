@@ -8,6 +8,7 @@ import usuarioRoutes from "./v1/routes/usuario.routes.js";
 import obrasRoutes from "./v1/routes/obra.routes.js";
 import notificacionRoutes from "./v1/routes/notificacion.routes.js";
 import solicitudRoutes from "./v1/routes/solicitudTraslado.routes.js";
+import cronRoutes from "./v1/routes/cron.routes.js";
 import { iniciarMonitorGarantiasPorVencer } from "./v1/services/garantia.services.js";
 
 const app = express();
@@ -47,6 +48,7 @@ app.use("/usuarios", usuarioRoutes);
 app.use("/obras", obrasRoutes);
 app.use("/notificaciones", notificacionRoutes);
 app.use("/solicitudes", solicitudRoutes);
+app.use("/cron", cronRoutes);
 
 app.listen(process.env.PORT || 5001, () => {
   console.log(`Servidor corriendo en puerto ${process.env.PORT || 5001}`);

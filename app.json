@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "46dd4234-b251-4d4e-b8be-0e31be00bee1"
+      }
+    },
+    "android": {
+      "package": "com.julietarosas.sigma"
+    }
+  }
+}
