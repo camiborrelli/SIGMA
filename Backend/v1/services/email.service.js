@@ -4,15 +4,24 @@ const SMTP_HOST = process.env.SMTP_HOST || "smtp.gmail.com";
 const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
 const SMTP_SECURE =
   String(process.env.SMTP_SECURE || "false").toLowerCase() === "true";
-const SMTP_TIMEOUT_MS = Number(process.env.SMTP_TIMEOUT_MS || 15000);
+const SMTP_CONNECTION_TIMEOUT_MS = Number(
+  process.env.SMTP_CONNECTION_TIMEOUT_MS || 20000,
+);
+const SMTP_GREETING_TIMEOUT_MS = Number(
+  process.env.SMTP_GREETING_TIMEOUT_MS || 20000,
+);
+const SMTP_SOCKET_TIMEOUT_MS = Number(
+  process.env.SMTP_SOCKET_TIMEOUT_MS || 60000,
+);
+const SMTP_SEND_TIMEOUT_MS = Number(process.env.SMTP_TIMEOUT_MS || 60000);
 
 const transporter = nodemailer.createTransport({
   host: SMTP_HOST,
   port: SMTP_PORT,
   secure: SMTP_SECURE,
-  connectionTimeout: SMTP_TIMEOUT_MS,
-  greetingTimeout: SMTP_TIMEOUT_MS,
-  socketTimeout: SMTP_TIMEOUT_MS,
+  connectionTimeout: SMTP_CONNECTION_TIMEOUT_MS,
+  greetingTimeout: SMTP_GREETING_TIMEOUT_MS,
+  socketTimeout: SMTP_SOCKET_TIMEOUT_MS,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD,
@@ -42,7 +51,7 @@ const ejecutarConTimeout = async (promesa, mensajeError) => {
   const timeoutPromise = new Promise((_, reject) => {
     timeoutId = setTimeout(
       () => reject(new Error(mensajeError)),
-      SMTP_TIMEOUT_MS,
+      SMTP_SEND_TIMEOUT_MS,
     );
   });
 

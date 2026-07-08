@@ -30,17 +30,31 @@ const allowedOrigins = [
   "https://sigma-front-git-develop-camilas-projects-2b00654e.vercel.app",
 ];
 
+const corsOrigin = (origin, callback) => {
+  if (
+    !origin ||
+    allowedOrigins.includes(origin) ||
+    /^https:\/\/sigma-front-[a-z0-9-]+\.vercel\.app$/i.test(origin) ||
+    /^https:\/\/[a-z0-9-]+\.onrender\.com$/i.test(origin)
+  ) {
+    callback(null, true);
+    return;
+  }
+
+  callback(new Error(`Origen no permitido por CORS: ${origin}`));
+};
+
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: corsOrigin,
     credentials: true,
+    optionsSuccessStatus: 200,
   }),
+);
+
+app.options(
+  "*",
+  cors({ origin: corsOrigin, credentials: true, optionsSuccessStatus: 200 }),
 );
 
 app.use(express.json());
