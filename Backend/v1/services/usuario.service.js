@@ -184,7 +184,8 @@ export const solicitarRecuperacionContraseniaService = async (email) => {
 
   const enlace = construirUrlRecuperacion(token);
 
-  await enviarCorreoSeguroLocal(
+  // Enviar correo en segundo plano: no bloquea la respuesta HTTP.
+  enviarCorreoSeguroLocal(
     {
       destino: usuario.email,
       asunto: "Recuperacion de contrasenia - SIGMA",
@@ -198,6 +199,11 @@ export const solicitarRecuperacionContraseniaService = async (email) => {
     `,
     },
     "recuperacion",
+  ).catch((err) =>
+    console.error(
+      "Error en envío asíncrono de recuperación:",
+      err && err.message,
+    ),
   );
 
   return {
