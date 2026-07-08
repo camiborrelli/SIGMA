@@ -4,11 +4,15 @@ const SMTP_HOST = process.env.SMTP_HOST || "smtp.gmail.com";
 const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
 const SMTP_SECURE =
   String(process.env.SMTP_SECURE || "false").toLowerCase() === "true";
+const SMTP_TIMEOUT_MS = Number(process.env.SMTP_TIMEOUT_MS || 15000);
 
 const transporter = nodemailer.createTransport({
   host: SMTP_HOST,
   port: SMTP_PORT,
   secure: SMTP_SECURE,
+  connectionTimeout: SMTP_TIMEOUT_MS,
+  greetingTimeout: SMTP_TIMEOUT_MS,
+  socketTimeout: SMTP_TIMEOUT_MS,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD,
@@ -32,23 +36,43 @@ transporter.verify((error, success) => {
   }
 });
 
+const ejecutarConTimeout = async (promesa, mensajeError) => {
+  let timeoutId;
+
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutId = setTimeout(
+      () => reject(new Error(mensajeError)),
+      SMTP_TIMEOUT_MS,
+    );
+  });
+
+  try {
+    return await Promise.race([promesa, timeoutPromise]);
+  } finally {
+    clearTimeout(timeoutId);
+  }
+};
+
 export const enviarCorreo = async ({ destino, asunto, mensaje }) => {
   try {
     const contenido = /<\/?[a-z][\s\S]*>/i.test(mensaje)
       ? mensaje
       : `<p>${mensaje}</p>`;
 
-    const info = await transporter.sendMail({
-      from: `SIGMA <${process.env.EMAIL_USER}>`,
-      to: destino,
-      subject: asunto,
-      html: `
-        <div>
-          <h2>SIGMA</h2>
-          ${contenido}
-        </div>
-      `,
-    });
+    const info = await ejecutarConTimeout(
+      transporter.sendMail({
+        from: `SIGMA <${process.env.EMAIL_USER}>`,
+        to: destino,
+        subject: asunto,
+        html: `
+          <div>
+            <h2>SIGMA</h2>
+            ${contenido}
+          </div>
+        `,
+      }),
+      "Timeout enviando el correo de recuperacion",
+    );
 
     console.log("Correo procesado por SMTP:", {
       destino,
