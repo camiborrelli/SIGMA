@@ -176,7 +176,7 @@ export const solicitarRecuperacionContraseniaService = async (email) => {
 
   const enlace = construirUrlRecuperacion(token);
 
-  void enviarCorreo({
+  await enviarCorreo({
     destino: usuario.email,
     asunto: "Recuperacion de contrasenia - SIGMA",
     mensaje: `
@@ -187,11 +187,6 @@ export const solicitarRecuperacionContraseniaService = async (email) => {
       <p>Este enlace vence en 1 hora.</p>
       <p>Si no solicitaste este cambio, ignora este correo.</p>
     `,
-  }).catch((error) => {
-    console.error(
-      "No se pudo enviar el correo de recuperacion:",
-      error.message,
-    );
   });
 
   return {
