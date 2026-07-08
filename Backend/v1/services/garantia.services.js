@@ -2,7 +2,10 @@ import Unidad from "../models/unidad.model.js";
 import Usuario from "../models/usuario.model.js";
 import Notificacion from "../models/Notificacion.js";
 import { enviarCorreo } from "./email.service.js";
-import { crearNotificacionService } from "./notificacion.services.js";
+import {
+  crearNotificacionService,
+  enviarPushANotificacionService,
+} from "./notificacion.services.js";
 
 const DIAS_AVISO_GARANTIA = 30;
 const MS_DIA = 24 * 60 * 60 * 1000;
@@ -210,8 +213,9 @@ export const notificarGarantiasPorVencer = async (
       };
 
       let notificacion = await Notificacion.findOne(filtroNotificacion)
-        .select("_id correoEnviado")
-        .lean();
+  .select(
+    "_id usuario mensaje tipo unidadId solicitudId correoEnviado pushEnviadoAt pushIntentadoAt pushTokensIntentados pushErrores",
+  );
 
       if (!notificacion) {
         notificacion = await crearNotificacionService({
@@ -224,6 +228,21 @@ export const notificarGarantiasPorVencer = async (
         });
 
         notificacionesCreadas += 1;
+      }
+
+      if (!notificacion.pushEnviadoAt) {
+        const resultado = await enviarPushANotificacionService(notificacion);
+
+        await Notificacion.findByIdAndUpdate(notificacion._id, {
+          $set: {
+            pushIntentadoAt: new Date(),
+            pushTokensIntentados: resultado.tokens,
+            pushErrores: resultado.errores,
+            ...(resultado.enviados > 0 && {
+              pushEnviadoAt: new Date(),
+            }),
+          },
+        });
       }
 
       if (!notificacion.correoEnviado) {

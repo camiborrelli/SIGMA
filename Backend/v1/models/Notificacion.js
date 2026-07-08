@@ -35,6 +35,24 @@ const NotificacionSchema = new mongoose.Schema({
     type: Date,
   },
 
+  pushIntentadoAt: {
+    type: Date,
+  },
+
+  pushEnviadoAt: {
+    type: Date,
+  },
+
+  pushTokensIntentados: {
+    type: Number,
+    default: 0,
+  },
+
+  pushErrores: {
+    type: Number,
+    default: 0,
+  },
+
   leida: {
     type: Boolean,
     default: false,

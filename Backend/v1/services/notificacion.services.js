@@ -77,6 +77,28 @@ const partirEnLotes = (items, tamano = 100) => {
   return lotes;
 };
 
+const crearResumenPush = () => ({
+  tokens: 0,
+  enviados: 0,
+  errores: 0,
+});
+
+const normalizarTicketsExpo = (body = {}) => {
+  if (Array.isArray(body.data)) return body.data;
+  if (body.data) return [body.data];
+  return [];
+};
+
+const parsearRespuestaExpo = (texto) => {
+  if (!texto) return {};
+
+  try {
+    return JSON.parse(texto);
+  } catch {
+    return { raw: texto };
+  }
+};
+
 const eliminarTokensNoRegistrados = async (tickets = [], mensajes = []) => {
   const tokensInvalidos = tickets
     .map((ticket, index) =>
@@ -102,24 +124,52 @@ const eliminarTokensNoRegistrados = async (tickets = [], mensajes = []) => {
 };
 
 const enviarLoteExpo = async (mensajes) => {
-  const response = await fetch(EXPO_PUSH_URL, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Accept-Encoding": "gzip, deflate",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(mensajes),
-  });
+  const resumen = crearResumenPush();
 
-  const body = await response.json().catch(() => ({}));
+  try {
+    const response = await fetch(EXPO_PUSH_URL, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Accept-Encoding": "gzip, deflate",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(mensajes),
+    });
 
-  if (!response.ok) {
-    console.error("Expo Push rechazo el lote:", response.status, body);
-    return;
+    const body = parsearRespuestaExpo(await response.text());
+
+    if (!response.ok) {
+      resumen.errores = mensajes.length;
+      console.error("Expo Push rechazo el lote:", response.status, body);
+      return resumen;
+    }
+
+    const tickets = normalizarTicketsExpo(body);
+    const erroresSolicitud = Array.isArray(body.errors) ? body.errors : [];
+    const ticketsConError = tickets.filter((ticket) => ticket?.status === "error");
+
+    resumen.enviados = tickets.filter((ticket) => ticket?.status === "ok").length;
+    resumen.errores = ticketsConError.length + erroresSolicitud.length;
+
+    if (ticketsConError.length > 0 || erroresSolicitud.length > 0) {
+      console.error("Expo Push devolvio errores:", {
+        tickets: ticketsConError.map((ticket) => ({
+          message: ticket.message,
+          error: ticket.details?.error,
+        })),
+        errors: erroresSolicitud,
+      });
+    }
+
+    await eliminarTokensNoRegistrados(tickets, mensajes);
+
+    return resumen;
+  } catch (error) {
+    resumen.errores = mensajes.length;
+    console.error("No se pudo contactar Expo Push:", error.message);
+    return resumen;
   }
-
-  await eliminarTokensNoRegistrados(body.data, mensajes);
 };
 
 export const registrarPushTokenService = async (usuarioId, data = {}) => {
@@ -186,7 +236,8 @@ export const enviarPushANotificacionService = async (
   notificacion,
   tokensObjetivo = null,
 ) => {
-  console.log("=== ENVIANDO PUSH ===");
+  const resumen = crearResumenPush();
+
   try {
     const notificacionPlana = serializarNotificacion(notificacion);
     let tokens = Array.isArray(tokensObjetivo)
@@ -203,8 +254,14 @@ export const enviarPushANotificacionService = async (
         .filter(esExpoPushTokenValido);
     }
 
-    if (tokens.length === 0){console.log("⚠️ Usuario sin push tokens:", notificacionPlana.usuario); return;} ;
+    tokens = [...new Set(tokens)];
+    resumen.tokens = tokens.length;
 
+    if (tokens.length === 0) {
+      console.warn("Usuario sin push tokens:", notificacionPlana.usuario);
+      return resumen;
+    }
+    
     const data = {
       url: notificacionPlana.url,
       tipo: notificacionPlana.tipo,
@@ -225,10 +282,20 @@ export const enviarPushANotificacionService = async (
     }));
 
     for (const lote of partirEnLotes(mensajes)) {
-      await enviarLoteExpo(lote);
+      const resultado = await enviarLoteExpo(lote);
+      resumen.enviados += resultado?.enviados || 0;
+      resumen.errores += resultado?.errores || 0;
     }
+
+    if (resumen.enviados > 0 || resumen.errores > 0) {
+      console.log("Resultado push SIGMA:", resumen);
+    }
+
+    return resumen;
   } catch (error) {
     console.error("No se pudo enviar push de notificacion:", error.message);
+    resumen.errores += 1;
+    return resumen;
   }
 };
 
