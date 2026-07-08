@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { lookup } from "dns/promises";
 
 const SMTP_HOST = process.env.SMTP_HOST || "smtp.gmail.com";
 const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
@@ -68,20 +69,66 @@ export const enviarCorreo = async ({ destino, asunto, mensaje }) => {
       ? mensaje
       : `<p>${mensaje}</p>`;
 
-    const info = await ejecutarConTimeout(
-      transporter.sendMail({
-        from: `SIGMA <${process.env.EMAIL_USER}>`,
-        to: destino,
-        subject: asunto,
-        html: `
+    const sendMailPromise = transporter.sendMail({
+      from: `SIGMA <${process.env.EMAIL_USER}>`,
+      to: destino,
+      subject: asunto,
+      html: `
           <div>
             <h2>SIGMA</h2>
             ${contenido}
           </div>
         `,
-      }),
-      "Timeout enviando el correo de recuperacion",
-    );
+    });
+
+    let info;
+
+    try {
+      info = await ejecutarConTimeout(
+        sendMailPromise,
+        "Timeout enviando el correo de recuperacion",
+      );
+    } catch (err) {
+      // If network unreachable (IPv6 routing issues), try forcing IPv4 resolution
+      if (err && err.code === "ENETUNREACH") {
+        try {
+          const addr = await lookup(SMTP_HOST, { family: 4 });
+          console.warn(
+            `ENETUNREACH al enviar correo, reintentando usando IPv4 ${addr.address}`,
+          );
+
+          const fallbackTransport = nodemailer.createTransport({
+            host: addr.address,
+            port: SMTP_PORT,
+            secure: SMTP_SECURE,
+            connectionTimeout: SMTP_CONNECTION_TIMEOUT_MS,
+            greetingTimeout: SMTP_GREETING_TIMEOUT_MS,
+            socketTimeout: SMTP_SOCKET_TIMEOUT_MS,
+            auth: {
+              user: process.env.EMAIL_USER,
+              pass: process.env.EMAIL_PASSWORD,
+            },
+            tls: {
+              servername: SMTP_HOST,
+            },
+          });
+
+          info = await ejecutarConTimeout(
+            fallbackTransport.sendMail({
+              from: `SIGMA <${process.env.EMAIL_USER}>`,
+              to: destino,
+              subject: asunto,
+              html: `<div><h2>SIGMA</h2>${contenido}</div>`,
+            }),
+            "Timeout enviando el correo de recuperacion (fallback IPv4)",
+          );
+        } catch (err2) {
+          throw err2;
+        }
+      } else {
+        throw err;
+      }
+    }
 
     console.log("Correo procesado por SMTP:", {
       destino,
@@ -101,5 +148,14 @@ export const enviarCorreo = async ({ destino, asunto, mensaje }) => {
   } catch (error) {
     console.error("Error enviando correo:", error.message);
     throw error;
+  }
+};
+
+export const enviarCorreoSeguro = async (datosCorreo, contexto = "") => {
+  try {
+    return await enviarCorreo(datosCorreo);
+  } catch (error) {
+    console.error(`No se pudo enviar correo (${contexto}):`, error.message);
+    return null;
   }
 };

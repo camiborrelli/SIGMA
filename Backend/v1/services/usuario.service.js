@@ -2,7 +2,15 @@ import Usuario from "../models/usuario.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import { enviarCorreo } from "./email.service.js";
+import * as emailService from "./email.service.js";
+const enviarCorreoSeguroLocal = async (datosCorreo, contexto = "") => {
+  try {
+    return await emailService.enviarCorreo(datosCorreo);
+  } catch (error) {
+    console.error(`No se pudo enviar correo (${contexto}):`, error.message);
+    return null;
+  }
+};
 
 const DEFAULT_FRONTEND_URL = "https://sigma-front-five.vercel.app";
 
@@ -176,10 +184,11 @@ export const solicitarRecuperacionContraseniaService = async (email) => {
 
   const enlace = construirUrlRecuperacion(token);
 
-  await enviarCorreo({
-    destino: usuario.email,
-    asunto: "Recuperacion de contrasenia - SIGMA",
-    mensaje: `
+  await enviarCorreoSeguroLocal(
+    {
+      destino: usuario.email,
+      asunto: "Recuperacion de contrasenia - SIGMA",
+      mensaje: `
       <p>Hola ${usuario.nombre},</p>
       <p>Recibimos una solicitud para restablecer tu contrasenia.</p>
       <p>Haz clic en este enlace para continuar:</p>
@@ -187,7 +196,9 @@ export const solicitarRecuperacionContraseniaService = async (email) => {
       <p>Este enlace vence en 1 hora.</p>
       <p>Si no solicitaste este cambio, ignora este correo.</p>
     `,
-  });
+    },
+    "recuperacion",
+  );
 
   return {
     mensaje:

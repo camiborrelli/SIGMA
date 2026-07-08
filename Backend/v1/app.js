@@ -44,6 +44,38 @@ const corsOrigin = (origin, callback) => {
   callback(new Error(`Origen no permitido por CORS: ${origin}`));
 };
 
+const corsHeaders = (req, res, next) => {
+  const origin = req.headers.origin;
+
+  if (
+    origin &&
+    (allowedOrigins.includes(origin) ||
+      /^https:\/\/sigma-front-[a-z0-9-]+\.vercel\.app$/i.test(origin) ||
+      /^https:\/\/[a-z0-9-]+\.onrender\.com$/i.test(origin))
+  ) {
+    res.header("Access-Control-Allow-Origin", origin);
+    res.header("Vary", "Origin");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header(
+      "Access-Control-Allow-Methods",
+      "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+    );
+    res.header(
+      "Access-Control-Allow-Headers",
+      req.headers["access-control-request-headers"] ||
+        "Content-Type, Authorization",
+    );
+  }
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  return next();
+};
+
+app.use(corsHeaders);
+
 app.use(
   cors({
     origin: corsOrigin,
