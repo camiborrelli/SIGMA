@@ -261,7 +261,7 @@ export const enviarPushANotificacionService = async (
       console.warn("Usuario sin push tokens:", notificacionPlana.usuario);
       return resumen;
     }
-    
+
     const data = {
       url: notificacionPlana.url,
       tipo: notificacionPlana.tipo,
@@ -278,7 +278,7 @@ export const enviarPushANotificacionService = async (
       channelId: NOTIFICATION_CHANNEL_ID,
       priority: "high",
       sound: "default",
-      ttl: 60 * 60 * 24 * 30,
+      ttl: 60 * 60 * 24 * 28,
     }));
 
     for (const lote of partirEnLotes(mensajes)) {
