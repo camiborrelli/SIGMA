@@ -106,6 +106,12 @@ input {
   font-size: 14px;
 }
 
+.success {
+  color: #16803a;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
 .roles {
   display: flex;
   gap: 1mm;

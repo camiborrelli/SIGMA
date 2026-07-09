@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 
 import Login from "./Componentes/Usuario/Login";
 import Registro from "./Componentes/Usuario/Registro";
+import RestablecerContrasenia from "./Componentes/Usuario/RestablecerContrasenia";
 import MainLayout from "./Componentes/Layout/MainLayout";
 import Dashboard from "./Componentes/Dashboard/Dashboard";
 import ListadoGeneral from "./Componentes/Equipo/ListadoGeneral";
@@ -76,6 +77,10 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Registro />} />
+        <Route
+          path="/restablecer-contrasenia"
+          element={<RestablecerContrasenia />}
+        />
 
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
