@@ -61,8 +61,6 @@
 
 .cambiar-contrasenia-modal .btn-change:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(198, 40, 40, 0.32);
-  background: #a61c1c;
 }
 
 .cambiar-contrasenia-modal .btn-change:active:not(:disabled) {
