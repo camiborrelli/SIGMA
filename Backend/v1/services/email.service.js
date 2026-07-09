@@ -105,6 +105,23 @@ const crearFallbackIPv4Transport = async () => {
   });
 };
 
+const crearFallbackGmailSeguroTransport = () => {
+  console.warn("Reintentando correo con Gmail SMTP seguro en puerto 465");
+
+  return nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: 465,
+    secure: true,
+    connectionTimeout: SMTP_CONNECTION_TIMEOUT_MS,
+    greetingTimeout: SMTP_GREETING_TIMEOUT_MS,
+    socketTimeout: SMTP_SOCKET_TIMEOUT_MS,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+};
+
 export const enviarCorreo = async ({ destino, asunto, mensaje }) => {
   try {
     const contenido = /<\/?[a-z][\s\S]*>/i.test(mensaje)
@@ -142,7 +159,16 @@ export const enviarCorreo = async ({ destino, asunto, mensaje }) => {
             "Timeout enviando el correo de recuperacion (fallback IPv4)",
           );
         } catch (err2) {
-          throw err2;
+          if (SMTP_HOST === "smtp.gmail.com" && SMTP_PORT !== 465) {
+            const fallbackSeguroTransport = crearFallbackGmailSeguroTransport();
+
+            info = await ejecutarConTimeout(
+              fallbackSeguroTransport.sendMail(mailOptions),
+              "Timeout enviando el correo de recuperacion (fallback Gmail 465)",
+            );
+          } else {
+            throw err2;
+          }
         }
       } else {
         throw err;
