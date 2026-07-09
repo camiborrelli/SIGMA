@@ -178,8 +178,11 @@ export const verificarEmail = async (req, res) => {
 
 export const solicitarRecuperacionContrasenia = async (req, res) => {
   try {
-    const { email } = req.body;
-    const resultado = await solicitarRecuperacionContraseniaService(email);
+    const { email, frontendUrl } = req.body;
+    const resultado = await solicitarRecuperacionContraseniaService(
+      email,
+      frontendUrl,
+    );
 
     res.status(200).json(resultado);
   } catch (error) {

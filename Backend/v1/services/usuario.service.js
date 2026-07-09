@@ -3,26 +3,31 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import * as emailService from "./email.service.js";
-const enviarCorreoSeguroLocal = async (datosCorreo, contexto = "") => {
-  try {
-    return await emailService.enviarCorreo(datosCorreo);
-  } catch (error) {
-    console.error(`No se pudo enviar correo (${contexto}):`, error.message);
-    return null;
-  }
-};
 
 const DEFAULT_FRONTEND_URL = "https://sigma-front-five.vercel.app";
 
-const obtenerBaseUrlSistema = () =>
-  (
+const normalizarFrontendUrl = (frontendUrl) => {
+  const urlBase =
     process.env.SIGMA_FRONTEND_URL ||
     process.env.FRONTEND_URL ||
-    DEFAULT_FRONTEND_URL
-  ).replace(/\/+$/, "");
+    frontendUrl ||
+    DEFAULT_FRONTEND_URL;
 
-const construirUrlRecuperacion = (token) =>
-  `${obtenerBaseUrlSistema()}/restablecer-contrasenia?token=${token}`;
+  try {
+    const url = new URL(urlBase);
+
+    if (!["http:", "https:"].includes(url.protocol)) {
+      throw new Error("Protocolo invalido");
+    }
+
+    return url.origin.replace(/\/+$/, "");
+  } catch {
+    return DEFAULT_FRONTEND_URL;
+  }
+};
+
+const construirUrlRecuperacion = (token, frontendUrl) =>
+  `${normalizarFrontendUrl(frontendUrl)}/restablecer-contrasenia?token=${encodeURIComponent(token)}`;
 
 export const registrarUsuario = async (data) => {
   const { nombre, apellido, email, password, rol } = data;
@@ -159,7 +164,10 @@ export const getUsuarioPorEmail = async (email) => {
   }
 };
 
-export const solicitarRecuperacionContraseniaService = async (email) => {
+export const solicitarRecuperacionContraseniaService = async (
+  email,
+  frontendUrl,
+) => {
   if (!email) {
     throw new Error("El email es requerido");
   }
@@ -182,14 +190,12 @@ export const solicitarRecuperacionContraseniaService = async (email) => {
   usuario.resetPasswordExpires = expiracion;
   await usuario.save();
 
-  const enlace = construirUrlRecuperacion(token);
+  const enlace = construirUrlRecuperacion(token, frontendUrl);
 
-  // Enviar correo en segundo plano: no bloquea la respuesta HTTP.
-  enviarCorreoSeguroLocal(
-    {
-      destino: usuario.email,
-      asunto: "Recuperacion de contrasenia - SIGMA",
-      mensaje: `
+  await emailService.enviarCorreo({
+    destino: usuario.email,
+    asunto: "Recuperacion de contrasenia - SIGMA",
+    mensaje: `
       <p>Hola ${usuario.nombre},</p>
       <p>Recibimos una solicitud para restablecer tu contrasenia.</p>
       <p>Haz clic en este enlace para continuar:</p>
@@ -197,14 +203,7 @@ export const solicitarRecuperacionContraseniaService = async (email) => {
       <p>Este enlace vence en 1 hora.</p>
       <p>Si no solicitaste este cambio, ignora este correo.</p>
     `,
-    },
-    "recuperacion",
-  ).catch((err) =>
-    console.error(
-      "Error en envío asíncrono de recuperación:",
-      err && err.message,
-    ),
-  );
+  });
 
   return {
     mensaje:
