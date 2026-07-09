@@ -114,8 +114,8 @@ app.get("/restablecer-contrasenia", (req, res) => {
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <title>Restablecer contraseña - SIGMA</title>
           <style>
-            body { font-family: Arial, sans-serif; background:#fff; color:#111; display:flex; min-height:100vh; align-items:center; justify-content:center; margin:0; }
-            .card { background:#fff; padding:30px; border-radius:20px; width:min(400px, calc(100vw - 48px)); box-shadow:0 10px 30px rgba(0,0,0,.1); border:1px solid #f0f0f0; }
+            body { font-family: Arial, sans-serif; background:#fff; color:#111; display:grid; min-height:100dvh; place-items:center; margin:0; padding:24px; box-sizing:border-box; }
+            .card { background:#fff; padding:30px; border-radius:20px; width:min(400px, 100%); box-shadow:0 10px 30px rgba(0,0,0,.1); border:1px solid #f0f0f0; box-sizing:border-box; margin:0 auto; }
             h1 { color:#111; margin-top:0; text-align:center; }
             p { color:#666; line-height:1.5; text-align:center; }
           </style>
@@ -149,8 +149,8 @@ app.get("/restablecer-contrasenia", (req, res) => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Restablecer contraseña - SIGMA</title>
         <style>
-          body { font-family: Arial, sans-serif; background:#fff; color:#111; display:flex; min-height:100vh; align-items:center; justify-content:center; margin:0; }
-          .card { background:#fff; padding:30px; border-radius:20px; width:min(400px, calc(100vw - 48px)); box-shadow:0 10px 30px rgba(0,0,0,.1); border:1px solid #f0f0f0; }
+          body { font-family: Arial, sans-serif; background:#fff; color:#111; display:grid; min-height:100dvh; place-items:center; margin:0; padding:24px; box-sizing:border-box; }
+          .card { background:#fff; padding:30px; border-radius:20px; width:min(400px, 100%); box-shadow:0 10px 30px rgba(0,0,0,.1); border:1px solid #f0f0f0; box-sizing:border-box; margin:0 auto; }
           h1 { margin-top:0; font-size:26px; text-align:center; color:#111; }
           p { color:#666; line-height:1.5; text-align:center; }
           label { display:block; margin:14px 0 6px; color:#111; font-size:14px; }
