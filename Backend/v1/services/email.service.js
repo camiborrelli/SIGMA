@@ -14,7 +14,7 @@ const SMTP_GREETING_TIMEOUT_MS = Number(
 const SMTP_SOCKET_TIMEOUT_MS = Number(
   process.env.SMTP_SOCKET_TIMEOUT_MS || 60000,
 );
-const SMTP_SEND_TIMEOUT_MS = Number(process.env.SMTP_TIMEOUT_MS || 60000);
+const SMTP_SEND_TIMEOUT_MS = Number(process.env.SMTP_TIMEOUT_MS || 20000);
 
 const transporter = nodemailer.createTransport({
   host: SMTP_HOST,
@@ -63,13 +63,55 @@ const ejecutarConTimeout = async (promesa, mensajeError) => {
   }
 };
 
+const esErrorDeConexion = (error) => {
+  const mensaje = String(error?.message || "").toLowerCase();
+  const codigosReintentables = new Set([
+    "ENETUNREACH",
+    "ETIMEDOUT",
+    "ESOCKET",
+    "ECONNECTION",
+    "EAI_AGAIN",
+  ]);
+
+  return (
+    codigosReintentables.has(error?.code) ||
+    mensaje.includes("timeout") ||
+    mensaje.includes("timed out") ||
+    mensaje.includes("connection")
+  );
+};
+
+const crearFallbackIPv4Transport = async () => {
+  const addr = await lookup(SMTP_HOST, { family: 4 });
+
+  console.warn(
+    `Problema conectando con ${SMTP_HOST}, reintentando usando IPv4 ${addr.address}`,
+  );
+
+  return nodemailer.createTransport({
+    host: addr.address,
+    port: SMTP_PORT,
+    secure: SMTP_SECURE,
+    connectionTimeout: SMTP_CONNECTION_TIMEOUT_MS,
+    greetingTimeout: SMTP_GREETING_TIMEOUT_MS,
+    socketTimeout: SMTP_SOCKET_TIMEOUT_MS,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+    tls: {
+      servername: SMTP_HOST,
+    },
+  });
+};
+
 export const enviarCorreo = async ({ destino, asunto, mensaje }) => {
   try {
     const contenido = /<\/?[a-z][\s\S]*>/i.test(mensaje)
       ? mensaje
       : `<p>${mensaje}</p>`;
 
-    const sendMailPromise = transporter.sendMail({
+    const mailOptions = {
       from: `SIGMA <${process.env.EMAIL_USER}>`,
       to: destino,
       subject: asunto,
@@ -79,7 +121,9 @@ export const enviarCorreo = async ({ destino, asunto, mensaje }) => {
             ${contenido}
           </div>
         `,
-    });
+    };
+
+    const sendMailPromise = transporter.sendMail(mailOptions);
 
     let info;
 
@@ -89,37 +133,12 @@ export const enviarCorreo = async ({ destino, asunto, mensaje }) => {
         "Timeout enviando el correo de recuperacion",
       );
     } catch (err) {
-      // If network unreachable (IPv6 routing issues), try forcing IPv4 resolution
-      if (err && err.code === "ENETUNREACH") {
+      if (esErrorDeConexion(err)) {
         try {
-          const addr = await lookup(SMTP_HOST, { family: 4 });
-          console.warn(
-            `ENETUNREACH al enviar correo, reintentando usando IPv4 ${addr.address}`,
-          );
-
-          const fallbackTransport = nodemailer.createTransport({
-            host: addr.address,
-            port: SMTP_PORT,
-            secure: SMTP_SECURE,
-            connectionTimeout: SMTP_CONNECTION_TIMEOUT_MS,
-            greetingTimeout: SMTP_GREETING_TIMEOUT_MS,
-            socketTimeout: SMTP_SOCKET_TIMEOUT_MS,
-            auth: {
-              user: process.env.EMAIL_USER,
-              pass: process.env.EMAIL_PASSWORD,
-            },
-            tls: {
-              servername: SMTP_HOST,
-            },
-          });
+          const fallbackTransport = await crearFallbackIPv4Transport();
 
           info = await ejecutarConTimeout(
-            fallbackTransport.sendMail({
-              from: `SIGMA <${process.env.EMAIL_USER}>`,
-              to: destino,
-              subject: asunto,
-              html: `<div><h2>SIGMA</h2>${contenido}</div>`,
-            }),
+            fallbackTransport.sendMail(mailOptions),
             "Timeout enviando el correo de recuperacion (fallback IPv4)",
           );
         } catch (err2) {
