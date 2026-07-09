@@ -6,12 +6,13 @@ import * as emailService from "./email.service.js";
 
 const DEFAULT_FRONTEND_URL = "https://sigma-front-five.vercel.app";
 
-const normalizarFrontendUrl = (frontendUrl) => {
+const normalizarBaseUrl = (frontendUrl) => {
+  const portLocal = process.env.PORT || 5001;
   const urlBase =
-    process.env.SIGMA_FRONTEND_URL ||
-    process.env.FRONTEND_URL ||
-    frontendUrl ||
-    DEFAULT_FRONTEND_URL;
+    process.env.RENDER_EXTERNAL_URL ||
+    process.env.SIGMA_BACKEND_URL ||
+    process.env.BACKEND_URL ||
+    `http://localhost:${portLocal}`;
 
   try {
     const url = new URL(urlBase);
@@ -22,12 +23,12 @@ const normalizarFrontendUrl = (frontendUrl) => {
 
     return url.origin.replace(/\/+$/, "");
   } catch {
-    return DEFAULT_FRONTEND_URL;
+    return `http://localhost:${portLocal}`;
   }
 };
 
 const construirUrlRecuperacion = (token, frontendUrl) =>
-  `${normalizarFrontendUrl(frontendUrl)}/restablecer-contrasenia?token=${encodeURIComponent(token)}`;
+  `${normalizarBaseUrl(frontendUrl)}/restablecer-contrasenia?token=${encodeURIComponent(token)}`;
 
 export const registrarUsuario = async (data) => {
   const { nombre, apellido, email, password, rol } = data;

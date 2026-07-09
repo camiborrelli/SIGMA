@@ -16,9 +16,29 @@ const SMTP_SOCKET_TIMEOUT_MS = Number(
 );
 const SMTP_SEND_TIMEOUT_MS = Number(process.env.SMTP_TIMEOUT_MS || 20000);
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const RESEND_FROM =
-  process.env.RESEND_FROM ||
-  (process.env.EMAIL_USER ? `SIGMA <${process.env.EMAIL_USER}>` : null);
+const DEFAULT_RESEND_FROM = "SIGMA <onboarding@resend.dev>";
+
+const normalizarResendFrom = (valor) => {
+  const remitente = String(valor || "").trim();
+
+  if (!remitente) {
+    return DEFAULT_RESEND_FROM;
+  }
+
+  const pareceValido =
+    /<[^>]+@[^>]+>/.test(remitente) || /^[^@\s]+@[^@\s]+$/.test(remitente);
+
+  if (!pareceValido) {
+    console.warn(
+      `RESEND_FROM invalido (${remitente}). Usando remitente por defecto: ${DEFAULT_RESEND_FROM}`,
+    );
+    return DEFAULT_RESEND_FROM;
+  }
+
+  return remitente;
+};
+
+const RESEND_FROM = normalizarResendFrom(process.env.RESEND_FROM);
 
 const transporter = nodemailer.createTransport({
   host: SMTP_HOST,
@@ -42,7 +62,10 @@ if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
 if (!RESEND_API_KEY) {
   transporter.verify((error, success) => {
     if (error) {
-      console.error("No se pudo verificar el servicio de correo:", error.message);
+      console.error(
+        "No se pudo verificar el servicio de correo:",
+        error.message,
+      );
       return;
     }
 
@@ -133,6 +156,10 @@ const crearFallbackGmailSeguroTransport = () => {
 const enviarCorreoPorResend = async ({ destino, asunto, html }) => {
   if (!RESEND_API_KEY || !RESEND_FROM) {
     throw new Error("Resend no esta configurado");
+  }
+
+  if (RESEND_FROM === DEFAULT_RESEND_FROM) {
+    console.log(`Usando remitente Resend por defecto: ${RESEND_FROM}`);
   }
 
   const response = await fetch("https://api.resend.com/emails", {
