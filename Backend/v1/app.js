@@ -30,13 +30,15 @@ const allowedOrigins = [
   "https://sigma-front-git-develop-camilas-projects-2b00654e.vercel.app",
 ];
 
+const esOrigenPermitido = (origin) =>
+  !origin ||
+  allowedOrigins.includes(origin) ||
+  /^http:\/\/(localhost|127\.0\.0\.1):\d+$/i.test(origin) ||
+  /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin) ||
+  /^https:\/\/[a-z0-9-]+\.onrender\.com$/i.test(origin);
+
 const corsOrigin = (origin, callback) => {
-  if (
-    !origin ||
-    allowedOrigins.includes(origin) ||
-    /^https:\/\/sigma-front-[a-z0-9-]+\.vercel\.app$/i.test(origin) ||
-    /^https:\/\/[a-z0-9-]+\.onrender\.com$/i.test(origin)
-  ) {
+  if (esOrigenPermitido(origin)) {
     callback(null, true);
     return;
   }
@@ -47,12 +49,7 @@ const corsOrigin = (origin, callback) => {
 const corsHeaders = (req, res, next) => {
   const origin = req.headers.origin;
 
-  if (
-    origin &&
-    (allowedOrigins.includes(origin) ||
-      /^https:\/\/sigma-front-[a-z0-9-]+\.vercel\.app$/i.test(origin) ||
-      /^https:\/\/[a-z0-9-]+\.onrender\.com$/i.test(origin))
-  ) {
+  if (origin && esOrigenPermitido(origin)) {
     res.header("Access-Control-Allow-Origin", origin);
     res.header("Vary", "Origin");
     res.header("Access-Control-Allow-Credentials", "true");

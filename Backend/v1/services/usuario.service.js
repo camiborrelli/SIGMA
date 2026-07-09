@@ -7,24 +7,30 @@ import * as emailService from "./email.service.js";
 const DEFAULT_FRONTEND_URL = "https://sigma-front-five.vercel.app";
 
 const normalizarBaseUrl = (frontendUrl) => {
-  const portLocal = process.env.PORT || 5001;
-  const urlBase =
-    process.env.RENDER_EXTERNAL_URL ||
-    process.env.SIGMA_BACKEND_URL ||
-    process.env.BACKEND_URL ||
-    `http://localhost:${portLocal}`;
+  const candidatos = [
+    frontendUrl,
+    process.env.SIGMA_FRONTEND_URL,
+    process.env.FRONTEND_URL,
+    DEFAULT_FRONTEND_URL,
+  ];
 
-  try {
-    const url = new URL(urlBase);
+  for (const candidato of candidatos) {
+    if (!candidato) continue;
 
-    if (!["http:", "https:"].includes(url.protocol)) {
-      throw new Error("Protocolo invalido");
+    try {
+      const url = new URL(candidato);
+
+      if (!["http:", "https:"].includes(url.protocol)) {
+        continue;
+      }
+
+      return url.origin.replace(/\/+$/, "");
+    } catch {
+      continue;
     }
-
-    return url.origin.replace(/\/+$/, "");
-  } catch {
-    return `http://localhost:${portLocal}`;
   }
+
+  return DEFAULT_FRONTEND_URL;
 };
 
 const construirUrlRecuperacion = (token, frontendUrl) =>

@@ -42,6 +42,14 @@
   color: white;
 }
 
+.btn:disabled,
+.btn-register:disabled {
+  background: #d98c8c;
+  color: white;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .btn-restore {
   background: white;
   color: #c62828;
@@ -70,4 +78,35 @@
   .card {
     width: 400px;
   }
+}
+
+.reset-password-page {
+  min-height: 100vh;
+  background: #fff;
+  align-items: center;
+  padding: 32px 24px;
+}
+
+.reset-password-card {
+  margin-top: 0;
+  border: 1px solid #f0f0f0;
+}
+
+.reset-password-card h2 {
+  text-align: center;
+  color: #111;
+}
+
+.reset-password-card .subtitle {
+  text-align: center;
+}
+
+.reset-password-btn {
+  background: #c62828;
+  color: #fff;
+  font-weight: 700;
+}
+
+.reset-password-btn:hover:not(:disabled) {
+  background: #a61c1c;
 }

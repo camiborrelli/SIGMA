@@ -79,16 +79,21 @@ const RestablecerContrasenia = () => {
         navigate("/login", { replace: true });
       }, 1800);
     } catch (error) {
-      setMensaje(error.message || "Error al restablecer la contrasenia.");
-      toast.error(error.message || "Error al restablecer la contrasenia");
+      const mensajeError =
+        error instanceof TypeError
+          ? "No se pudo conectar con el servidor. Revisa la conexion o intenta nuevamente en unos segundos."
+          : error.message || "Error al restablecer la contrasenia.";
+
+      setMensaje(mensajeError);
+      toast.error(mensajeError);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="container">
-      <div className="card">
+    <div className="container reset-password-page">
+      <div className="card reset-password-card">
         <h2>Restablecer contrasenia</h2>
         <p className="subtitle">Ingresa una nueva contrasenia para tu usuario</p>
 
@@ -110,6 +115,7 @@ const RestablecerContrasenia = () => {
               onChange={(e) => setNuevaContrasenia(e.target.value)}
               disabled={loading || mensajeOk}
               minLength={6}
+              autoComplete="new-password"
             />
 
             <label>Confirmar contrasenia</label>
@@ -119,13 +125,17 @@ const RestablecerContrasenia = () => {
               onChange={(e) => setConfirmarContrasenia(e.target.value)}
               disabled={loading || mensajeOk}
               minLength={6}
+              autoComplete="new-password"
             />
 
             {mensaje && (
               <p className={mensajeOk ? "success" : "error"}>{mensaje}</p>
             )}
 
-            <button className="btn btn-register" disabled={loading || mensajeOk}>
+            <button
+              className="btn btn-register reset-password-btn"
+              disabled={loading || mensajeOk}
+            >
               {loading ? "Actualizando..." : "Actualizar contrasenia"}
             </button>
 
