@@ -15,6 +15,10 @@ const SMTP_SOCKET_TIMEOUT_MS = Number(
   process.env.SMTP_SOCKET_TIMEOUT_MS || 60000,
 );
 const SMTP_SEND_TIMEOUT_MS = Number(process.env.SMTP_TIMEOUT_MS || 20000);
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const RESEND_FROM =
+  process.env.RESEND_FROM ||
+  (process.env.EMAIL_USER ? `SIGMA <${process.env.EMAIL_USER}>` : null);
 
 const transporter = nodemailer.createTransport({
   host: SMTP_HOST,
@@ -35,16 +39,20 @@ if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
   );
 }
 
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("No se pudo verificar el servicio de correo:", error.message);
-    return;
-  }
+if (!RESEND_API_KEY) {
+  transporter.verify((error, success) => {
+    if (error) {
+      console.error("No se pudo verificar el servicio de correo:", error.message);
+      return;
+    }
 
-  if (success) {
-    console.log("Servicio de correo listo para enviar mensajes");
-  }
-});
+    if (success) {
+      console.log("Servicio de correo listo para enviar mensajes");
+    }
+  });
+} else {
+  console.log("Servicio de correo configurado con Resend API");
+}
 
 const ejecutarConTimeout = async (promesa, mensajeError) => {
   let timeoutId;
@@ -122,22 +130,62 @@ const crearFallbackGmailSeguroTransport = () => {
   });
 };
 
+const enviarCorreoPorResend = async ({ destino, asunto, html }) => {
+  if (!RESEND_API_KEY || !RESEND_FROM) {
+    throw new Error("Resend no esta configurado");
+  }
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: RESEND_FROM,
+      to: [destino],
+      subject: asunto,
+      html,
+    }),
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(
+      data?.message || data?.error || "No se pudo enviar correo por Resend",
+    );
+  }
+
+  console.log("Correo procesado por Resend:", {
+    destino,
+    id: data.id,
+  });
+
+  return data;
+};
+
 export const enviarCorreo = async ({ destino, asunto, mensaje }) => {
   try {
     const contenido = /<\/?[a-z][\s\S]*>/i.test(mensaje)
       ? mensaje
       : `<p>${mensaje}</p>`;
+    const html = `
+          <div>
+            <h2>SIGMA</h2>
+            ${contenido}
+          </div>
+        `;
+
+    if (RESEND_API_KEY) {
+      return await enviarCorreoPorResend({ destino, asunto, html });
+    }
 
     const mailOptions = {
       from: `SIGMA <${process.env.EMAIL_USER}>`,
       to: destino,
       subject: asunto,
-      html: `
-          <div>
-            <h2>SIGMA</h2>
-            ${contenido}
-          </div>
-        `,
+      html,
     };
 
     const sendMailPromise = transporter.sendMail(mailOptions);
