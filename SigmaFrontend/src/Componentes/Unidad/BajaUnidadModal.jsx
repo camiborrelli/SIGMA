@@ -65,13 +65,13 @@ const BajaUnidadModal = ({ unidad, onClose, onUpdated }) => {
         )}
 
         <div className="acciones">
-          <button className="btn-cancel" onClick={onClose}>
+          <button className="btn-cancel unidad-modal-action-btn" onClick={onClose}>
             Cancelar
           </button>
 
           {!yaBaja && (
             <button
-              className="btn-asign"
+              className="btn-asign unidad-modal-action-btn"
               onClick={darDeBaja}
               disabled={loading}
             >

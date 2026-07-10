@@ -252,8 +252,10 @@
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 120000;
   box-sizing: border-box;
+  padding-bottom: env(safe-area-inset-bottom);
+  height: calc(65px + env(safe-area-inset-bottom));
 }
 
 .mobile-footer-btn {
@@ -453,16 +455,16 @@
   }
 
   .app-layout-container {
-    padding-bottom: 65px;
+    padding-bottom: calc(65px + env(safe-area-inset-bottom));
   }
 
-  .mobile-footer {
-    display: flex;
+  .app-layout-container > .mobile-footer {
+    display: flex !important;
   }
 
   .notification-dropdown {
     position: fixed;
-    bottom: 70px;
+    bottom: calc(70px + env(safe-area-inset-bottom));
     top: auto;
     right: 16px;
     left: 16px;

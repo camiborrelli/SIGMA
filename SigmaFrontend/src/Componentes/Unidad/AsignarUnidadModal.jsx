@@ -103,10 +103,14 @@ const AsignarUnidadModal = ({ unidad, onClose, onUpdated }) => {
         </select>
 
         <div className="acciones">
-          <button className="btn-cancel" onClick={onClose}>
+          <button className="btn-cancel unidad-modal-action-btn" onClick={onClose}>
             Cancelar
           </button>
-          <button className="btn-asign" onClick={asignar} disabled={loading}>
+          <button
+            className="btn-asign unidad-modal-action-btn"
+            onClick={asignar}
+            disabled={loading}
+          >
             {loading ? "Guardando..." : "Guardar"}
           </button>
         </div>
