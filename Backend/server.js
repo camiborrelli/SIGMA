@@ -13,6 +13,7 @@ import { getAccionesUsuarioController } from "./v1/controllers/accionUsuario.con
 import { verificarToken } from "./v1/middlewares/auth.js";
 import { soloAdmin } from "./v1/middlewares/roles.js";
 import { iniciarMonitorGarantiasPorVencer } from "./v1/services/garantia.services.js";
+import { graficasRoutes } from "./v1/controllers/graficas.controller.js";
 
 const app = express();
 app.set("trust proxy", true);
@@ -230,6 +231,7 @@ app.use("/obras", obrasRoutes);
 app.use("/notificaciones", notificacionRoutes);
 app.use("/solicitudes", solicitudRoutes);
 app.use("/cron", cronRoutes);
+app.use("/graficas", graficasRoutes);
 
 const PORT = process.env.PORT || 5001;
 
