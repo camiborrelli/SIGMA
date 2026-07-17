@@ -18,6 +18,7 @@ import Mapa from "./Componentes/Mapa/Mapa";
 import PerfilUsuario from "./Componentes/Usuario/PerfilUsuario";
 import ModalTokenExpirado from "./Componentes/Usuario/ModalTokenExpirado";
 import GestionMantenimiento from "./Componentes/Unidad/GestionMantenimiento";
+import DashboardGraficas from "./Componentes/Graficas/Grafica";
 
 const tokenVigente = (token) => {
   if (!token) return false;
@@ -96,6 +97,7 @@ function App() {
             path="/gestion-mantenimiento"
             element={<GestionMantenimiento />}
           />
+          <Route path="/graficas" element={<DashboardGraficas />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/login" />} />

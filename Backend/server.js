@@ -13,7 +13,7 @@ import { getAccionesUsuarioController } from "./v1/controllers/accionUsuario.con
 import { verificarToken } from "./v1/middlewares/auth.js";
 import { soloAdmin } from "./v1/middlewares/roles.js";
 import { iniciarMonitorGarantiasPorVencer } from "./v1/services/garantia.services.js";
-import { graficasRoutes } from "./v1/controllers/graficas.controller.js";
+import graficasRoutes from "./v1/routes/graficas.routes.js";
 
 const app = express();
 app.set("trust proxy", true);

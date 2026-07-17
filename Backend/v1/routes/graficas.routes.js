@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  getResumenGraficasController,
   getDistribucionUnidadesPorEstadoController,
   getMaquinariaPorObraController,
   getEquiposMasEnMantenimientoController,
@@ -7,6 +8,8 @@ import {
 import { verificarToken } from "../middlewares/auth.js";
 
 const router = Router();
+
+router.get("/resumen", verificarToken, getResumenGraficasController);
 
 router.get(
   "/unidades-estado",
