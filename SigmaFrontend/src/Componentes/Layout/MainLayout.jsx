@@ -10,6 +10,7 @@ import {
   FaRegUser,
   FaSignOutAlt,
   FaTools,
+  FaChartPie,
 } from "react-icons/fa";
 import "./MainLayout.css";
 import ModalDetalleNotificacion from "./ModalDetalleNotificacion";
@@ -346,6 +347,14 @@ const MainLayout = () => {
           >
             <TfiMapAlt /> <span>Ver mapa</span>
           </button>
+          <button
+            className={`btn-nav ${
+              location.pathname === "/graficas" ? "active" : ""
+            }`}
+            onClick={() => navigate("/graficas")}
+          >
+            <FaChartPie /> <span>Informes y gráficas</span>
+          </button>
         </nav>
         <div className="topbar-right" ref={headerRef}>
           <div className="notification-wrapper desktop-only">
@@ -408,6 +417,14 @@ const MainLayout = () => {
             <FaTools /> <span>Manten.</span>
           </button>
         )}
+        <button
+          className={`mobile-footer-btn ${
+            location.pathname === "/graficas" ? "active" : ""
+          }`}
+          onClick={() => navigate("/graficas")}
+        >
+          <FaChartPie /> <span>Informes</span>
+        </button>
         <div className="notification-wrapper mobile-only">
           <button className="mobile-footer-btn" onClick={handleToggleDropdown}>
             <div className="icon-badge-wrapper">

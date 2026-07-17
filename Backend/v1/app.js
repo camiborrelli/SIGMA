@@ -9,6 +9,7 @@ import obraRoutes from "./routes/obra.routes.js";
 import notificacionRoutes from "./routes/notificacion.routes.js";
 import solicitudRoutes from "./routes/solicitudTraslado.routes.js";
 import cronRoutes from "./routes/cron.routes.js";
+import graficasRoutes from "./routes/graficas.routes.js";
 import { getAccionesUsuarioController } from "./controllers/accionUsuario.controller.js";
 import { verificarToken } from "./middlewares/auth.js";
 import { soloAdmin } from "./middlewares/roles.js";
@@ -102,6 +103,7 @@ app.use("/obras", obraRoutes);
 app.use("/notificaciones", notificacionRoutes);
 app.use("/solicitudes", solicitudRoutes);
 app.use("/cron", cronRoutes);
+app.use("/graficas", graficasRoutes);
 
 app.listen(process.env.PORT || 5001, () => {
   console.log(`Servidor corriendo en puerto ${process.env.PORT || 5001}`);
