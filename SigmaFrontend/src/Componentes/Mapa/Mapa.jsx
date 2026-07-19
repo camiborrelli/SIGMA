@@ -18,7 +18,6 @@ import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import EditarObraModal from "../Obra/EditarObraModal";
 import { FaEdit } from "react-icons/fa";
 import { API_URL } from "../../../api";
-// import { FaTrash } from "react-icons/fa";
 
 let DefaultIcon = L.icon({
   iconUrl: markerIcon,
