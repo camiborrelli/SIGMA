@@ -38,12 +38,8 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const [unidadDescripcion, setUnidadDescripcion] = useState(null);
   const [unidadEtiqueta, setUnidadEtiqueta] = useState(null);
   const [unidadFechaExistente, setUnidadFechaExistente] = useState(null);
-
-  // Modales para acciones masivas con datos extra
   const [modalFechaMasiva, setModalFechaMasiva] = useState(false);
   const [modalObraMasiva, setModalObraMasiva] = useState(false);
-
-  // Modal de confirmación para baja masiva
   const [modalBajaMasiva, setModalBajaMasiva] = useState(false);
 
   const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
@@ -667,12 +663,6 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     {
       header: "ID",
       accessor: "identificador",
-    },
-
-    {
-      header: "Cantidad",
-      accessor: (row) =>
-        getCantidadUnidad(row),
     },
 
     {

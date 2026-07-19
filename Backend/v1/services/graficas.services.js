@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Unidad from "../models/unidad.model.js";
+import Obra from "../models/obra.model.js";
 
 const ESTADOS_UNIDAD = [
   "Disponible",
@@ -151,56 +152,100 @@ export const getDistribucionUnidadesPorEstado = async (filtros = {}) => {
 
 export const getMaquinariaPorObra = async (filtros = {}) => {
   const pipeline = [];
-  addMatchStage(pipeline, {
-    ...buildUnidadMatch(filtros),
-    ubicacion: buildUnidadMatch(filtros).ubicacion || { $ne: null },
+
+  const obraId = toObjectId(filtros.obraId || filtros.obra);
+  const equipoId = toObjectId(filtros.equipoId || filtros.equipo);
+
+  // Si se selecciona una obra específica, se filtra.
+  // Si no, se muestran todas las obras.
+  if (obraId) {
+    pipeline.push({
+      $match: {
+        _id: obraId,
+      },
+    });
+  }
+
+  pipeline.push({
+    $lookup: {
+      from: "unidades",
+      let: {
+        obraId: "$_id",
+      },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $eq: ["$ubicacion", "$$obraId"],
+            },
+          },
+        },
+      ],
+      as: "unidades",
+    },
+  });
+
+  pipeline.push({
+    $unwind: {
+      path: "$unidades",
+      preserveNullAndEmptyArrays: true,
+    },
+  });
+
+  // Si se seleccionó un equipo específico
+  if (equipoId) {
+    pipeline.push({
+      $match: {
+        $or: [
+          {
+            "unidades.equipo": equipoId,
+          },
+          {
+            unidades: null,
+          },
+        ],
+      },
+    });
+  }
+
+  pipeline.push({
+    $group: {
+      _id: "$_id",
+      obra: {
+        $first: "$nombre",
+      },
+      cantidad: {
+        $sum: {
+          $cond: [
+            {
+              $ne: ["$unidades", null],
+            },
+            1,
+            0,
+          ],
+        },
+      },
+    },
   });
 
   pipeline.push(
     {
-      $lookup: {
-        from: "equipos",
-        localField: "equipo",
-        foreignField: "_id",
-        as: "equipo",
-      },
-    },
-    { $unwind: "$equipo" },
-    {
-      $match: {
-        "equipo.tipo": "Maquina",
-      },
-    },
-    {
-      $lookup: {
-        from: "obras",
-        localField: "ubicacion",
-        foreignField: "_id",
-        as: "obra",
-      },
-    },
-    { $unwind: "$obra" },
-    {
-      $group: {
-        _id: {
-          id: "$obra._id",
-          nombre: "$obra.nombre",
-        },
-        cantidad: { $sum: CANTIDAD_UNIDAD },
-      },
-    },
-    { $sort: { cantidad: -1, "_id.nombre": 1 } },
-    {
       $project: {
         _id: 0,
-        obraId: "$_id.id",
-        obra: "$_id.nombre",
+        obraId: "$_id",
+        obra: 1,
         cantidad: 1,
+      },
+    },
+    {
+      $sort: {
+        cantidad: -1,
+        obra: 1,
       },
     },
   );
 
-  return await Unidad.aggregate(pipeline);
+  return await Obra.aggregate(pipeline);
 };
 
 export const getEquiposMasEnMantenimiento = async (filtros = {}) => {

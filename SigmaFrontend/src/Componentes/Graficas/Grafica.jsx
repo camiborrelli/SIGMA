@@ -3,7 +3,6 @@ import axios from "axios";
 import "./Grafica.css";
 
 import DashboardHeader from "./GraficaHeader";
-import DashboardCards from "./GraficaCards";
 import ChartCard from "./ChartCard";
 import EstadoChart from "./EstadoChart";
 import ObraChart from "./ObraChart";
@@ -83,8 +82,6 @@ function Grafica() {
           onEquipoChange={(value) => actualizarFiltro("equipoId", value)}
           onLimpiarFiltros={limpiarFiltros}
         />
-
-        <DashboardCards filtros={filtrosActivos} />
 
         <div className="charts-grid">
           <ChartCard
