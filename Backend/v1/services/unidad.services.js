@@ -3,8 +3,43 @@ import Unidad from "../models/unidad.model.js";
 import Equipo from "../models/equipo.model.js";
 import Obra from "../models/obra.model.js";
 
+const normalizarCantidad = (cantidad, fallback = 1) => {
+  if (cantidad === undefined || cantidad === null || cantidad === "") {
+    return fallback;
+  }
+
+  const numero = Number(cantidad);
+  if (!Number.isFinite(numero) || numero < 1) {
+    throw new Error("La cantidad debe ser un numero mayor a 0");
+  }
+
+  return Math.trunc(numero);
+};
+
+const getCantidadUnidad = (unidad) => normalizarCantidad(unidad?.cantidad, 1);
+
+const getEquipoId = (equipo) =>
+  equipo && typeof equipo === "object" ? equipo._id : equipo;
+
+const generarIdentificadorUnidad = async (equipo, esLote = false) => {
+  const equipoId = getEquipoId(equipo);
+  const codigo =
+    equipo?.codigo || `EQ-${String(equipoId).slice(-6).toUpperCase()}`;
+  let siguiente = (await Unidad.countDocuments({ equipo: equipoId })) + 1;
+  let identificador = `${codigo}-${esLote ? `L${siguiente}` : siguiente}`;
+
+  while (await Unidad.exists({ equipo: equipoId, identificador })) {
+    siguiente += 1;
+    identificador = `${codigo}-${esLote ? `L${siguiente}` : siguiente}`;
+  }
+
+  return identificador;
+};
+
 export const getUnidadesPorEquipo = async (equipoId) => {
-  return await Unidad.find({ equipo: equipoId }).populate("ubicacion");
+  return await Unidad.find({ equipo: equipoId })
+    .populate("ubicacion")
+    .populate("equipo");
 };
 
 export const bajaUnidad = async (id) => {
@@ -25,11 +60,13 @@ export const agregarUnidad = async (equipoId, data = {}) => {
     throw new Error("El equipo no tiene código asignado");
   }
 
-  const existentes = await Unidad.countDocuments({ equipo: equipoId });
+  const esLote = equipo.modoGestion === "lote";
+  const cantidad = esLote ? normalizarCantidad(data.cantidad, 1) : 1;
 
   const createObj = {
     equipo: equipoId,
-    identificador: `${equipo.codigo}-${existentes + 1}`,
+    identificador: await generarIdentificadorUnidad(equipo, esLote),
+    cantidad,
   };
 
   if (data && data.fechaCompra) {
@@ -92,6 +129,7 @@ export const getGarantiaUnidad = async (id) => {
       enGarantia: false,
       diasRestantes: 0,
       estado: unidad.estado,
+      cantidad: getCantidadUnidad(unidad),
       cantReparaciones: unidad.cantReparaciones || 0,
       historialMantenimiento: unidad.historialMantenimiento || [],
     };
@@ -114,6 +152,7 @@ export const getGarantiaUnidad = async (id) => {
       Math.ceil((fechaFin - ahora) / (1000 * 60 * 60 * 24)),
     ),
     estado: unidad.estado,
+    cantidad: getCantidadUnidad(unidad),
     cantReparaciones: unidad.cantReparaciones || 0,
     historialMantenimiento: unidad.historialMantenimiento || [],
   };
@@ -121,22 +160,36 @@ export const getGarantiaUnidad = async (id) => {
 
 export const getStatsUnidades = async () => {
   try {
+    const cantidadUnidad = { $ifNull: ["$cantidad", 1] };
+
     const result = await Unidad.aggregate([
       {
         $group: {
           _id: null,
-          total: { $sum: 1 },
+          total: { $sum: cantidadUnidad },
           asignadas: {
-            $sum: { $cond: [{ $eq: ["$estado", "Asignada"] }, 1, 0] },
+            $sum: {
+              $cond: [{ $eq: ["$estado", "Asignada"] }, cantidadUnidad, 0],
+            },
           },
           mantenimiento: {
-            $sum: { $cond: [{ $eq: ["$estado", "En mantenimiento"] }, 1, 0] },
+            $sum: {
+              $cond: [
+                { $eq: ["$estado", "En mantenimiento"] },
+                cantidadUnidad,
+                0,
+              ],
+            },
           },
           bajas: {
-            $sum: { $cond: [{ $eq: ["$estado", "Dada de Baja"] }, 1, 0] },
+            $sum: {
+              $cond: [{ $eq: ["$estado", "Dada de Baja"] }, cantidadUnidad, 0],
+            },
           },
           disponibles: {
-            $sum: { $cond: [{ $eq: ["$estado", "Disponible"] }, 1, 0] },
+            $sum: {
+              $cond: [{ $eq: ["$estado", "Disponible"] }, cantidadUnidad, 0],
+            },
           },
         },
       },
@@ -166,15 +219,154 @@ export const getReparacionesUnidad = async (id) => {
   };
 };
 
-export const asignarUnidad = async (unidadId, ubicacionId) => {
-  const unidad = await Unidad.findById(unidadId);
+export const asignarUnidad = async (unidadId, ubicacionId, cantidad = null) => {
+  const obra = await Obra.findById(ubicacionId);
+  if (!obra) throw new Error("Obra no encontrada");
+
+  const unidad = await Unidad.findById(unidadId).populate("equipo");
   if (!unidad) throw new Error("Unidad no encontrada");
 
+  if (unidad.estado === "Dada de Baja") {
+    throw new Error("No se puede asignar una unidad dada de baja");
+  }
+
+  if (unidad.estado === "En mantenimiento") {
+    throw new Error("No se puede asignar una unidad en mantenimiento");
+  }
+
+  const cantidadActual = getCantidadUnidad(unidad);
+  const cantidadAsignar =
+    cantidad === null || cantidad === undefined || cantidad === ""
+      ? cantidadActual
+      : normalizarCantidad(cantidad, cantidadActual);
+  const modoGestion = unidad.equipo?.modoGestion || "unidad";
+
+  if (modoGestion !== "lote" && cantidadAsignar !== 1) {
+    throw new Error("Este equipo se maneja por unidad");
+  }
+
+  if (cantidadAsignar > cantidadActual) {
+    throw new Error("La cantidad solicitada supera la cantidad disponible");
+  }
+
+  if (cantidadAsignar < cantidadActual) {
+    unidad.cantidad = cantidadActual - cantidadAsignar;
+    await unidad.save();
+
+    const unidadAsignada = await Unidad.create({
+      equipo: getEquipoId(unidad.equipo),
+      descripcion: unidad.descripcion || "",
+      identificador: await generarIdentificadorUnidad(unidad.equipo, true),
+      cantidad: cantidadAsignar,
+      estado: "Asignada",
+      ubicacion: ubicacionId,
+      fechaCompra: unidad.fechaCompra,
+    });
+
+    return {
+      unidad: unidadAsignada,
+      unidadOrigen: unidad,
+      cantidadAsignada: cantidadAsignar,
+    };
+  }
+
+  unidad.cantidad = cantidadActual;
   unidad.ubicacion = ubicacionId;
   unidad.estado = "Asignada";
 
   await unidad.save();
-  return unidad;
+  return {
+    unidad,
+    cantidadAsignada: cantidadAsignar,
+  };
+};
+
+export const asignarCantidadLoteAObra = async ({
+  equipoId,
+  obraId,
+  cantidad,
+}) => {
+  const equipo = await Equipo.findById(equipoId);
+  if (!equipo) throw new Error("Equipo no encontrado");
+
+  if ((equipo.modoGestion || "unidad") !== "lote") {
+    throw new Error("Este equipo se maneja por unidad");
+  }
+
+  const obra = await Obra.findById(obraId);
+  if (!obra) throw new Error("Obra no encontrada");
+
+  if (cantidad === undefined || cantidad === null || cantidad === "") {
+    throw new Error("Debe indicar la cantidad a asignar");
+  }
+
+  const cantidadSolicitada = normalizarCantidad(cantidad, 1);
+
+  const lotesDisponibles = await Unidad.find({
+    equipo: equipoId,
+    estado: "Disponible",
+    ubicacion: null,
+  }).sort({ _id: 1 });
+
+  const cantidadDisponible = lotesDisponibles.reduce(
+    (total, lote) => total + getCantidadUnidad(lote),
+    0,
+  );
+
+  if (cantidadSolicitada > cantidadDisponible) {
+    throw new Error(
+      `La cantidad solicitada supera el stock disponible (${cantidadDisponible})`,
+    );
+  }
+
+  let restante = cantidadSolicitada;
+  const unidadesAsignadas = [];
+  const lotesActualizados = [];
+
+  for (const lote of lotesDisponibles) {
+    if (restante <= 0) break;
+
+    const cantidadLote = getCantidadUnidad(lote);
+    const cantidadTomada = Math.min(restante, cantidadLote);
+
+    if (cantidadTomada === cantidadLote) {
+      lote.cantidad = cantidadLote;
+      lote.ubicacion = obraId;
+      lote.estado = "Asignada";
+      await lote.save();
+      unidadesAsignadas.push(lote);
+    } else {
+      lote.cantidad = cantidadLote - cantidadTomada;
+      await lote.save();
+      lotesActualizados.push(lote);
+
+      const unidadAsignada = await Unidad.create({
+        equipo: equipoId,
+        descripcion: lote.descripcion || "",
+        identificador: await generarIdentificadorUnidad(equipo, true),
+        cantidad: cantidadTomada,
+        estado: "Asignada",
+        ubicacion: obraId,
+        fechaCompra: lote.fechaCompra,
+      });
+
+      unidadesAsignadas.push(unidadAsignada);
+    }
+
+    restante -= cantidadTomada;
+  }
+
+  return {
+    message: "Lote asignado correctamente",
+    equipoId,
+    obraId,
+    cantidadSolicitada,
+    cantidadAsignada: cantidadSolicitada - restante,
+    disponibleRestante: cantidadDisponible - cantidadSolicitada,
+    registrosAsignados: unidadesAsignadas.length,
+    unidadesAsignadas,
+    lotesActualizados,
+  };
 };
 
 export const agregarUnidadesAEquipo = async ({ equipoId, cantidad }) => {
@@ -185,17 +377,28 @@ export const agregarUnidadesAEquipo = async ({ equipoId, cantidad }) => {
     throw new Error("El equipo no tiene código asignado");
   }
 
-  const existentes = await Unidad.countDocuments({ equipo: equipoId });
-
+  const cantidadFinal = normalizarCantidad(cantidad, 1);
+  const esLote = equipo.modoGestion === "lote";
   const unidades = [];
 
-  for (let i = 1; i <= cantidad; i++) {
-    const n = existentes + i;
-
+  if (esLote) {
     unidades.push({
       equipo: equipoId,
-      identificador: `${equipo.codigo}-${n}`,
+      identificador: await generarIdentificadorUnidad(equipo, true),
+      cantidad: cantidadFinal,
     });
+  } else {
+    const existentes = await Unidad.countDocuments({ equipo: equipoId });
+
+    for (let i = 1; i <= cantidadFinal; i++) {
+      const n = existentes + i;
+
+      unidades.push({
+        equipo: equipoId,
+        identificador: `${equipo.codigo}-${n}`,
+        cantidad: 1,
+      });
+    }
   }
 
   const creadas = await Unidad.insertMany(unidades);
@@ -292,6 +495,10 @@ export const trasladarUnidadesAotraObra = async ({
   }
 
   const idsAMover = unidadesAMover.map((u) => u._id);
+  const cantidadTrasladada = unidadesAMover.reduce(
+    (total, unidad) => total + getCantidadUnidad(unidad),
+    0,
+  );
 
   await Unidad.updateMany(
     { _id: { $in: idsAMover } },
@@ -316,7 +523,8 @@ export const trasladarUnidadesAotraObra = async ({
 
   return {
     message: "Traslado realizado con éxito",
-    cantidadTrasladada: idsAMover.length,
+    cantidadTrasladada,
+    registrosTrasladados: idsAMover.length,
   };
 };
 

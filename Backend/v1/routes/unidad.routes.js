@@ -10,6 +10,7 @@ import {
   getStatsUnidadesController,
   getReparacionesUnidadController,
   asignarUnidadController,
+  asignarLoteAObraController,
   eliminarUnidadController,
   actualizarFechaCompraController,
   trasladarUnidadesController,
@@ -60,6 +61,11 @@ router.post(
 router.post("/agregar/:equipoId", verificarToken, agregarUnidadController);
 
 router.post("/asignar/:id", verificarToken, asignarUnidadController);
+router.post(
+  "/asignar-lote/:equipoId",
+  verificarToken,
+  asignarLoteAObraController,
+);
 
 router.delete(
   "/:id/mantenimiento/comentario/:comentarioId",

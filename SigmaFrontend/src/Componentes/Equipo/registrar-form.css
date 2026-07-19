@@ -55,6 +55,37 @@
   margin-bottom: 4px;
 }
 
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.gestion-toggle {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.gestion-toggle button {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.gestion-toggle button.active {
+  border-color: #b91c1c;
+  background: rgba(185, 28, 28, 0.08);
+  color: #b91c1c;
+}
+
 .registrar-form input,
 .registrar-form select,
 .registrar-form textarea {

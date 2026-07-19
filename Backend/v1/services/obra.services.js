@@ -57,9 +57,11 @@ export const getDetalleObraServices = async (id) => {
     const dto = {
       _id: unidad._id,
       identificador: unidad.identificador,
+      cantidad: unidad.cantidad || 1,
       estado: unidad.estado,
       nombreEquipo: unidad.equipo?.nombre,
       modelo: unidad.equipo?.modelo,
+      modoGestion: unidad.equipo?.modoGestion || "unidad",
     };
 
     if (unidad.equipo?.tipo === "Maquina") {
@@ -72,8 +74,14 @@ export const getDetalleObraServices = async (id) => {
   return {
     ...obra.toObject(),
 
-    cantidadMaquinas: maquinas.length,
-    cantidadHerramientas: herramientas.length,
+    cantidadMaquinas: maquinas.reduce(
+      (total, unidad) => total + (unidad.cantidad || 1),
+      0,
+    ),
+    cantidadHerramientas: herramientas.reduce(
+      (total, unidad) => total + (unidad.cantidad || 1),
+      0,
+    ),
 
     maquinas,
     herramientas,

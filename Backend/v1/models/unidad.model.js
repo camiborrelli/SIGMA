@@ -9,6 +9,7 @@ const UnidadSchema = new Schema({
   descripcion: { type: String, default: "" },
   etiqueta: { type: Number, default: null },
   identificador: { type: String, required: true },
+  cantidad: { type: Number, default: 1, min: 1 },
   estado: {
     type: String,
     enum: ["Disponible", "Asignada", "En mantenimiento", "Dada de Baja"],
