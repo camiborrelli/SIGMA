@@ -4,79 +4,61 @@ import Unidad from "../models/unidad.model.js";
 import Obra from "../models/obra.model.js";
 
 const normalizarCantidad = (cantidad, fallback = 1) => {
-  if (cantidad === undefined || cantidad === null || cantidad === "") {
-    return fallback;
-  }
+if (cantidad === undefined || cantidad === null || cantidad === "") {
+return fallback;
+}
 
-  const numero = Number(cantidad);
-  if (!Number.isFinite(numero) || numero < 1) {
-    throw new Error("La cantidad debe ser un numero mayor a 0");
-  }
+const numero = Number(cantidad);
 
-  return Math.trunc(numero);
-};
+if (!Number.isFinite(numero) || numero < 1) {
+throw new Error("La cantidad debe ser un numero mayor a 0");
+}
 
-const normalizarModoGestion = (modoGestion) => {
-  if (!modoGestion) return "unidad";
-  if (["unidad", "lote"].includes(modoGestion)) return modoGestion;
-  throw new Error("El modo de gestion debe ser unidad o lote");
+return Math.trunc(numero);
 };
 
 export const crearEquipoConUnidades = async ({
-  nombre,
-  modelo,
-  tipo,
-  cantidad,
-  modoGestion,
+nombre,
+modelo,
+tipo,
+cantidad,
 }) => {
-  const cantidadFinal = normalizarCantidad(cantidad);
-  const modoGestionFinal = normalizarModoGestion(modoGestion);
+const cantidadFinal = normalizarCantidad(cantidad, 1);
 
-  const equipo = await Equipo.create({
-    nombre,
-    modelo,
-    tipo,
-    modoGestion: modoGestionFinal,
-  });
+const equipo = await Equipo.create({
+nombre,
+modelo,
+tipo,
+});
 
-  const codigo = `EQ-${String(equipo._id).slice(-6).toUpperCase()}`;
+const codigo = `EQ-${String(equipo._id).slice(-6).toUpperCase()}`;
 
-  equipo.codigo = codigo;
-  await equipo.save();
+equipo.codigo = codigo;
+await equipo.save();
 
-  const unidades = [];
+const unidades = [];
 
-  if (modoGestionFinal === "lote") {
-    unidades.push({
-      equipo: equipo._id,
-      identificador: `${codigo}-L1`,
-      cantidad: cantidadFinal,
-    });
-  } else {
-    const existentes = await Unidad.countDocuments({ equipo: equipo._id });
+for (let i = 1; i <= cantidadFinal; i++) {
+unidades.push({
+equipo: equipo._id,
+identificador: `${codigo}-${i}`,
+descripcion: "",
+etiqueta: null,
+estado: "Disponible",
+});
+}
 
-    for (let i = 1; i <= cantidadFinal; i++) {
-      unidades.push({
-        equipo: equipo._id,
-        identificador: `${codigo}-${existentes + i}`,
-        cantidad: 1,
-      });
-    }
-  }
+const unidadesCreadas = await Unidad.insertMany(unidades);
 
-  const unidadesCreadas = await Unidad.insertMany(unidades);
-
-  return {
-    equipo,
-    unidadesCreadas,
-    cantidadGenerada: cantidadFinal,
-    registrosGenerados: unidadesCreadas.length,
-  };
+return {
+equipo,
+unidadesCreadas,
+cantidadGenerada: cantidadFinal,
+registrosGenerados: unidadesCreadas.length,
+};
 };
 
 export const getEquiposConStock = async () => {
-  const cantidadUnidad = { $ifNull: ["$cantidad", 1] };
-
   return await Unidad.aggregate([
     {
       $group: {
@@ -84,19 +66,19 @@ export const getEquiposConStock = async () => {
 
         stockTotal: {
           $sum: {
-            $cond: [{ $ne: ["$estado", "Dada de Baja"] }, cantidadUnidad, 0],
+            $cond: [{ $ne: ["$estado", "Dada de Baja"] }, 1, 0],
           },
         },
 
         stockDisponible: {
           $sum: {
-            $cond: [{ $eq: ["$estado", "Disponible"] }, cantidadUnidad, 0],
+            $cond: [{ $eq: ["$estado", "Disponible"] }, 1, 0],
           },
         },
 
         stockAsignado: {
           $sum: {
-            $cond: [{ $eq: ["$estado", "Asignada"] }, cantidadUnidad, 0],
+            $cond: [{ $eq: ["$estado", "Asignada"] }, 1, 0],
           },
         },
 
@@ -104,7 +86,7 @@ export const getEquiposConStock = async () => {
           $sum: {
             $cond: [
               { $eq: ["$estado", "En mantenimiento"] },
-              cantidadUnidad,
+              1,
               0,
             ],
           },
@@ -112,11 +94,13 @@ export const getEquiposConStock = async () => {
 
         stockBaja: {
           $sum: {
-            $cond: [{ $eq: ["$estado", "Dada de Baja"] }, cantidadUnidad, 0],
+            $cond: [{ $eq: ["$estado", "Dada de Baja"] }, 1, 0],
           },
         },
 
-        registros: { $sum: 1 },
+        registros: {
+          $sum: 1,
+        },
       },
     },
 
@@ -129,7 +113,9 @@ export const getEquiposConStock = async () => {
       },
     },
 
-    { $unwind: "$equipo" },
+    {
+      $unwind: "$equipo",
+    },
 
     {
       $project: {
@@ -138,7 +124,6 @@ export const getEquiposConStock = async () => {
         modelo: "$equipo.modelo",
         tipo: "$equipo.tipo",
         codigo: "$equipo.codigo",
-        modoGestion: { $ifNull: ["$equipo.modoGestion", "unidad"] },
 
         stock: "$stockTotal",
         disponible: "$stockDisponible",
@@ -148,30 +133,43 @@ export const getEquiposConStock = async () => {
         registros: "$registros",
       },
     },
-    { $sort: { nombre: 1, modelo: 1 } },
+
+    {
+      $sort: {
+        nombre: 1,
+        modelo: 1,
+      },
+    },
   ]);
 };
 
 export const getStatsEquipos = async () => {
-  const total = await Equipo.countDocuments();
+const total = await Equipo.countDocuments();
 
-  return {
-    total,
-  };
+return {
+total,
+};
 };
 
-export const editarEquipo = async (id, { nombre, modelo, tipo, modoGestion }) => {
-  const equipo = await Equipo.findById(id);
-  if (!equipo) throw new Error("Equipo no encontrado");
+export const editarEquipo = async (
+id,
+{
+nombre,
+modelo,
+tipo,
+},
+) => {
+const equipo = await Equipo.findById(id);
 
-  equipo.nombre = nombre;
-  equipo.modelo = modelo;
-  equipo.tipo = tipo;
-  if (modoGestion) {
-    equipo.modoGestion = normalizarModoGestion(modoGestion);
-  }
+if (!equipo) {
+throw new Error("Equipo no encontrado");
+}
 
-  const equipoGuardado = await equipo.save();
+equipo.nombre = nombre;
+equipo.modelo = modelo;
+equipo.tipo = tipo;
 
-  return equipoGuardado;
+const equipoGuardado = await equipo.save();
+
+return equipoGuardado;
 };

@@ -1,0 +1,192 @@
+.modal-fecha-overlay {
+  z-index: 2000;
+  padding: 20px;
+}
+
+.modal-fecha-masiva {
+  width: 100%;
+  max-width: 480px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px;
+  box-sizing: border-box;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.28);
+  animation: modalFechaEntrada 0.2s ease-out;
+}
+
+@keyframes modalFechaEntrada {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-fecha-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.modal-fecha-header h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.modal-fecha-close {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #64748b;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-fecha-close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.modal-fecha-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  margin-bottom: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.modal-fecha-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: #fee2e2;
+  font-size: 17px;
+}
+
+.modal-fecha-info p {
+  margin: 0;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.modal-fecha-info strong {
+  color: #b91c1c;
+  font-weight: 700;
+}
+
+.modal-fecha-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modal-fecha-form label {
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.modal-fecha-form input {
+  width: 100%;
+  height: 46px;
+  padding: 0 13px;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.modal-fecha-form input:hover {
+  border-color: #94a3b8;
+}
+
+.modal-fecha-form input:focus {
+  border-color: #b91c1c;
+  box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.12);
+}
+
+.modal-fecha-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.modal-fecha-btn {
+  min-width: 120px;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-fecha-btn.cancelar {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+}
+
+.modal-fecha-btn.cancelar:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+}
+
+.modal-fecha-btn.confirmar {
+  border: 1px solid #b91c1c;
+  background: #b91c1c;
+  color: #ffffff;
+}
+
+.modal-fecha-btn.confirmar:hover {
+  border-color: #991b1b;
+  background: #991b1b;
+}
+
+@media (max-width: 600px) {
+  .modal-fecha-masiva {
+    padding: 22px;
+    border-radius: 14px;
+  }
+
+  .modal-fecha-header h2 {
+    font-size: 20px;
+  }
+
+  .modal-fecha-actions {
+    flex-direction: column-reverse;
+  }
+
+  .modal-fecha-btn {
+    width: 100%;
+  }
+}

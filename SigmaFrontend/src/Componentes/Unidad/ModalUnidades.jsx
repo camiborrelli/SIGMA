@@ -10,6 +10,7 @@ import { FaRegCalendarPlus, FaRegFileAlt, FaTag } from "react-icons/fa";
 import AgregarFechaCompraModal from "./AgregarFechaCompraModal";
 import ModalFechaMasiva from "./ModalFechaMasiva";
 import ModalObraMasiva from "./ModalObraMasiva";
+import ModalBajaMasiva from "./ModalBajaMasiva";
 import EditarDescripcionModal from "./EditarDescripcionModal";
 import EditarEtiquetaModal from "./EditarEtiquetaModal";
 import FechaCompraExistenteModal from "./FechaCompraExistenteModal";
@@ -38,12 +39,16 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const [unidadEtiqueta, setUnidadEtiqueta] = useState(null);
   const [unidadFechaExistente, setUnidadFechaExistente] = useState(null);
 
-  // modales para acciones masivas con datos extra
+  // Modales para acciones masivas con datos extra
   const [modalFechaMasiva, setModalFechaMasiva] = useState(false);
   const [modalObraMasiva, setModalObraMasiva] = useState(false);
 
+  // Modal de confirmación para baja masiva
+  const [modalBajaMasiva, setModalBajaMasiva] = useState(false);
+
   const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
   const rol = usuario?.rol || "";
+
   const getCantidadUnidad = (unidad) => Number(unidad?.cantidad || 1);
 
   const cantidadSeleccionada = unidadesSeleccionadas.reduce((total, id) => {
@@ -66,10 +71,14 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
 
   const fetchUnidades = async () => {
     const token = localStorage.getItem("token");
+
     if (!equipo?._id) return;
+
     try {
       const res = await fetch(`${API_URL}/unidades/equipo/${equipo._id}`, {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
       });
 
       if (res.status === 401) {
@@ -77,25 +86,38 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
         throw new Error("Sesión expirada");
       }
 
-      if (!res.ok) throw new Error("Error al obtener unidades");
+      if (!res.ok) {
+        throw new Error("Error al obtener unidades");
+      }
+
       const data = await res.json();
       const unidadesArray = Array.isArray(data) ? data : [];
 
       const parseKey = (ident) => {
         if (!ident) return { num: null, str: "" };
+
         const s = String(ident).trim();
         const m = s.match(/(\d+)$/);
-        return m ? { num: Number(m[1]), str: s } : { num: null, str: s };
+
+        return m
+          ? { num: Number(m[1]), str: s }
+          : { num: null, str: s };
       };
 
       unidadesArray.sort((a, b) => {
         const ka = parseKey(a.identificador);
         const kb = parseKey(b.identificador);
-        if (ka.num !== null && kb.num !== null) return ka.num - kb.num;
+
+        if (ka.num !== null && kb.num !== null) {
+          return ka.num - kb.num;
+        }
+
         if (ka.num !== null) return -1;
         if (kb.num !== null) return 1;
+
         return ka.str.localeCompare(kb.str);
       });
+
       setUnidades(unidadesArray);
     } catch (err) {
       console.error(err);
@@ -105,11 +127,16 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
 
   const handleUpdated = () => {
     fetchUnidades();
-    if (onUpdated) onUpdated();
+
+    if (onUpdated) {
+      onUpdated();
+    }
   };
 
   useEffect(() => {
-    if (equipo?._id) fetchUnidades();
+    if (equipo?._id) {
+      fetchUnidades();
+    }
   }, [equipo]);
 
   useEffect(() => {
@@ -123,55 +150,87 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   useEffect(() => {
     const actualizarCantidad = () => {
       const width = window.innerWidth;
-      if (width <= 768) setItemsPorPagina(2);
-      else if (width <= 1024) setItemsPorPagina(7);
-      else setItemsPorPagina(10);
+
+      if (width <= 768) {
+        setItemsPorPagina(2);
+      } else if (width <= 1024) {
+        setItemsPorPagina(7);
+      } else {
+        setItemsPorPagina(10);
+      }
     };
+
     actualizarCantidad();
+
     window.addEventListener("resize", actualizarCantidad);
-    return () => window.removeEventListener("resize", actualizarCantidad);
+
+    return () => {
+      window.removeEventListener("resize", actualizarCantidad);
+    };
   }, []);
 
   const finalizarMantenimiento = (u) => {
     const token = localStorage.getItem("token");
+
     if (!u?._id) return;
+
     fetch(`${API_URL}/unidades/mantenimiento/finalizar/${u._id}`, {
       method: "POST",
-      headers: { Authorization: token ? `Bearer ${token}` : "" },
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+      },
     })
       .then((res) => {
         if (res.status === 401) {
           window.dispatchEvent(new Event("token-expirado"));
           throw new Error("Sesión expirada");
         }
-        if (!res.ok) throw new Error();
+
+        if (!res.ok) {
+          throw new Error();
+        }
+
         toast.success("Mantenimiento finalizado");
+
         setConfirmMantenimientoUnidad(null);
+
         handleUpdated();
       })
-      .catch(() => toast.error("Error al finalizar mantenimiento"));
+      .catch(() => {
+        toast.error("Error al finalizar mantenimiento");
+      });
   };
 
   const enviarAMantenimiento = (u) => {
     if (!u) return false;
+
     const est = String(u.estado || "").toLowerCase();
+
     if (est.includes("mantenimiento")) {
       setConfirmMantenimientoUnidad(u);
       return false;
     }
+
     if (est === "dada de baja" || est === "baja") {
       toast.error("La unidad está dada de baja.");
       return false;
     }
+
     setUnidadMantenimiento(u);
+
     return true;
   };
 
   const stockDisponible = unidades.filter(
-    (u) => String(u.estado || "").toLowerCase() === "disponible",
+    (u) =>
+      String(u.estado || "").toLowerCase() === "disponible",
   ).length;
-  const esModoCantidadMasiva = modoSeleccionMasiva === "cantidad";
+
+  const esModoCantidadMasiva =
+    modoSeleccionMasiva === "cantidad";
+
   const cantidadMasivaNumero = Number(cantidadMasiva);
+
   const cantidadObjetivoMasiva = esModoCantidadMasiva
     ? cantidadMasivaNumero
     : unidadesSeleccionadas.length;
@@ -184,6 +243,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
 
   const cambiarModoSeleccionMasiva = (modo) => {
     setModoSeleccionMasiva(modo);
+
     if (modo === "cantidad") {
       setUnidadesSeleccionadas([]);
     } else {
@@ -192,8 +252,11 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   };
 
   const validarCantidadMasiva = () => {
-    if (!Number.isInteger(cantidadMasivaNumero) || cantidadMasivaNumero <= 0) {
-      toast.error("Ingresa una cantidad valida");
+    if (
+      !Number.isInteger(cantidadMasivaNumero) ||
+      cantidadMasivaNumero <= 0
+    ) {
+      toast.error("Ingresá una cantidad válida");
       return false;
     }
 
@@ -201,15 +264,20 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
       toast.error(
         `Stock disponible insuficiente. Disponibles: ${stockDisponible}`,
       );
+
       return false;
     }
 
     return true;
   };
 
-  // ── Acciones masivas ──
+  // ─────────────────────────────────────────────
+  // ACCIONES MASIVAS
+  // ─────────────────────────────────────────────
+
   const darDeBajaMultiplesUnidades = async (ids) => {
     const token = localStorage.getItem("token");
+
     const res = await fetch(`${API_URL}/unidades/baja-multiple`, {
       method: "POST",
       headers: {
@@ -224,22 +292,33 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
       throw new Error("Sesión expirada");
     }
 
-    if (!res.ok) throw new Error("Error al dar de baja");
+    if (!res.ok) {
+      throw new Error("Error al dar de baja");
+    }
+
     toast.success("Unidades dadas de baja");
+
     handleUpdated();
   };
 
   const asignarObraMultiplesUnidades = async (ids, obraId) => {
     const token = localStorage.getItem("token");
 
-    const res = await fetch(`${API_URL}/unidades/asignar-obra-multiples`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token ? `Bearer ${token}` : "",
+    const res = await fetch(
+      `${API_URL}/unidades/asignar-obra-multiples`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({
+          ids,
+          obraId,
+        }),
       },
-      body: JSON.stringify({ ids, obraId }),
-    });
+    );
+
     const body = await res.json().catch(() => ({}));
 
     if (res.status === 401) {
@@ -251,26 +330,44 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
       toast.error(body.error || "Error al asignar unidad");
       return;
     }
+
     toast.success("Unidades asignadas correctamente");
+
     handleUpdated();
   };
 
-  const agregarFechaCompraMultiplesUnidades = async (ids, fechaCompra) => {
+  const agregarFechaCompraMultiplesUnidades = async (
+    ids,
+    fechaCompra,
+  ) => {
     const token = localStorage.getItem("token");
-    const res = await fetch(`${API_URL}/unidades/actualizar-multiples`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token ? `Bearer ${token}` : "",
+
+    const res = await fetch(
+      `${API_URL}/unidades/actualizar-multiples`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({
+          ids,
+          fechaCompra,
+        }),
       },
-      body: JSON.stringify({ ids, fechaCompra }), // ← ahora manda fechaCompra
-    });
+    );
+
     if (res.status === 401) {
       window.dispatchEvent(new Event("token-expirado"));
       throw new Error("Sesión expirada");
     }
-    if (!res.ok) throw new Error("Error al agregar fecha de compra");
+
+    if (!res.ok) {
+      throw new Error("Error al agregar fecha de compra");
+    }
+
     toast.success("Fechas de compra agregadas");
+
     handleUpdated();
   };
 
@@ -281,82 +378,136 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     fechaCompra,
   }) => {
     const token = localStorage.getItem("token");
+
     const payload = {
       equipoId: equipo._id,
       accion,
       cantidad,
     };
 
-    if (obraId) payload.obraId = obraId;
-    if (fechaCompra) payload.fechaCompra = fechaCompra;
+    if (obraId) {
+      payload.obraId = obraId;
+    }
 
-    const res = await fetch(`${API_URL}/unidades/masivo-por-cantidad`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token ? `Bearer ${token}` : "",
+    if (fechaCompra) {
+      payload.fechaCompra = fechaCompra;
+    }
+
+    const res = await fetch(
+      `${API_URL}/unidades/masivo-por-cantidad`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify(payload),
       },
-      body: JSON.stringify(payload),
-    });
+    );
+
     const body = await res.json().catch(() => ({}));
 
     if (res.status === 401) {
       window.dispatchEvent(new Event("token-expirado"));
-      throw new Error("Sesion expirada");
+      throw new Error("Sesión expirada");
     }
 
     if (!res.ok) {
-      throw new Error(body.error || "Error al procesar la cantidad indicada");
+      throw new Error(
+        body.error ||
+          "Error al procesar la cantidad indicada",
+      );
     }
 
-    const procesadas = body.cantidadProcesada ?? cantidad;
+    const procesadas =
+      body.cantidadProcesada ?? cantidad;
+
     toast.success(
-      `${procesadas} unidad${procesadas !== 1 ? "es" : ""} procesada${
+      `${procesadas} unidad${
+        procesadas !== 1 ? "es" : ""
+      } procesada${
         procesadas !== 1 ? "s" : ""
       }`,
     );
+
     handleUpdated();
   };
 
-  // Cuando el usuario hace click en "Aplicar", abrir el modal correspondiente
+  // ─────────────────────────────────────────────
+  // EJECUTAR ACCIÓN MASIVA
+  // ─────────────────────────────────────────────
+
   const ejecutarAccionMasiva = () => {
     if (!accionMasiva) {
       toast.error("Seleccioná una acción");
       return;
     }
+
     if (esModoCantidadMasiva) {
-      if (!validarCantidadMasiva()) return;
+      if (!validarCantidadMasiva()) {
+        return;
+      }
     } else if (unidadesSeleccionadas.length === 0) {
       toast.error("Seleccioná al menos una unidad");
       return;
     }
 
+    // BAJA MASIVA
     if (accionMasiva === "baja") {
-      // Esta no necesita datos extra, ejecutar directo
-      setBulkLoading(true);
-      const accion = esModoCantidadMasiva
-        ? aplicarAccionMasivaPorCantidad({
-            accion: "baja",
-            cantidad: cantidadMasivaNumero,
-          })
-        : darDeBajaMultiplesUnidades(unidadesSeleccionadas);
+      setModalBajaMasiva(true);
+    }
 
-      accion
-        .then(() => limpiarAccionMasiva())
-        .catch((error) =>
-          toast.error(error.message || "No se pudo dar de baja"),
-        )
-        .finally(() => setBulkLoading(false));
-    } else if (accionMasiva === "asignar") {
-      setModalObraMasiva(true); // ← abrir modal para elegir obra
-    } else if (accionMasiva === "fecha") {
-      setModalFechaMasiva(true); // ← abrir modal para elegir fecha
+    // ASIGNAR A OBRA
+    else if (accionMasiva === "asignar") {
+      setModalObraMasiva(true);
+    }
+
+    // FECHA DE COMPRA
+    else if (accionMasiva === "fecha") {
+      setModalFechaMasiva(true);
     }
   };
 
+  // ─────────────────────────────────────────────
+  // CONFIRMAR BAJA MASIVA
+  // ─────────────────────────────────────────────
+
+  const confirmarBajaMasiva = async () => {
+    setModalBajaMasiva(false);
+
+    setBulkLoading(true);
+
+    try {
+      if (esModoCantidadMasiva) {
+        await aplicarAccionMasivaPorCantidad({
+          accion: "baja",
+          cantidad: cantidadMasivaNumero,
+        });
+      } else {
+        await darDeBajaMultiplesUnidades(
+          unidadesSeleccionadas,
+        );
+      }
+
+      limpiarAccionMasiva();
+    } catch (error) {
+      toast.error(
+        error.message || "No se pudo dar de baja",
+      );
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
+  // ─────────────────────────────────────────────
+  // CONFIRMAR OBRA MASIVA
+  // ─────────────────────────────────────────────
+
   const confirmarObraMasiva = async (obraId) => {
     setModalObraMasiva(false);
+
     setBulkLoading(true);
+
     try {
       if (esModoCantidadMasiva) {
         await aplicarAccionMasivaPorCantidad({
@@ -365,19 +516,32 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           obraId,
         });
       } else {
-        await asignarObraMultiplesUnidades(unidadesSeleccionadas, obraId);
+        await asignarObraMultiplesUnidades(
+          unidadesSeleccionadas,
+          obraId,
+        );
       }
+
       limpiarAccionMasiva();
     } catch (error) {
-      toast.error(error.message || "No se pudo asignar la obra");
+      toast.error(
+        error.message ||
+          "No se pudo asignar la obra",
+      );
     } finally {
       setBulkLoading(false);
     }
   };
 
+  // ─────────────────────────────────────────────
+  // CONFIRMAR FECHA MASIVA
+  // ─────────────────────────────────────────────
+
   const confirmarFechaMasiva = async (fecha) => {
     setModalFechaMasiva(false);
+
     setBulkLoading(true);
+
     try {
       if (esModoCantidadMasiva) {
         await aplicarAccionMasivaPorCantidad({
@@ -391,57 +555,102 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           fecha,
         );
       }
+
       limpiarAccionMasiva();
     } catch (error) {
-      toast.error(error.message || "No se pudo agregar la fecha");
+      toast.error(
+        error.message ||
+          "No se pudo agregar la fecha",
+      );
     } finally {
       setBulkLoading(false);
     }
   };
 
-  // ── Filtros y paginación ──
+  // ─────────────────────────────────────────────
+  // FILTROS Y PAGINACIÓN
+  // ─────────────────────────────────────────────
+
   const obrasMap = new Map();
+
   unidades.forEach((u) => {
     const o = u.ubicacion;
+
     if (!o) return;
-    if (typeof o === "object")
-      obrasMap.set(String(o._id), o.nombre || String(o._id));
-    else obrasMap.set(String(o), String(o));
+
+    if (typeof o === "object") {
+      obrasMap.set(
+        String(o._id),
+        o.nombre || String(o._id),
+      );
+    } else {
+      obrasMap.set(
+        String(o),
+        String(o),
+      );
+    }
   });
 
   const unidadesFiltradas = unidades.filter((u) => {
     const okEstado = estadoFiltro
-      ? String(u.estado || "").toLowerCase() === estadoFiltro.toLowerCase()
+      ? String(u.estado || "").toLowerCase() ===
+        estadoFiltro.toLowerCase()
       : true;
+
     const okObra = obraFiltro
       ? typeof u.ubicacion === "object"
         ? String(u.ubicacion._id) === obraFiltro
         : String(u.ubicacion) === obraFiltro
       : true;
+
     return okEstado && okObra;
   });
 
-  const indexUltimo = paginaActual * itemsPorPagina;
-  const indexPrimero = indexUltimo - itemsPorPagina;
-  const unidadesPaginadas = unidadesFiltradas.slice(indexPrimero, indexUltimo);
+  const indexUltimo =
+    paginaActual * itemsPorPagina;
+
+  const indexPrimero =
+    indexUltimo - itemsPorPagina;
+
+  const unidadesPaginadas =
+    unidadesFiltradas.slice(
+      indexPrimero,
+      indexUltimo,
+    );
+
   const totalPaginas =
-    Math.ceil(unidadesFiltradas.length / itemsPorPagina) || 1;
-  const idsFiltradas = unidadesFiltradas.map((u) => String(u._id));
+    Math.ceil(
+      unidadesFiltradas.length /
+        itemsPorPagina,
+    ) || 1;
+
+  const idsFiltradas =
+    unidadesFiltradas.map((u) =>
+      String(u._id),
+    );
 
   const toggleSeleccionUnidad = (id) => {
     const idStr = String(id);
+
     setUnidadesSeleccionadas((prev) =>
-      prev.includes(idStr) ? prev.filter((x) => x !== idStr) : [...prev, idStr],
+      prev.includes(idStr)
+        ? prev.filter((x) => x !== idStr)
+        : [...prev, idStr],
     );
   };
 
   const seleccionarTodasFiltradas = () => {
     setUnidadesSeleccionadas((prev) => [
-      ...new Set([...prev, ...idsFiltradas]),
+      ...new Set([
+        ...prev,
+        ...idsFiltradas,
+      ]),
     ]);
   };
 
-  const limpiarSeleccion = () => setUnidadesSeleccionadas([]);
+  const limpiarSeleccion = () => {
+    setUnidadesSeleccionadas([]);
+  };
 
   const toggleModoSeleccion = () => {
     setSeleccionMultiple((prev) => {
@@ -449,51 +658,85 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
         limpiarAccionMasiva();
         setModoSeleccionMasiva("manual");
       }
+
       return !prev;
     });
   };
 
   const columns = [
-    { header: "ID", accessor: "identificador" },
-    { header: "Cantidad", accessor: (row) => getCantidadUnidad(row) },
+    {
+      header: "ID",
+      accessor: "identificador",
+    },
+
+    {
+      header: "Cantidad",
+      accessor: (row) =>
+        getCantidadUnidad(row),
+    },
+
     {
       header: "Etiqueta",
       accessor: (row) =>
         row.etiqueta ? (
           row.etiqueta
         ) : (
-          <span style={{ color: "#94a3b8", fontStyle: "italic" }}>
+          <span
+            style={{
+              color: "#94a3b8",
+              fontStyle: "italic",
+            }}
+          >
             Sin etiqueta
           </span>
         ),
     },
+
     {
       header: "Estado",
       accessor: (row) => {
-        const est = String(row.estado || "").toLowerCase();
+        const est = String(
+          row.estado || "",
+        ).toLowerCase();
+
         const cls =
           est === "disponible"
             ? "estado-disponible"
             : est === "asignada"
             ? "estado-asignado"
-            : est.includes("mantenimiento")
+            : est.includes(
+                "mantenimiento",
+              )
             ? "estado-mantenimiento"
             : "estado-baja";
-        return <span className={`estado-badge ${cls}`}>{row.estado}</span>;
+
+        return (
+          <span
+            className={`estado-badge ${cls}`}
+          >
+            {row.estado}
+          </span>
+        );
       },
     },
+
     {
       header: "Obra",
       accessor: (row) =>
-        row.ubicacion && typeof row.ubicacion === "object"
-          ? row.ubicacion.nombre || "Sin asignar"
-          : row.ubicacion || "Sin asignar",
+        row.ubicacion &&
+        typeof row.ubicacion ===
+          "object"
+          ? row.ubicacion.nombre ||
+            "Sin asignar"
+          : row.ubicacion ||
+            "Sin asignar",
     },
 
     ...(rol === "Admin"
       ? [
           {
             header: "Acciones",
+
             accessor: (row) => (
               <div className="actions">
                 {seleccionMultiple ? (
@@ -508,8 +751,13 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
                         checked={unidadesSeleccionadas.includes(
                           String(row._id),
                         )}
-                        onChange={() => toggleSeleccionUnidad(row._id)}
+                        onChange={() =>
+                          toggleSeleccionUnidad(
+                            row._id,
+                          )
+                        }
                       />
+
                       Seleccionar
                     </label>
                   )
@@ -523,18 +771,27 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
                     >
                       📍
                     </button>
+
                     <button
                       onClick={() => {
                         cerrarTodos();
-                        const ok = enviarAMantenimiento(row);
+
+                        const ok =
+                          enviarAMantenimiento(
+                            row,
+                          );
+
                         if (ok) {
                           onClose();
-                          navigate(`/garantia/${row._id}`);
+                          navigate(
+                            `/garantia/${row._id}`,
+                          );
                         }
                       }}
                     >
                       🛠
                     </button>
+
                     <button
                       onClick={() => {
                         cerrarTodos();
@@ -543,12 +800,15 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
                     >
                       🚫
                     </button>
+
                     <button
                       onClick={() => {
                         cerrarTodos();
 
                         if (row.fechaCompra) {
-                          setUnidadFechaExistente(row);
+                          setUnidadFechaExistente(
+                            row,
+                          );
                         } else {
                           setUnidadFecha(row);
                         }
@@ -556,6 +816,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
                     >
                       <FaRegCalendarPlus />
                     </button>
+
                     <button
                       onClick={() => {
                         cerrarTodos();
@@ -586,32 +847,71 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     <>
       <div className="modal-overlay modal-unidades-overlay">
         <div className="modal-content modal-unidades-content">
-          <h2>Unidades de {equipo.nombre}</h2>
+          <h2>
+            Unidades de {equipo.nombre}
+          </h2>
 
           <div className="filtros">
             <select
               value={estadoFiltro}
-              onChange={(e) => setEstadoFiltro(e.target.value)}
+              onChange={(e) =>
+                setEstadoFiltro(
+                  e.target.value,
+                )
+              }
             >
-              <option value="">Todos los estados</option>
-              <option value="Disponible">Disponible</option>
-              <option value="Asignada">Asignada</option>
-              <option value="En mantenimiento">En mantenimiento</option>
-              <option value="Dada de Baja">Dada de Baja</option>
+              <option value="">
+                Todos los estados
+              </option>
+
+              <option value="Disponible">
+                Disponible
+              </option>
+
+              <option value="Asignada">
+                Asignada
+              </option>
+
+              <option value="En mantenimiento">
+                En mantenimiento
+              </option>
+
+              <option value="Dada de Baja">
+                Dada de Baja
+              </option>
             </select>
+
             <select
               value={obraFiltro}
-              onChange={(e) => setObraFiltro(e.target.value)}
+              onChange={(e) =>
+                setObraFiltro(
+                  e.target.value,
+                )
+              }
             >
-              <option value="">Todas las obras</option>
-              {[...obrasMap.entries()].map(([id, name]) => (
-                <option key={id} value={id}>
-                  {name}
-                </option>
-              ))}
+              <option value="">
+                Todas las obras
+              </option>
+
+              {[...obrasMap.entries()].map(
+                ([id, name]) => (
+                  <option
+                    key={id}
+                    value={id}
+                  >
+                    {name}
+                  </option>
+                ),
+              )}
             </select>
+
             {rol === "Admin" && (
-              <button className="btn-seleccion" onClick={toggleModoSeleccion}>
+              <button
+                className="btn-seleccion"
+                onClick={
+                  toggleModoSeleccion
+                }
+              >
                 {seleccionMultiple
                   ? "Cancelar selección"
                   : "Selección múltiple"}
@@ -624,80 +924,149 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
               <div className="acciones-masivas-info">
                 {esModoCantidadMasiva ? (
                   <>
-                    Disponibles: <strong>{stockDisponible}</strong>
+                    Disponibles:{" "}
+                    <strong>
+                      {stockDisponible}
+                    </strong>
                   </>
                 ) : (
                   <>
                     Seleccionadas:{" "}
-                    <strong>{unidadesSeleccionadas.length}</strong>
+                    <strong>
+                      {
+                        unidadesSeleccionadas.length
+                      }
+                    </strong>
                   </>
                 )}
               </div>
+
               <div
                 className="modo-seleccion-masiva"
                 role="group"
-                aria-label="Modo de seleccion masiva"
+                aria-label="Modo de selección masiva"
               >
                 <label>
                   <input
                     type="radio"
                     name="modo-seleccion-masiva"
-                    checked={!esModoCantidadMasiva}
-                    onChange={() => cambiarModoSeleccionMasiva("manual")}
+                    checked={
+                      !esModoCantidadMasiva
+                    }
+                    onChange={() =>
+                      cambiarModoSeleccionMasiva(
+                        "manual",
+                      )
+                    }
                   />
+
                   Manual
                 </label>
+
                 <label>
                   <input
                     type="radio"
                     name="modo-seleccion-masiva"
-                    checked={esModoCantidadMasiva}
-                    onChange={() => cambiarModoSeleccionMasiva("cantidad")}
+                    checked={
+                      esModoCantidadMasiva
+                    }
+                    onChange={() =>
+                      cambiarModoSeleccionMasiva(
+                        "cantidad",
+                      )
+                    }
                   />
+
                   Por cantidad
                 </label>
               </div>
+
               {esModoCantidadMasiva && (
                 <label className="cantidad-masiva-field">
-                  <span>Cantidad</span>
+                  <span>
+                    Cantidad
+                  </span>
+
                   <input
                     type="number"
                     min="1"
-                    max={stockDisponible || 1}
+                    max={
+                      stockDisponible ||
+                      1
+                    }
                     step="1"
-                    value={cantidadMasiva}
-                    onChange={(e) => setCantidadMasiva(e.target.value)}
+                    value={
+                      cantidadMasiva
+                    }
+                    onChange={(e) =>
+                      setCantidadMasiva(
+                        e.target.value,
+                      )
+                    }
                     placeholder="0"
                   />
                 </label>
               )}
+
               <select
                 value={accionMasiva}
-                onChange={(e) => setAccionMasiva(e.target.value)}
+                onChange={(e) =>
+                  setAccionMasiva(
+                    e.target.value,
+                  )
+                }
               >
-                <option value="">Elegí una acción</option>
-                <option value="baja">Dar de baja</option>
-                <option value="asignar">Asignar a obra</option>
-                <option value="fecha">Agregar fecha de compra</option>
+                <option value="">
+                  Elegí una acción
+                </option>
+
+                <option value="baja">
+                  Dar de baja
+                </option>
+
+                <option value="asignar">
+                  Asignar a obra
+                </option>
+
+                <option value="fecha">
+                  Agregar fecha de compra
+                </option>
               </select>
+
               <div className="acciones-masivas-botones">
                 {!esModoCantidadMasiva && (
                   <>
-                    <button type="button" onClick={seleccionarTodasFiltradas}>
+                    <button
+                      type="button"
+                      onClick={
+                        seleccionarTodasFiltradas
+                      }
+                    >
                       Seleccionar todo
                     </button>
-                    <button type="button" onClick={limpiarSeleccion}>
+
+                    <button
+                      type="button"
+                      onClick={
+                        limpiarSeleccion
+                      }
+                    >
                       Limpiar selección
                     </button>
                   </>
                 )}
+
                 <button
                   type="button"
                   className="btn-aplicar-masiva"
-                  onClick={ejecutarAccionMasiva}
+                  onClick={
+                    ejecutarAccionMasiva
+                  }
                   disabled={bulkLoading}
                 >
-                  {bulkLoading ? "Aplicando..." : "Aplicar"}
+                  {bulkLoading
+                    ? "Aplicando..."
+                    : "Aplicar"}
                 </button>
               </div>
             </div>
@@ -708,19 +1077,34 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
             data={unidadesPaginadas}
             paginaActual={paginaActual}
             totalPaginas={totalPaginas}
-            onPaginaAnterior={() => setPaginaActual((p) => Math.max(p - 1, 1))}
+            onPaginaAnterior={() =>
+              setPaginaActual((p) =>
+                Math.max(p - 1, 1),
+              )
+            }
             onPaginaSiguiente={() =>
-              setPaginaActual((p) => Math.min(p + 1, totalPaginas))
+              setPaginaActual((p) =>
+                Math.min(
+                  p + 1,
+                  totalPaginas,
+                ),
+              )
             }
           />
 
-          <button className="btn-cerrar" onClick={onClose}>
+          <button
+            className="btn-cerrar"
+            onClick={onClose}
+          >
             Cerrar
           </button>
         </div>
       </div>
 
-      {/* Modales individuales */}
+      {/* ─────────────────────────────── */}
+      {/* MODALES INDIVIDUALES */}
+      {/* ─────────────────────────────── */}
+
       {unidadMantenimiento && (
         <AsignarMantenimientoUnidad
           unidad={unidadMantenimiento}
@@ -728,6 +1112,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           onUpdated={handleUpdated}
         />
       )}
+
       {unidadBaja && (
         <BajaUnidadModal
           unidad={unidadBaja}
@@ -735,6 +1120,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           onUpdated={handleUpdated}
         />
       )}
+
       {unidadAsignar && (
         <AsignarUnidadModal
           unidad={unidadAsignar}
@@ -743,6 +1129,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           onUpdated={handleUpdated}
         />
       )}
+
       {unidadFecha && (
         <AgregarFechaCompraModal
           unidad={unidadFecha}
@@ -750,35 +1137,60 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           onUpdated={handleUpdated}
         />
       )}
+
       {unidadFechaExistente && (
         <FechaCompraExistenteModal
           unidad={unidadFechaExistente}
-          onClose={() => setUnidadFechaExistente(null)}
+          onClose={() =>
+            setUnidadFechaExistente(null)
+          }
         />
       )}
+
       {confirmMantenimientoUnidad && (
         <FinalizarMantenimientoModal
           unidad={confirmMantenimientoUnidad}
-          onClose={() => setConfirmMantenimientoUnidad(null)}
+          onClose={() =>
+            setConfirmMantenimientoUnidad(null)
+          }
           onUpdated={handleUpdated}
         />
       )}
 
-      {/* Modales para acciones masivas */}
+      {/* ─────────────────────────────── */}
+      {/* MODALES PARA ACCIONES MASIVAS */}
+      {/* ─────────────────────────────── */}
+
+      {modalBajaMasiva && (
+        <ModalBajaMasiva
+          cantidad={cantidadObjetivoMasiva}
+          onConfirm={confirmarBajaMasiva}
+          onClose={() =>
+            setModalBajaMasiva(false)
+          }
+        />
+      )}
+
       {modalFechaMasiva && (
         <ModalFechaMasiva
           cantidad={cantidadObjetivoMasiva}
           onConfirm={confirmarFechaMasiva}
-          onClose={() => setModalFechaMasiva(false)}
+          onClose={() =>
+            setModalFechaMasiva(false)
+          }
         />
       )}
+
       {modalObraMasiva && (
         <ModalObraMasiva
           cantidad={cantidadObjetivoMasiva}
           onConfirm={confirmarObraMasiva}
-          onClose={() => setModalObraMasiva(false)}
+          onClose={() =>
+            setModalObraMasiva(false)
+          }
         />
       )}
+
       {unidadDescripcion && (
         <EditarDescripcionModal
           unidad={unidadDescripcion}
@@ -786,6 +1198,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           onUpdated={handleUpdated}
         />
       )}
+
       {unidadEtiqueta && (
         <EditarEtiquetaModal
           unidad={unidadEtiqueta}

@@ -1,58 +1,77 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import "./ModalFechaMasiva.css";
+
 const ModalFechaMasiva = ({ cantidad, onConfirm, onClose }) => {
   const [fecha, setFecha] = useState("");
+
+  const confirmar = () => {
+    if (!fecha) {
+      toast.error("Seleccioná una fecha");
+      return;
+    }
+
+    onConfirm(fecha);
+  };
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay modal-fecha-overlay" onClick={onClose}>
       <div
-        className="modal-content"
+        className="modal-fecha-masiva"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: 400 }}
       >
-        <h2>Agregar fecha de compra</h2>
-        <p style={{ margin: "8px 0 16px", color: "#64748b", fontSize: 14 }}>
-          Se aplicará a <strong>{cantidad}</strong> unidad
-          {cantidad !== 1 ? "es" : ""} seleccionada{cantidad !== 1 ? "s" : ""}.
-        </p>
-        <input
-          type="date"
-          value={fecha}
-          onChange={(e) => setFecha(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "10px 12px",
-            borderRadius: 8,
-            border: "1px solid #e8e8e8",
-            fontSize: 14,
-            marginBottom: 16,
-          }}
-        />
-        <div style={{ display: "flex", gap: 8 }}>
+        <div className="modal-fecha-header">
+          <h2>Agregar fecha de compra</h2>
+
           <button
-            className="btn-aplicar-masiva"
-            style={{ flex: 1 }}
-            onClick={() => {
-              if (!fecha) {
-                toast.error("Seleccioná una fecha");
-                return;
-              }
-              onConfirm(fecha);
-            }}
-          >
-            Confirmar
-          </button>
-          <button
+            type="button"
+            className="modal-fecha-close"
             onClick={onClose}
-            style={{
-              flex: 1,
-              padding: 10,
-              borderRadius: 8,
-              border: "1px solid #e8e8e8",
-              background: "#f5f5f5",
-              cursor: "pointer",
-            }}
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="modal-fecha-info">
+          <span className="modal-fecha-icon">📅</span>
+
+          <p>
+            Se aplicará a{" "}
+            <strong>{cantidad}</strong>{" "}
+            unidad{cantidad !== 1 ? "es" : ""} seleccionada
+            {cantidad !== 1 ? "s" : ""}.
+          </p>
+        </div>
+
+        <div className="modal-fecha-form">
+          <label htmlFor="fecha-compra-masiva">
+            Fecha de compra
+          </label>
+
+          <input
+            id="fecha-compra-masiva"
+            type="date"
+            value={fecha}
+            onChange={(e) => setFecha(e.target.value)}
+          />
+        </div>
+
+        <div className="modal-fecha-actions">
+          <button
+            type="button"
+            className="modal-fecha-btn cancelar"
+            onClick={onClose}
           >
             Cancelar
+          </button>
+
+          <button
+            type="button"
+            className="modal-fecha-btn confirmar"
+            onClick={confirmar}
+          >
+            Confirmar
           </button>
         </div>
       </div>

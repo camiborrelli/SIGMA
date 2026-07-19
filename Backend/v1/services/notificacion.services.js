@@ -67,16 +67,6 @@ const esExpoPushTokenValido = (token) =>
   typeof token === "string" &&
   /^(ExpoPushToken|ExponentPushToken)\[[^\]]+\]$/.test(token);
 
-const partirEnLotes = (items, tamano = 100) => {
-  const lotes = [];
-
-  for (let i = 0; i < items.length; i += tamano) {
-    lotes.push(items.slice(i, i + tamano));
-  }
-
-  return lotes;
-};
-
 const crearResumenPush = () => ({
   tokens: 0,
   enviados: 0,
@@ -121,55 +111,6 @@ const eliminarTokensNoRegistrados = async (tickets = [], mensajes = []) => {
       },
     },
   );
-};
-
-const enviarLoteExpo = async (mensajes) => {
-  const resumen = crearResumenPush();
-
-  try {
-    const response = await fetch(EXPO_PUSH_URL, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Accept-Encoding": "gzip, deflate",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(mensajes),
-    });
-
-    const body = parsearRespuestaExpo(await response.text());
-
-    if (!response.ok) {
-      resumen.errores = mensajes.length;
-      console.error("Expo Push rechazo el lote:", response.status, body);
-      return resumen;
-    }
-
-    const tickets = normalizarTicketsExpo(body);
-    const erroresSolicitud = Array.isArray(body.errors) ? body.errors : [];
-    const ticketsConError = tickets.filter((ticket) => ticket?.status === "error");
-
-    resumen.enviados = tickets.filter((ticket) => ticket?.status === "ok").length;
-    resumen.errores = ticketsConError.length + erroresSolicitud.length;
-
-    if (ticketsConError.length > 0 || erroresSolicitud.length > 0) {
-      console.error("Expo Push devolvio errores:", {
-        tickets: ticketsConError.map((ticket) => ({
-          message: ticket.message,
-          error: ticket.details?.error,
-        })),
-        errors: erroresSolicitud,
-      });
-    }
-
-    await eliminarTokensNoRegistrados(tickets, mensajes);
-
-    return resumen;
-  } catch (error) {
-    resumen.errores = mensajes.length;
-    console.error("No se pudo contactar Expo Push:", error.message);
-    return resumen;
-  }
 };
 
 export const registrarPushTokenService = async (usuarioId, data = {}) => {
@@ -280,12 +221,6 @@ export const enviarPushANotificacionService = async (
       sound: "default",
       ttl: 60 * 60 * 24 * 28,
     }));
-
-    for (const lote of partirEnLotes(mensajes)) {
-      const resultado = await enviarLoteExpo(lote);
-      resumen.enviados += resultado?.enviados || 0;
-      resumen.errores += resultado?.errores || 0;
-    }
 
     if (resumen.enviados > 0 || resumen.errores > 0) {
       console.log("Resultado push SIGMA:", resumen);

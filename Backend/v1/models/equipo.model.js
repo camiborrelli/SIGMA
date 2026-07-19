@@ -9,13 +9,6 @@ const EquipoSchema = new Schema(
       enum: ["Maquina", "Herramienta"],
       required: true,
     },
-    modoGestion: {
-      type: String,
-      enum: ["unidad", "lote"],
-      default: "unidad",
-      required: true,
-    },
-
     codigo: {
       type: String,
       unique: true,

@@ -8,7 +8,6 @@ import {
   getStatsUnidades,
   getReparacionesUnidad,
   asignarUnidad,
-  asignarCantidadLoteAObra,
   eliminarUnidad,
   actualizarFechaCompra,
   quitarUnidadDeObra,
@@ -235,42 +234,6 @@ export const asignarUnidadController = async (req, res) => {
     }
 
     res.status(500).json({ error: "Error al asignar unidad" });
-  }
-};
-
-export const asignarLoteAObraController = async (req, res) => {
-  try {
-    const { equipoId } = req.params;
-    const { cantidad, obraId, ubicacion } = req.body;
-    const obraDestinoId = obraId || ubicacion;
-
-    if (!obraDestinoId) {
-      return res.status(400).json({ error: "Debe indicar la obra" });
-    }
-
-    const result = await asignarCantidadLoteAObra({
-      equipoId,
-      obraId: obraDestinoId,
-      cantidad,
-    });
-
-    res.status(200).json(result);
-  } catch (error) {
-    console.error(error);
-
-    if (error.message.includes("no encontrad")) {
-      return res.status(404).json({ error: error.message });
-    }
-
-    if (
-      error.message.includes("cantidad") ||
-      error.message.includes("stock disponible") ||
-      error.message.includes("maneja por unidad")
-    ) {
-      return res.status(400).json({ error: error.message });
-    }
-
-    res.status(500).json({ error: "Error al asignar lote" });
   }
 };
 
