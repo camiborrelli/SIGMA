@@ -153,87 +153,35 @@ export const getDistribucionUnidadesPorEstado = async (filtros = {}) => {
 export const getMaquinariaPorObra = async (filtros = {}) => {
   const pipeline = [];
 
-  const obraId = toObjectId(filtros.obraId || filtros.obra);
-  const equipoId = toObjectId(filtros.equipoId || filtros.equipo);
+  const unidadMatch = buildUnidadMatch(filtros);
 
-  // Si se selecciona una obra específica, se filtra.
-  // Si no, se muestran todas las obras.
-  if (obraId) {
-    pipeline.push({
-      $match: {
-        _id: obraId,
-      },
-    });
-  }
+  unidadMatch.ubicacion = unidadMatch.ubicacion || { $ne: null };
 
-  pipeline.push({
-    $lookup: {
-      from: "unidades",
-      let: {
-        obraId: "$_id",
-      },
-      pipeline: [
-        {
-          $match: {
-            $expr: {
-              $eq: ["$ubicacion", "$$obraId"],
-            },
-          },
-        },
-      ],
-      as: "unidades",
-    },
-  });
-
-  pipeline.push({
-    $unwind: {
-      path: "$unidades",
-      preserveNullAndEmptyArrays: true,
-    },
-  });
-
-  // Si se seleccionó un equipo específico
-  if (equipoId) {
-    pipeline.push({
-      $match: {
-        $or: [
-          {
-            "unidades.equipo": equipoId,
-          },
-          {
-            unidades: null,
-          },
-        ],
-      },
-    });
-  }
-
-  pipeline.push({
-    $group: {
-      _id: "$_id",
-      obra: {
-        $first: "$nombre",
-      },
-      cantidad: {
-        $sum: {
-          $cond: [
-            {
-              $ne: ["$unidades", null],
-            },
-            1,
-            0,
-          ],
-        },
-      },
-    },
-  });
+  addMatchStage(pipeline, unidadMatch);
 
   pipeline.push(
     {
+      $group: {
+        _id: "$ubicacion",
+        cantidad: { $sum: 1 },
+      },
+    },
+    {
+      $lookup: {
+        from: "obras",
+        localField: "_id",
+        foreignField: "_id",
+        as: "obra",
+      },
+    },
+    {
+      $unwind: "$obra",
+    },
+    {
       $project: {
         _id: 0,
-        obraId: "$_id",
-        obra: 1,
+        obraId: "$obra._id",
+        obra: "$obra.nombre",
         cantidad: 1,
       },
     },
@@ -245,7 +193,25 @@ export const getMaquinariaPorObra = async (filtros = {}) => {
     },
   );
 
-  return await Obra.aggregate(pipeline);
+  const obrasConUnidades = await Unidad.aggregate(pipeline);
+
+  const todasLasObras = await Obra.find()
+    .select("_id nombre")
+    .sort({ nombre: 1 })
+    .lean();
+
+  const mapaObras = new Map(
+    obrasConUnidades.map((obra) => [
+      obra.obraId.toString(),
+      obra.cantidad,
+    ]),
+  );
+
+  return todasLasObras.map((obra) => ({
+    obraId: obra._id,
+    obra: obra.nombre,
+    cantidad: mapaObras.get(obra._id.toString()) || 0,
+  }));
 };
 
 export const getEquiposMasEnMantenimiento = async (filtros = {}) => {
