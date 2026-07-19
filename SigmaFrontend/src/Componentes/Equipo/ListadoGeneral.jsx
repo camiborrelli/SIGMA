@@ -172,11 +172,7 @@ const ListadoGeneral = ({
     { header: "Nombre", accessor: "nombre" },
     { header: "Modelo", accessor: "modelo" },
     { header: "Tipo", accessor: "tipo" },
-    {
-      header: "Gestion",
-      accessor: (row) =>
-        row.modoGestion === "lote" ? "Por lote" : "Por unidad",
-    },
+
     { header: "Stock", accessor: (row) => row.stock + " unidades" },
     {
       header: "Detalle stock",
@@ -331,10 +327,6 @@ const ListadoGeneral = ({
                   <p>
                     <strong>Stock:</strong> {eq.stock} unidad
                     {eq.stock !== 1 ? "es" : ""}
-                  </p>
-                  <p>
-                    <strong>Gestion:</strong>{" "}
-                    {eq.modoGestion === "lote" ? "Por lote" : "Por unidad"}
                   </p>
                 </div>
 
