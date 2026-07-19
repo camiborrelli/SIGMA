@@ -96,7 +96,10 @@ function EstadoChart({ filtros = {} }) {
             outerRadius={90}
             innerRadius={55}
             paddingAngle={2}
-            label={({ percent }) => `${Math.round(percent * 100)}%`}
+            label={({ percent, value }) => {
+              const porcentaje = percent * 100;
+              return `${porcentaje < 0.1 && value > 0 ? "<0.1" : porcentaje.toFixed(1)}%`;
+            }}
           >
             {dataVisible.map((entry, index) => (
               <Cell
