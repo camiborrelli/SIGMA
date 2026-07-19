@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useEffect } from "react";
 import { API_URL } from "../../../api";
 
 const ModalObraMasiva = ({ cantidad, onConfirm, onClose }) => {
@@ -27,61 +26,54 @@ const ModalObraMasiva = ({ cantidad, onConfirm, onClose }) => {
 
     fetchObras();
   }, []);
+
+  const confirmar = () => {
+    if (!obraId) {
+      toast.error("Selecciona una obra");
+      return;
+    }
+
+    onConfirm(obraId);
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
-        className="modal-content"
+        className="modal-content modal-obra-masiva-content"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: 400 }}
       >
         <h2>Asignar a obra</h2>
-        <p style={{ margin: "8px 0 16px", color: "#64748b", fontSize: 14 }}>
-          Se aplicará a <strong>{cantidad}</strong> unidad
-          {cantidad !== 1 ? "es" : ""} seleccionada{cantidad !== 1 ? "s" : ""}.
+        <p className="modal-obra-masiva-texto">
+          Se aplicara a <strong>{cantidad}</strong> unidad
+          {cantidad !== 1 ? "es" : ""} seleccionada
+          {cantidad !== 1 ? "s" : ""}.
         </p>
+
         <select
+          className="modal-obra-masiva-select"
           value={obraId}
           onChange={(e) => setObraId(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "10px 12px",
-            borderRadius: 8,
-            border: "1px solid #e8e8e8",
-            fontSize: 14,
-            marginBottom: 16,
-          }}
         >
-          <option value="">-- Seleccioná una obra --</option>
+          <option value="">-- Selecciona una obra --</option>
           {obras.map((obra) => (
             <option key={obra._id} value={obra._id}>
               {obra.nombre}
             </option>
           ))}
         </select>
-        <div style={{ display: "flex", gap: 8 }}>
+
+        <div className="modal-obra-masiva-acciones">
           <button
-            className="btn-aplicar-masiva"
-            style={{ flex: 1 }}
-            onClick={() => {
-              if (!obraId) {
-                toast.error("Seleccioná una obra");
-                return;
-              }
-              onConfirm(obraId);
-            }}
+            type="button"
+            className="modal-obra-masiva-confirmar"
+            onClick={confirmar}
           >
             Confirmar
           </button>
           <button
+            type="button"
+            className="modal-obra-masiva-cancelar"
             onClick={onClose}
-            style={{
-              flex: 1,
-              padding: 10,
-              borderRadius: 8,
-              border: "1px solid #e8e8e8",
-              background: "#f5f5f5",
-              cursor: "pointer",
-            }}
           >
             Cancelar
           </button>

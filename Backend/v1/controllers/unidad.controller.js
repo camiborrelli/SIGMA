@@ -15,6 +15,7 @@ import {
   trasladarUnidadesAotraObra,
   actualizarDescripcionUnidad,
   actualizarEtiquetaUnidad,
+  ejecutarAccionMasivaPorCantidad,
 } from "../services/unidad.services.js";
 import {
   notificarGarantiasPorVencer,
@@ -386,6 +387,20 @@ export const bajaMultiplesUnidadesController = async (req, res) => {
     res.status(500).json({ error: "Error al procesar bajas múltiples" });
   }
 };
+
+export const accionMasivaPorCantidadController = async (req, res) => {
+  try {
+    const resultado = await ejecutarAccionMasivaPorCantidad(req.body);
+    res.status(200).json(resultado);
+  } catch (error) {
+    console.error(error);
+    res.status(error.statusCode || 500).json({
+      error: error.message || "Error al procesar accion masiva por cantidad",
+      stockDisponible: error.stockDisponible,
+    });
+  }
+};
+
 export const asignarFechaCompraMultiplesUnidadesController = async (
   req,
   res,

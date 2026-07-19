@@ -31,6 +31,8 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const [seleccionMultiple, setSeleccionMultiple] = useState(false);
   const [unidadesSeleccionadas, setUnidadesSeleccionadas] = useState([]);
   const [accionMasiva, setAccionMasiva] = useState("");
+  const [modoSeleccionMasiva, setModoSeleccionMasiva] = useState("manual");
+  const [cantidadMasiva, setCantidadMasiva] = useState("");
   const [bulkLoading, setBulkLoading] = useState(false);
   const [unidadDescripcion, setUnidadDescripcion] = useState(null);
   const [unidadEtiqueta, setUnidadEtiqueta] = useState(null);
@@ -165,6 +167,46 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     return true;
   };
 
+  const stockDisponible = unidades.filter(
+    (u) => String(u.estado || "").toLowerCase() === "disponible",
+  ).length;
+  const esModoCantidadMasiva = modoSeleccionMasiva === "cantidad";
+  const cantidadMasivaNumero = Number(cantidadMasiva);
+  const cantidadObjetivoMasiva = esModoCantidadMasiva
+    ? cantidadMasivaNumero
+    : unidadesSeleccionadas.length;
+
+  const limpiarAccionMasiva = () => {
+    setUnidadesSeleccionadas([]);
+    setAccionMasiva("");
+    setCantidadMasiva("");
+  };
+
+  const cambiarModoSeleccionMasiva = (modo) => {
+    setModoSeleccionMasiva(modo);
+    if (modo === "cantidad") {
+      setUnidadesSeleccionadas([]);
+    } else {
+      setCantidadMasiva("");
+    }
+  };
+
+  const validarCantidadMasiva = () => {
+    if (!Number.isInteger(cantidadMasivaNumero) || cantidadMasivaNumero <= 0) {
+      toast.error("Ingresa una cantidad valida");
+      return false;
+    }
+
+    if (cantidadMasivaNumero > stockDisponible) {
+      toast.error(
+        `Stock disponible insuficiente. Disponibles: ${stockDisponible}`,
+      );
+      return false;
+    }
+
+    return true;
+  };
+
   // ── Acciones masivas ──
   const darDeBajaMultiplesUnidades = async (ids) => {
     const token = localStorage.getItem("token");
@@ -232,13 +274,59 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     handleUpdated();
   };
 
+  const aplicarAccionMasivaPorCantidad = async ({
+    accion,
+    cantidad,
+    obraId,
+    fechaCompra,
+  }) => {
+    const token = localStorage.getItem("token");
+    const payload = {
+      equipoId: equipo._id,
+      accion,
+      cantidad,
+    };
+
+    if (obraId) payload.obraId = obraId;
+    if (fechaCompra) payload.fechaCompra = fechaCompra;
+
+    const res = await fetch(`${API_URL}/unidades/masivo-por-cantidad`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+      body: JSON.stringify(payload),
+    });
+    const body = await res.json().catch(() => ({}));
+
+    if (res.status === 401) {
+      window.dispatchEvent(new Event("token-expirado"));
+      throw new Error("Sesion expirada");
+    }
+
+    if (!res.ok) {
+      throw new Error(body.error || "Error al procesar la cantidad indicada");
+    }
+
+    const procesadas = body.cantidadProcesada ?? cantidad;
+    toast.success(
+      `${procesadas} unidad${procesadas !== 1 ? "es" : ""} procesada${
+        procesadas !== 1 ? "s" : ""
+      }`,
+    );
+    handleUpdated();
+  };
+
   // Cuando el usuario hace click en "Aplicar", abrir el modal correspondiente
   const ejecutarAccionMasiva = () => {
     if (!accionMasiva) {
       toast.error("Seleccioná una acción");
       return;
     }
-    if (unidadesSeleccionadas.length === 0) {
+    if (esModoCantidadMasiva) {
+      if (!validarCantidadMasiva()) return;
+    } else if (unidadesSeleccionadas.length === 0) {
       toast.error("Seleccioná al menos una unidad");
       return;
     }
@@ -246,12 +334,18 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     if (accionMasiva === "baja") {
       // Esta no necesita datos extra, ejecutar directo
       setBulkLoading(true);
-      darDeBajaMultiplesUnidades(unidadesSeleccionadas)
-        .then(() => {
-          setUnidadesSeleccionadas([]);
-          setAccionMasiva("");
-        })
-        .catch(() => toast.error("No se pudo dar de baja"))
+      const accion = esModoCantidadMasiva
+        ? aplicarAccionMasivaPorCantidad({
+            accion: "baja",
+            cantidad: cantidadMasivaNumero,
+          })
+        : darDeBajaMultiplesUnidades(unidadesSeleccionadas);
+
+      accion
+        .then(() => limpiarAccionMasiva())
+        .catch((error) =>
+          toast.error(error.message || "No se pudo dar de baja"),
+        )
         .finally(() => setBulkLoading(false));
     } else if (accionMasiva === "asignar") {
       setModalObraMasiva(true); // ← abrir modal para elegir obra
@@ -264,11 +358,18 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     setModalObraMasiva(false);
     setBulkLoading(true);
     try {
-      await asignarObraMultiplesUnidades(unidadesSeleccionadas, obraId);
-      setUnidadesSeleccionadas([]);
-      setAccionMasiva("");
-    } catch {
-      toast.error("No se pudo asignar la obra");
+      if (esModoCantidadMasiva) {
+        await aplicarAccionMasivaPorCantidad({
+          accion: "asignar",
+          cantidad: cantidadMasivaNumero,
+          obraId,
+        });
+      } else {
+        await asignarObraMultiplesUnidades(unidadesSeleccionadas, obraId);
+      }
+      limpiarAccionMasiva();
+    } catch (error) {
+      toast.error(error.message || "No se pudo asignar la obra");
     } finally {
       setBulkLoading(false);
     }
@@ -278,11 +379,21 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     setModalFechaMasiva(false);
     setBulkLoading(true);
     try {
-      await agregarFechaCompraMultiplesUnidades(unidadesSeleccionadas, fecha);
-      setUnidadesSeleccionadas([]);
-      setAccionMasiva("");
-    } catch {
-      toast.error("No se pudo agregar la fecha");
+      if (esModoCantidadMasiva) {
+        await aplicarAccionMasivaPorCantidad({
+          accion: "fecha",
+          cantidad: cantidadMasivaNumero,
+          fechaCompra: fecha,
+        });
+      } else {
+        await agregarFechaCompraMultiplesUnidades(
+          unidadesSeleccionadas,
+          fecha,
+        );
+      }
+      limpiarAccionMasiva();
+    } catch (error) {
+      toast.error(error.message || "No se pudo agregar la fecha");
     } finally {
       setBulkLoading(false);
     }
@@ -335,8 +446,8 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const toggleModoSeleccion = () => {
     setSeleccionMultiple((prev) => {
       if (prev) {
-        setUnidadesSeleccionadas([]);
-        setAccionMasiva("");
+        limpiarAccionMasiva();
+        setModoSeleccionMasiva("manual");
       }
       return !prev;
     });
@@ -386,14 +497,22 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
             accessor: (row) => (
               <div className="actions">
                 {seleccionMultiple ? (
-                  <label className="check-multiple">
-                    <input
-                      type="checkbox"
-                      checked={unidadesSeleccionadas.includes(String(row._id))}
-                      onChange={() => toggleSeleccionUnidad(row._id)}
-                    />
-                    Seleccionar
-                  </label>
+                  esModoCantidadMasiva ? (
+                    <span className="cantidad-multiple-label">
+                      Por cantidad
+                    </span>
+                  ) : (
+                    <label className="check-multiple">
+                      <input
+                        type="checkbox"
+                        checked={unidadesSeleccionadas.includes(
+                          String(row._id),
+                        )}
+                        onChange={() => toggleSeleccionUnidad(row._id)}
+                      />
+                      Seleccionar
+                    </label>
+                  )
                 ) : (
                   <>
                     <button
@@ -503,15 +622,55 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           {seleccionMultiple && (
             <div className="acciones-masivas">
               <div className="acciones-masivas-info">
-                Unidades: <strong>{cantidadSeleccionada}</strong>
-                {unidadesSeleccionadas.length !== cantidadSeleccionada && (
-                  <span>
-                    {" "}
-                    en {unidadesSeleccionadas.length} registro
-                    {unidadesSeleccionadas.length !== 1 ? "s" : ""}
-                  </span>
+                {esModoCantidadMasiva ? (
+                  <>
+                    Disponibles: <strong>{stockDisponible}</strong>
+                  </>
+                ) : (
+                  <>
+                    Seleccionadas:{" "}
+                    <strong>{unidadesSeleccionadas.length}</strong>
+                  </>
                 )}
               </div>
+              <div
+                className="modo-seleccion-masiva"
+                role="group"
+                aria-label="Modo de seleccion masiva"
+              >
+                <label>
+                  <input
+                    type="radio"
+                    name="modo-seleccion-masiva"
+                    checked={!esModoCantidadMasiva}
+                    onChange={() => cambiarModoSeleccionMasiva("manual")}
+                  />
+                  Manual
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="modo-seleccion-masiva"
+                    checked={esModoCantidadMasiva}
+                    onChange={() => cambiarModoSeleccionMasiva("cantidad")}
+                  />
+                  Por cantidad
+                </label>
+              </div>
+              {esModoCantidadMasiva && (
+                <label className="cantidad-masiva-field">
+                  <span>Cantidad</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max={stockDisponible || 1}
+                    step="1"
+                    value={cantidadMasiva}
+                    onChange={(e) => setCantidadMasiva(e.target.value)}
+                    placeholder="0"
+                  />
+                </label>
+              )}
               <select
                 value={accionMasiva}
                 onChange={(e) => setAccionMasiva(e.target.value)}
@@ -522,12 +681,16 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
                 <option value="fecha">Agregar fecha de compra</option>
               </select>
               <div className="acciones-masivas-botones">
-                <button type="button" onClick={seleccionarTodasFiltradas}>
-                  Seleccionar todo
-                </button>
-                <button type="button" onClick={limpiarSeleccion}>
-                  Limpiar selección
-                </button>
+                {!esModoCantidadMasiva && (
+                  <>
+                    <button type="button" onClick={seleccionarTodasFiltradas}>
+                      Seleccionar todo
+                    </button>
+                    <button type="button" onClick={limpiarSeleccion}>
+                      Limpiar selección
+                    </button>
+                  </>
+                )}
                 <button
                   type="button"
                   className="btn-aplicar-masiva"
@@ -604,14 +767,14 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
       {/* Modales para acciones masivas */}
       {modalFechaMasiva && (
         <ModalFechaMasiva
-          cantidad={cantidadSeleccionada}
+          cantidad={cantidadObjetivoMasiva}
           onConfirm={confirmarFechaMasiva}
           onClose={() => setModalFechaMasiva(false)}
         />
       )}
       {modalObraMasiva && (
         <ModalObraMasiva
-          cantidad={cantidadSeleccionada}
+          cantidad={cantidadObjetivoMasiva}
           onConfirm={confirmarObraMasiva}
           onClose={() => setModalObraMasiva(false)}
         />

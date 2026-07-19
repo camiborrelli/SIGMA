@@ -18,6 +18,7 @@ import {
   asignarMultiplesUnidadesController,
   asignarFechaCompraMultiplesUnidadesController,
   bajaMultiplesUnidadesController,
+  accionMasivaPorCantidadController,
   actualizarDescripcionUnidadController,
   actualizarEtiquetaUnidadController,
   getUnidadesController,
@@ -117,6 +118,11 @@ router.post(
   asignarFechaCompraMultiplesUnidadesController,
 );
 router.post("/baja-multiple", verificarToken, bajaMultiplesUnidadesController);
+router.post(
+  "/masivo-por-cantidad",
+  verificarToken,
+  accionMasivaPorCantidadController,
+);
 router.put(
   "/descripcion/:id",
   verificarToken,

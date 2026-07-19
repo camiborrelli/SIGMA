@@ -450,6 +450,129 @@ export const actualizarFechaCompra = async (id, fechaCompra) => {
   return unidad;
 };
 
+const obtenerIdsDisponiblesPorCantidad = async (equipoId, cantidad) => {
+  const stockDisponible = await Unidad.countDocuments({
+    equipo: equipoId,
+    estado: "Disponible",
+  });
+
+  if (stockDisponible < cantidad) {
+    const error = new Error(
+      `Stock disponible insuficiente. Disponibles: ${stockDisponible}`,
+    );
+    error.statusCode = 400;
+    error.stockDisponible = stockDisponible;
+    throw error;
+  }
+
+  const unidades = await Unidad.find({
+    equipo: equipoId,
+    estado: "Disponible",
+  })
+    .select("_id")
+    .sort({ _id: 1 })
+    .limit(cantidad);
+
+  if (unidades.length < cantidad) {
+    const error = new Error(
+      `Stock disponible insuficiente. Disponibles: ${unidades.length}`,
+    );
+    error.statusCode = 400;
+    error.stockDisponible = unidades.length;
+    throw error;
+  }
+
+  return {
+    ids: unidades.map((unidad) => unidad._id),
+    stockDisponible,
+  };
+};
+
+export const ejecutarAccionMasivaPorCantidad = async ({
+  equipoId,
+  cantidad,
+  accion,
+  obraId,
+  fechaCompra,
+}) => {
+  const cantidadNumero = Number(cantidad);
+
+  if (!equipoId) {
+    const error = new Error("Debe indicar el equipo");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (!Number.isInteger(cantidadNumero) || cantidadNumero <= 0) {
+    const error = new Error("Debe indicar una cantidad valida");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (!["baja", "asignar", "fecha"].includes(accion)) {
+    const error = new Error("Accion masiva invalida");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (accion === "asignar") {
+    if (!obraId) {
+      const error = new Error("Debe indicar la obra de destino");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const obra = await Obra.findById(obraId);
+    if (!obra) {
+      const error = new Error("Obra no encontrada");
+      error.statusCode = 404;
+      throw error;
+    }
+  }
+
+  if (accion === "fecha" && !fechaCompra) {
+    const error = new Error("Debe proporcionar una fecha de compra valida");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const { ids, stockDisponible } = await obtenerIdsDisponiblesPorCantidad(
+    equipoId,
+    cantidadNumero,
+  );
+
+  const resultados = await Promise.all(
+    ids.map(async (id) => {
+      try {
+        let resultado;
+
+        if (accion === "baja") {
+          resultado = await bajaUnidad(id);
+        } else if (accion === "asignar") {
+          resultado = await asignarUnidad(id, obraId);
+        } else {
+          resultado = await actualizarFechaCompra(id, fechaCompra);
+        }
+
+        return { id, success: true, resultado };
+      } catch (error) {
+        return { id, success: false, error: error.message };
+      }
+    }),
+  );
+
+  const cantidadProcesada = resultados.filter(
+    (resultado) => resultado.success,
+  ).length;
+
+  return {
+    resultados,
+    cantidadSolicitada: cantidadNumero,
+    cantidadProcesada,
+    stockDisponible,
+  };
+};
+
 export const quitarUnidadDeObra = async (idUnidad, idObra) => {
   const unidad = await Unidad.findById(idUnidad);
   if (!unidad) throw new Error("Unidad no encontrada");
