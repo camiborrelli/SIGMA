@@ -16,6 +16,8 @@ const STATS_VACIAS = {
   bajas: 0,
 };
 
+const CANTIDAD_UNIDAD = { $ifNull: ["$cantidad", 1] };
+
 const toObjectId = (value) => {
   if (!value || !mongoose.Types.ObjectId.isValid(value)) return null;
   return new mongoose.Types.ObjectId(value);
@@ -82,18 +84,28 @@ export const getResumenGraficas = async (filtros = {}) => {
   pipeline.push({
     $group: {
       _id: null,
-      total: { $sum: 1 },
+      total: { $sum: CANTIDAD_UNIDAD },
       asignadas: {
-        $sum: { $cond: [{ $eq: ["$estado", "Asignada"] }, 1, 0] },
+        $sum: { $cond: [{ $eq: ["$estado", "Asignada"] }, CANTIDAD_UNIDAD, 0] },
       },
       mantenimiento: {
-        $sum: { $cond: [{ $eq: ["$estado", "En mantenimiento"] }, 1, 0] },
+        $sum: {
+          $cond: [
+            { $eq: ["$estado", "En mantenimiento"] },
+            CANTIDAD_UNIDAD,
+            0,
+          ],
+        },
       },
       bajas: {
-        $sum: { $cond: [{ $eq: ["$estado", "Dada de Baja"] }, 1, 0] },
+        $sum: {
+          $cond: [{ $eq: ["$estado", "Dada de Baja"] }, CANTIDAD_UNIDAD, 0],
+        },
       },
       disponibles: {
-        $sum: { $cond: [{ $eq: ["$estado", "Disponible"] }, 1, 0] },
+        $sum: {
+          $cond: [{ $eq: ["$estado", "Disponible"] }, CANTIDAD_UNIDAD, 0],
+        },
       },
     },
   });
@@ -118,7 +130,7 @@ export const getDistribucionUnidadesPorEstado = async (filtros = {}) => {
     {
       $group: {
         _id: "$estado",
-        cantidad: { $sum: 1 },
+        cantidad: { $sum: CANTIDAD_UNIDAD },
       },
     },
     {
@@ -174,7 +186,7 @@ export const getMaquinariaPorObra = async (filtros = {}) => {
           id: "$obra._id",
           nombre: "$obra.nombre",
         },
-        cantidad: { $sum: 1 },
+        cantidad: { $sum: CANTIDAD_UNIDAD },
       },
     },
     { $sort: { cantidad: -1, "_id.nombre": 1 } },
@@ -227,7 +239,7 @@ export const getEquiposMasEnMantenimiento = async (filtros = {}) => {
         nombre: { $first: "$equipo.nombre" },
         modelo: { $first: "$equipo.modelo" },
         tipo: { $first: "$equipo.tipo" },
-        cantidad: { $sum: 1 },
+        cantidad: { $sum: CANTIDAD_UNIDAD },
       },
     },
     { $sort: { cantidad: -1, nombre: 1, modelo: 1 } },

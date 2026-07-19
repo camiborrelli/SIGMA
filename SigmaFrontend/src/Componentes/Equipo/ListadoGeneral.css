@@ -260,9 +260,13 @@
   color: #063395;
 }
 
+.icon-btn.asignar-lote {
+  color: #0f766e;
+}
+
 .col-acciones {
-  width: 120px;
-  min-width: 120px;
+  width: 160px;
+  min-width: 160px;
 }
 
 .equipos-mobile {
@@ -368,6 +372,9 @@
   .equipo-card-acciones .icon-btn.edit {
     background-color: rgba(6, 51, 149, 0.05);
   }
+  .equipo-card-acciones .icon-btn.asignar-lote {
+    background-color: rgba(15, 118, 110, 0.06);
+  }
 
   .equipo-tipo-tag {
     font-size: 11px;
@@ -420,6 +427,14 @@
     font-size: 11px;
     padding: 8px 2px;
   }
+
+  .equipo-card-acciones {
+    flex-wrap: wrap;
+  }
+
+  .equipo-card-acciones .icon-btn {
+    flex: 1 1 calc(50% - 8px);
+  }
 }
 
 .detalle-stock-btn {
@@ -447,4 +462,102 @@
 .icon-btn-unidades-usuario:hover {
   background: #791515;
   color: white;
+}
+
+.lote-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.lote-modal-card {
+  width: min(420px, 100%);
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.24);
+  padding: 22px;
+  display: grid;
+  gap: 16px;
+}
+
+.lote-modal-card h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #0f172a;
+}
+
+.lote-modal-summary {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #475569;
+}
+
+.lote-modal-summary strong {
+  color: #0f172a;
+}
+
+.lote-modal-card label {
+  display: grid;
+  gap: 6px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.lote-modal-card input,
+.lote-modal-card select {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #0f172a;
+  background: #ffffff;
+}
+
+.lote-modal-card input:focus,
+.lote-modal-card select:focus {
+  outline: none;
+  border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+}
+
+.lote-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.btn-lote-cancel,
+.btn-lote-submit {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-lote-cancel {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.btn-lote-submit {
+  background: #0f766e;
+  color: #ffffff;
+}
+
+.btn-lote-submit:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
 }

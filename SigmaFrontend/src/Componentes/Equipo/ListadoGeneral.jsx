@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import Tabla from "../Tabla";
 import ModalUnidades from "../Unidad/ModalUnidades";
 import "./ListadoGeneral.css";
-import { FaEye, FaPlus, FaEdit } from "react-icons/fa";
+import { FaEye, FaPlus, FaEdit, FaArrowRight } from "react-icons/fa";
 import { LuWrench } from "react-icons/lu";
 import { FiTruck } from "react-icons/fi";
 import { FaList } from "react-icons/fa";
 import EditarEquipoModal from "./EditarEquipoModal";
+import AsignarLoteEquipoModal from "./AsignarLoteEquipoModal";
 import { API_URL } from "../../../api";
 
 const ListadoGeneral = ({
@@ -26,6 +27,7 @@ const ListadoGeneral = ({
 
   const [equipoSeleccionado, setEquipoSeleccionado] = useState(null);
   const [equipoEditar, setEquipoEditar] = useState(null);
+  const [equipoAsignarLote, setEquipoAsignarLote] = useState(null);
 
   const [paginaActual, setPaginaActual] = useState(1);
   const [porPagina, setPorPagina] = useState(6);
@@ -157,10 +159,24 @@ const ListadoGeneral = ({
     }
   };
 
+  const puedeAsignarLote = (equipo) =>
+    equipo?.modoGestion === "lote" && Number(equipo?.disponible || 0) > 0;
+
+  const handleLoteAsignado = () => {
+    setEquipoAsignarLote(null);
+    fetchEquipos();
+    if (onUpdated) onUpdated();
+  };
+
   const baseColumns = [
     { header: "Nombre", accessor: "nombre" },
     { header: "Modelo", accessor: "modelo" },
     { header: "Tipo", accessor: "tipo" },
+    {
+      header: "Gestion",
+      accessor: (row) =>
+        row.modoGestion === "lote" ? "Por lote" : "Por unidad",
+    },
     { header: "Stock", accessor: (row) => row.stock + " unidades" },
     {
       header: "Detalle stock",
@@ -216,6 +232,15 @@ const ListadoGeneral = ({
             >
               <FaPlus />
             </button>
+            {puedeAsignarLote(row) && (
+              <button
+                className="icon-btn asignar-lote"
+                title={`Asignar lote (${row.disponible} disponibles)`}
+                onClick={() => setEquipoAsignarLote(row)}
+              >
+                <FaArrowRight />
+              </button>
+            )}
             <button
               className="icon-btn edit"
               title="Editar equipo"
@@ -307,6 +332,10 @@ const ListadoGeneral = ({
                     <strong>Stock:</strong> {eq.stock} unidad
                     {eq.stock !== 1 ? "es" : ""}
                   </p>
+                  <p>
+                    <strong>Gestion:</strong>{" "}
+                    {eq.modoGestion === "lote" ? "Por lote" : "Por unidad"}
+                  </p>
                 </div>
 
                 <div className="equipo-card-acciones">
@@ -326,6 +355,15 @@ const ListadoGeneral = ({
                       >
                         <FaPlus /> Añadir
                       </button>
+                      {puedeAsignarLote(eq) && (
+                        <button
+                          className="icon-btn asignar-lote"
+                          title="Asignar lote"
+                          onClick={() => setEquipoAsignarLote(eq)}
+                        >
+                          <FaArrowRight /> Asignar
+                        </button>
+                      )}
                       <button
                         className="icon-btn edit"
                         title="Editar equipo"
@@ -378,6 +416,14 @@ const ListadoGeneral = ({
             setEquipoEditar(null);
             fetchEquipos();
           }}
+        />
+      )}
+
+      {equipoAsignarLote && (
+        <AsignarLoteEquipoModal
+          equipo={equipoAsignarLote}
+          onClose={() => setEquipoAsignarLote(null)}
+          onUpdated={handleLoteAsignado}
         />
       )}
     </div>

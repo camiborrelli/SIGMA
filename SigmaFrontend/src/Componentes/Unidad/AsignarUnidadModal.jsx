@@ -2,11 +2,20 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { API_URL } from "../../../api";
 
-const AsignarUnidadModal = ({ unidad, onClose, onUpdated }) => {
+const AsignarUnidadModal = ({ unidad, equipo, onClose, onUpdated }) => {
   const token = localStorage.getItem("token");
   const [ubicacion, setUbicacion] = useState("");
   const [ubicaciones, setUbicaciones] = useState([]);
+  const [cantidadAsignar, setCantidadAsignar] = useState("1");
   const [loading, setLoading] = useState(false);
+
+  const cantidadDisponible = Number(unidad?.cantidad || 1);
+  const modoGestion =
+    equipo?.modoGestion ||
+    (unidad?.equipo && typeof unidad.equipo === "object"
+      ? unidad.equipo.modoGestion
+      : "");
+  const esLote = modoGestion === "lote" || cantidadDisponible > 1;
 
   useEffect(() => {
     const fetchObras = async () => {
@@ -36,11 +45,24 @@ const AsignarUnidadModal = ({ unidad, onClose, onUpdated }) => {
     } else {
       setUbicacion("");
     }
+
+    setCantidadAsignar(String(Number(unidad?.cantidad || 1)));
   }, [unidad, token]);
 
   const asignar = async () => {
     if (!ubicacion) {
       toast.error("Debe seleccionar una obra");
+      return;
+    }
+
+    const cantidadNumerica = Number(cantidadAsignar);
+    if (
+      esLote &&
+      (!Number.isFinite(cantidadNumerica) ||
+        cantidadNumerica < 1 ||
+        cantidadNumerica > cantidadDisponible)
+    ) {
+      toast.error(`La cantidad debe estar entre 1 y ${cantidadDisponible}`);
       return;
     }
 
@@ -55,7 +77,10 @@ const AsignarUnidadModal = ({ unidad, onClose, onUpdated }) => {
       const res = await fetch(`${API_URL}/unidades/asignar/${unidad._id}`, {
         method: "POST",
         headers,
-        body: JSON.stringify({ ubicacion }),
+        body: JSON.stringify({
+          ubicacion,
+          ...(esLote ? { cantidad: Math.trunc(cantidadNumerica) } : {}),
+        }),
       });
 
       const body = await res.json().catch(() => ({}));
@@ -83,11 +108,28 @@ const AsignarUnidadModal = ({ unidad, onClose, onUpdated }) => {
   return (
     <div className="modal-overlay unidad-child-modal-overlay">
       <div className="modal-card unidad-child-modal-card">
-        <h2>Asignar Unidad</h2>
+        <h2>{esLote ? "Asignar Lote" : "Asignar Unidad"}</h2>
 
         <p>
-          Unidad: <strong>{unidad.identificador}</strong>
+          {esLote ? "Lote" : "Unidad"}:{" "}
+          <strong>{unidad.identificador}</strong>
         </p>
+
+        {esLote && (
+          <div className="form-group">
+            <label>Cantidad a asignar</label>
+            <input
+              type="number"
+              min={1}
+              max={cantidadDisponible}
+              value={cantidadAsignar}
+              onChange={(e) => setCantidadAsignar(e.target.value)}
+            />
+            <small style={{ color: "#64748b" }}>
+              Disponible en este lote: {cantidadDisponible}
+            </small>
+          </div>
+        )}
 
         <label>Obra</label>
         <select

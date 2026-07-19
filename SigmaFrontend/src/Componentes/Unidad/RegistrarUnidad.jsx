@@ -9,9 +9,15 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
     useState("Ej: EQ-XXXXXX-1");
   const [unidadesCount, setUnidadesCount] = useState(0);
   const [fechaCompra, setFechaCompra] = useState("");
+  const [cantidad, setCantidad] = useState("");
   const [equipos, setEquipos] = useState([]);
   const [mensaje, setMensaje] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const equipoSeleccionado = equipos.find(
+    (eq) => String(eq._id || eq.id) === String(equipoId),
+  );
+  const esLote = equipoSeleccionado?.modoGestion === "lote";
 
   useEffect(() => {
     if (!isOpen) return;
@@ -74,7 +80,11 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
           equipoObj && equipoObj.codigo ? equipoObj.codigo : "EQ-XXXXXX";
         const nextNum = count + 1;
 
-        setPlaceholderIdentificador(`${codigoEquipo}-${nextNum}`);
+        setPlaceholderIdentificador(
+          equipoObj?.modoGestion === "lote"
+            ? `${codigoEquipo}-L${nextNum}`
+            : `${codigoEquipo}-${nextNum}`,
+        );
       } catch (err) {
         setUnidadesCount(0);
         setPlaceholderIdentificador("Ej: EQ-XXXXXX-1");
@@ -99,6 +109,12 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
       return;
     }
 
+    if (esLote && (!cantidad || Number(cantidad) < 1)) {
+      setMensaje("La cantidad del lote debe ser al menos 1");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch(`${API_URL}/unidades/agregar/${equipoId}`, {
         method: "POST",
@@ -108,6 +124,7 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
         },
         body: JSON.stringify({
           fechaCompra,
+          ...(esLote ? { cantidad: Number(cantidad) } : {}),
         }),
       });
 
@@ -122,6 +139,7 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
 
       setEquipoId("");
       setFechaCompra("");
+      setCantidad("");
       setMensaje("");
 
       if (onSuccess) onSuccess();
@@ -211,6 +229,29 @@ const RegistrarUnidad = ({ isOpen, onClose, onSuccess, initialEquipoId }) => {
               onChange={(e) => setFechaCompra(e.target.value)}
             />
           </div>
+
+          {esLote && (
+            <div className="form-group">
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "4px",
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  color: "#475569",
+                }}
+              >
+                Cantidad del lote
+              </label>
+              <input
+                type="number"
+                min={1}
+                value={cantidad}
+                placeholder="Cantidad de unidades"
+                onChange={(e) => setCantidad(e.target.value)}
+              />
+            </div>
+          )}
 
           <div className="buttons">
             <button type="submit" className="btn-primary" disabled={loading}>

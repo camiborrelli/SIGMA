@@ -276,7 +276,8 @@
   height: 16px;
 }
 
-.modal-card select {
+.modal-card select,
+.modal-card input {
   width: 100%;
   padding: 10px 12px;
   border-radius: 8px;
@@ -556,12 +557,15 @@
   }
 
   .sigma-td:nth-of-type(2)::before {
-    content: "Etiqueta";
+    content: "Cantidad";
   }
   .sigma-td:nth-of-type(3)::before {
-    content: "Estado";
+    content: "Etiqueta";
   }
   .sigma-td:nth-of-type(4)::before {
+    content: "Estado";
+  }
+  .sigma-td:nth-of-type(5)::before {
     content: "Obra asignada";
   }
 
@@ -570,7 +574,7 @@
     max-width: 65%;
   }
 
-  .sigma-td:nth-of-type(4) > * {
+  .sigma-td:nth-of-type(5) > * {
     white-space: normal !important;
     word-break: break-word;
     overflow-wrap: anywhere;

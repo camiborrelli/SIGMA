@@ -42,6 +42,12 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
 
   const usuario = JSON.parse(localStorage.getItem("usuario") || "null");
   const rol = usuario?.rol || "";
+  const getCantidadUnidad = (unidad) => Number(unidad?.cantidad || 1);
+
+  const cantidadSeleccionada = unidadesSeleccionadas.reduce((total, id) => {
+    const unidad = unidades.find((u) => String(u._id) === String(id));
+    return total + getCantidadUnidad(unidad);
+  }, 0);
 
   const cerrarTodos = () => {
     setUnidadMantenimiento(null);
@@ -338,6 +344,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
 
   const columns = [
     { header: "ID", accessor: "identificador" },
+    { header: "Cantidad", accessor: (row) => getCantidadUnidad(row) },
     {
       header: "Etiqueta",
       accessor: (row) =>
@@ -496,7 +503,14 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           {seleccionMultiple && (
             <div className="acciones-masivas">
               <div className="acciones-masivas-info">
-                Seleccionadas: <strong>{unidadesSeleccionadas.length}</strong>
+                Unidades: <strong>{cantidadSeleccionada}</strong>
+                {unidadesSeleccionadas.length !== cantidadSeleccionada && (
+                  <span>
+                    {" "}
+                    en {unidadesSeleccionadas.length} registro
+                    {unidadesSeleccionadas.length !== 1 ? "s" : ""}
+                  </span>
+                )}
               </div>
               <select
                 value={accionMasiva}
@@ -561,6 +575,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
       {unidadAsignar && (
         <AsignarUnidadModal
           unidad={unidadAsignar}
+          equipo={equipo}
           onClose={cerrarTodos}
           onUpdated={handleUpdated}
         />
@@ -589,14 +604,14 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
       {/* Modales para acciones masivas */}
       {modalFechaMasiva && (
         <ModalFechaMasiva
-          cantidad={unidadesSeleccionadas.length}
+          cantidad={cantidadSeleccionada}
           onConfirm={confirmarFechaMasiva}
           onClose={() => setModalFechaMasiva(false)}
         />
       )}
       {modalObraMasiva && (
         <ModalObraMasiva
-          cantidad={unidadesSeleccionadas.length}
+          cantidad={cantidadSeleccionada}
           onConfirm={confirmarObraMasiva}
           onClose={() => setModalObraMasiva(false)}
         />

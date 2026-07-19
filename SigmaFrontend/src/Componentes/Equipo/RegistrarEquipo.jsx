@@ -8,6 +8,7 @@ const RegistrarEquipo = ({ isOpen, onClose, onSuccess }) => {
   const [tipo, setTipo] = useState("");
   const [modelo, setModelo] = useState("");
   const [cantidad, setCantidad] = useState("");
+  const [modoGestion, setModoGestion] = useState("unidad");
   const [mensaje, setMensaje] = useState("");
 
   if (!isOpen) return null;
@@ -45,6 +46,7 @@ const RegistrarEquipo = ({ isOpen, onClose, onSuccess }) => {
           tipo,
           modelo,
           cantidad: Number(cantidad),
+          modoGestion,
         }),
       });
 
@@ -63,8 +65,14 @@ const RegistrarEquipo = ({ isOpen, onClose, onSuccess }) => {
       setTipo("");
       setModelo("");
       setCantidad("");
+      setModoGestion("unidad");
 
-      if (data.unidadesCreadas && Array.isArray(data.unidadesCreadas)) {
+      if (modoGestion === "lote") {
+        const lote = data.unidadesCreadas?.[0];
+        toast.success(
+          `Equipo registrado con lote de ${lote?.cantidad || cantidad} unidades`,
+        );
+      } else if (data.unidadesCreadas && Array.isArray(data.unidadesCreadas)) {
         const ids = data.unidadesCreadas.map((u) => u.identificador).join(", ");
         toast.success(`Equipo registrado. Unidades: ${ids}`);
       } else {
@@ -109,10 +117,34 @@ const RegistrarEquipo = ({ isOpen, onClose, onSuccess }) => {
           </div>
 
           <div className="form-group">
+            <label>Modo de gestion</label>
+            <div className="gestion-toggle">
+              <button
+                type="button"
+                className={modoGestion === "unidad" ? "active" : ""}
+                onClick={() => setModoGestion("unidad")}
+              >
+                Por unidad
+              </button>
+              <button
+                type="button"
+                className={modoGestion === "lote" ? "active" : ""}
+                onClick={() => setModoGestion("lote")}
+              >
+                Por lote
+              </button>
+            </div>
+          </div>
+
+          <div className="form-group">
             <input
               type="number"
               min={1}
-              placeholder="Cantidad de unidades"
+              placeholder={
+                modoGestion === "lote"
+                  ? "Cantidad del lote"
+                  : "Cantidad de unidades"
+              }
               value={cantidad || ""}
               onChange={(e) =>
                 setCantidad(e.target.value === "" ? "" : Number(e.target.value))
