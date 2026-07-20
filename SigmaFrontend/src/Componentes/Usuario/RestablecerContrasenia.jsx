@@ -55,11 +55,14 @@ const RestablecerContrasenia = () => {
 
     try {
       const response = await fetch(
-        `${API_URL}/usuarios/restablecer-contrasenia/${encodeURIComponent(token)}`,
+        `${API_URL}/usuarios/restablecer-contrasenia?token=${encodeURIComponent(token)}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nuevaContrasenia, confirmarContrasenia }),
+          body: JSON.stringify({
+            nuevaContrasenia,
+            confirmarContrasenia,
+          }),
         },
       );
 
