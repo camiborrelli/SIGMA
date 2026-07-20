@@ -18,6 +18,7 @@ import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import EditarObraModal from "../Obra/EditarObraModal";
 import { FaEdit } from "react-icons/fa";
 import { API_URL } from "../../../api";
+import RemoverUnidadesModal from "../Unidad/RemoverUnidadesModal";
 
 let DefaultIcon = L.icon({
   iconUrl: markerIcon,
@@ -41,6 +42,7 @@ const Mapa = () => {
   const [obraAReactivar, setObraAReactivar] = useState(null);
   const [removingIds, setRemovingIds] = useState([]);
   const [verModalEditarObra, setVerModalEditarObra] = useState(false);
+  const [verModalRemoverUnidades, setVerModalRemoverUnidades] = useState(false);
 
   const usuario = JSON.parse(localStorage.getItem("usuario"));
 
@@ -560,6 +562,14 @@ const Mapa = () => {
               <div className="detalle-acciones">
                 {usuario?.rol === "Admin" && (
                   <button
+                    className="btn-removerUnidades"
+                    onClick={() => setVerModalRemoverUnidades(true)}
+                  >
+                    Remover unidades
+                  </button>
+                )}
+                {usuario?.rol === "Admin" && (
+                  <button
                     className="btn-finalizar-obra"
                     onClick={() => setVerModalFinalizar(true)}
                   >
@@ -632,6 +642,18 @@ const Mapa = () => {
           await fetchObras();
         }}
       />
+      {verModalRemoverUnidades && detalleObra && (
+        <RemoverUnidadesModal
+          isOpen={verModalRemoverUnidades}
+          obra={detalleObra}
+          onClose={() => setVerModalRemoverUnidades(false)}
+          onUpdated={async () => {
+            setDetalleObra(null);
+            setObraSeleccionada(null);
+            await fetchObras();
+          }}
+        />
+      )}
     </>
   );
 };

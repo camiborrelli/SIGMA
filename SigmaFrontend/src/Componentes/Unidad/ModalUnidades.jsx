@@ -95,9 +95,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
         const s = String(ident).trim();
         const m = s.match(/(\d+)$/);
 
-        return m
-          ? { num: Number(m[1]), str: s }
-          : { num: null, str: s };
+        return m ? { num: Number(m[1]), str: s } : { num: null, str: s };
       };
 
       unidadesArray.sort((a, b) => {
@@ -218,12 +216,10 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   };
 
   const stockDisponible = unidades.filter(
-    (u) =>
-      String(u.estado || "").toLowerCase() === "disponible",
+    (u) => String(u.estado || "").toLowerCase() === "disponible",
   ).length;
 
-  const esModoCantidadMasiva =
-    modoSeleccionMasiva === "cantidad";
+  const esModoCantidadMasiva = modoSeleccionMasiva === "cantidad";
 
   const cantidadMasivaNumero = Number(cantidadMasiva);
 
@@ -248,10 +244,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   };
 
   const validarCantidadMasiva = () => {
-    if (
-      !Number.isInteger(cantidadMasivaNumero) ||
-      cantidadMasivaNumero <= 0
-    ) {
+    if (!Number.isInteger(cantidadMasivaNumero) || cantidadMasivaNumero <= 0) {
       toast.error("Ingresá una cantidad válida");
       return false;
     }
@@ -300,20 +293,17 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   const asignarObraMultiplesUnidades = async (ids, obraId) => {
     const token = localStorage.getItem("token");
 
-    const res = await fetch(
-      `${API_URL}/unidades/asignar-obra-multiples`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-        body: JSON.stringify({
-          ids,
-          obraId,
-        }),
+    const res = await fetch(`${API_URL}/unidades/asignar-obra-multiples`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token ? `Bearer ${token}` : "",
       },
-    );
+      body: JSON.stringify({
+        ids,
+        obraId,
+      }),
+    });
 
     const body = await res.json().catch(() => ({}));
 
@@ -332,26 +322,20 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     handleUpdated();
   };
 
-  const agregarFechaCompraMultiplesUnidades = async (
-    ids,
-    fechaCompra,
-  ) => {
+  const agregarFechaCompraMultiplesUnidades = async (ids, fechaCompra) => {
     const token = localStorage.getItem("token");
 
-    const res = await fetch(
-      `${API_URL}/unidades/actualizar-multiples`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-        body: JSON.stringify({
-          ids,
-          fechaCompra,
-        }),
+    const res = await fetch(`${API_URL}/unidades/actualizar-multiples`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token ? `Bearer ${token}` : "",
       },
-    );
+      body: JSON.stringify({
+        ids,
+        fechaCompra,
+      }),
+    });
 
     if (res.status === 401) {
       window.dispatchEvent(new Event("token-expirado"));
@@ -389,17 +373,14 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
       payload.fechaCompra = fechaCompra;
     }
 
-    const res = await fetch(
-      `${API_URL}/unidades/masivo-por-cantidad`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-        body: JSON.stringify(payload),
+    const res = await fetch(`${API_URL}/unidades/masivo-por-cantidad`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token ? `Bearer ${token}` : "",
       },
-    );
+      body: JSON.stringify(payload),
+    });
 
     const body = await res.json().catch(() => ({}));
 
@@ -409,19 +390,13 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     }
 
     if (!res.ok) {
-      throw new Error(
-        body.error ||
-          "Error al procesar la cantidad indicada",
-      );
+      throw new Error(body.error || "Error al procesar la cantidad indicada");
     }
 
-    const procesadas =
-      body.cantidadProcesada ?? cantidad;
+    const procesadas = body.cantidadProcesada ?? cantidad;
 
     toast.success(
-      `${procesadas} unidad${
-        procesadas !== 1 ? "es" : ""
-      } procesada${
+      `${procesadas} unidad${procesadas !== 1 ? "es" : ""} procesada${
         procesadas !== 1 ? "s" : ""
       }`,
     );
@@ -480,16 +455,12 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           cantidad: cantidadMasivaNumero,
         });
       } else {
-        await darDeBajaMultiplesUnidades(
-          unidadesSeleccionadas,
-        );
+        await darDeBajaMultiplesUnidades(unidadesSeleccionadas);
       }
 
       limpiarAccionMasiva();
     } catch (error) {
-      toast.error(
-        error.message || "No se pudo dar de baja",
-      );
+      toast.error(error.message || "No se pudo dar de baja");
     } finally {
       setBulkLoading(false);
     }
@@ -512,18 +483,12 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           obraId,
         });
       } else {
-        await asignarObraMultiplesUnidades(
-          unidadesSeleccionadas,
-          obraId,
-        );
+        await asignarObraMultiplesUnidades(unidadesSeleccionadas, obraId);
       }
 
       limpiarAccionMasiva();
     } catch (error) {
-      toast.error(
-        error.message ||
-          "No se pudo asignar la obra",
-      );
+      toast.error(error.message || "No se pudo asignar la obra");
     } finally {
       setBulkLoading(false);
     }
@@ -546,18 +511,12 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
           fechaCompra: fecha,
         });
       } else {
-        await agregarFechaCompraMultiplesUnidades(
-          unidadesSeleccionadas,
-          fecha,
-        );
+        await agregarFechaCompraMultiplesUnidades(unidadesSeleccionadas, fecha);
       }
 
       limpiarAccionMasiva();
     } catch (error) {
-      toast.error(
-        error.message ||
-          "No se pudo agregar la fecha",
-      );
+      toast.error(error.message || "No se pudo agregar la fecha");
     } finally {
       setBulkLoading(false);
     }
@@ -575,22 +534,15 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     if (!o) return;
 
     if (typeof o === "object") {
-      obrasMap.set(
-        String(o._id),
-        o.nombre || String(o._id),
-      );
+      obrasMap.set(String(o._id), o.nombre || String(o._id));
     } else {
-      obrasMap.set(
-        String(o),
-        String(o),
-      );
+      obrasMap.set(String(o), String(o));
     }
   });
 
   const unidadesFiltradas = unidades.filter((u) => {
     const okEstado = estadoFiltro
-      ? String(u.estado || "").toLowerCase() ===
-        estadoFiltro.toLowerCase()
+      ? String(u.estado || "").toLowerCase() === estadoFiltro.toLowerCase()
       : true;
 
     const okObra = obraFiltro
@@ -602,45 +554,28 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     return okEstado && okObra;
   });
 
-  const indexUltimo =
-    paginaActual * itemsPorPagina;
+  const indexUltimo = paginaActual * itemsPorPagina;
 
-  const indexPrimero =
-    indexUltimo - itemsPorPagina;
+  const indexPrimero = indexUltimo - itemsPorPagina;
 
-  const unidadesPaginadas =
-    unidadesFiltradas.slice(
-      indexPrimero,
-      indexUltimo,
-    );
+  const unidadesPaginadas = unidadesFiltradas.slice(indexPrimero, indexUltimo);
 
   const totalPaginas =
-    Math.ceil(
-      unidadesFiltradas.length /
-        itemsPorPagina,
-    ) || 1;
+    Math.ceil(unidadesFiltradas.length / itemsPorPagina) || 1;
 
-  const idsFiltradas =
-    unidadesFiltradas.map((u) =>
-      String(u._id),
-    );
+  const idsFiltradas = unidadesFiltradas.map((u) => String(u._id));
 
   const toggleSeleccionUnidad = (id) => {
     const idStr = String(id);
 
     setUnidadesSeleccionadas((prev) =>
-      prev.includes(idStr)
-        ? prev.filter((x) => x !== idStr)
-        : [...prev, idStr],
+      prev.includes(idStr) ? prev.filter((x) => x !== idStr) : [...prev, idStr],
     );
   };
 
   const seleccionarTodasFiltradas = () => {
     setUnidadesSeleccionadas((prev) => [
-      ...new Set([
-        ...prev,
-        ...idsFiltradas,
-      ]),
+      ...new Set([...prev, ...idsFiltradas]),
     ]);
   };
 
@@ -685,41 +620,27 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     {
       header: "Estado",
       accessor: (row) => {
-        const est = String(
-          row.estado || "",
-        ).toLowerCase();
+        const est = String(row.estado || "").toLowerCase();
 
         const cls =
           est === "disponible"
             ? "estado-disponible"
             : est === "asignada"
             ? "estado-asignado"
-            : est.includes(
-                "mantenimiento",
-              )
+            : est.includes("mantenimiento")
             ? "estado-mantenimiento"
             : "estado-baja";
 
-        return (
-          <span
-            className={`estado-badge ${cls}`}
-          >
-            {row.estado}
-          </span>
-        );
+        return <span className={`estado-badge ${cls}`}>{row.estado}</span>;
       },
     },
 
     {
       header: "Obra",
       accessor: (row) =>
-        row.ubicacion &&
-        typeof row.ubicacion ===
-          "object"
-          ? row.ubicacion.nombre ||
-            "Sin asignar"
-          : row.ubicacion ||
-            "Sin asignar",
+        row.ubicacion && typeof row.ubicacion === "object"
+          ? row.ubicacion.nombre || "Sin asignar"
+          : row.ubicacion || "Sin asignar",
     },
 
     ...(rol === "Admin"
@@ -741,13 +662,8 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
                         checked={unidadesSeleccionadas.includes(
                           String(row._id),
                         )}
-                        onChange={() =>
-                          toggleSeleccionUnidad(
-                            row._id,
-                          )
-                        }
+                        onChange={() => toggleSeleccionUnidad(row._id)}
                       />
-
                       Seleccionar
                     </label>
                   )
@@ -766,16 +682,11 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
                       onClick={() => {
                         cerrarTodos();
 
-                        const ok =
-                          enviarAMantenimiento(
-                            row,
-                          );
+                        const ok = enviarAMantenimiento(row);
 
                         if (ok) {
                           onClose();
-                          navigate(
-                            `/garantia/${row._id}`,
-                          );
+                          navigate(`/garantia/${row._id}`);
                         }
                       }}
                     >
@@ -796,9 +707,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
                         cerrarTodos();
 
                         if (row.fechaCompra) {
-                          setUnidadFechaExistente(
-                            row,
-                          );
+                          setUnidadFechaExistente(row);
                         } else {
                           setUnidadFecha(row);
                         }
@@ -837,71 +746,39 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
     <>
       <div className="modal-overlay modal-unidades-overlay">
         <div className="modal-content modal-unidades-content">
-          <h2>
-            Unidades de {equipo.nombre}
-          </h2>
+          <h2>Unidades de {equipo.nombre}</h2>
 
           <div className="filtros">
             <select
               value={estadoFiltro}
-              onChange={(e) =>
-                setEstadoFiltro(
-                  e.target.value,
-                )
-              }
+              onChange={(e) => setEstadoFiltro(e.target.value)}
             >
-              <option value="">
-                Todos los estados
-              </option>
+              <option value="">Todos los estados</option>
 
-              <option value="Disponible">
-                Disponible
-              </option>
+              <option value="Disponible">Disponible</option>
 
-              <option value="Asignada">
-                Asignada
-              </option>
+              <option value="Asignada">Asignada</option>
 
-              <option value="En mantenimiento">
-                En mantenimiento
-              </option>
+              <option value="En mantenimiento">En mantenimiento</option>
 
-              <option value="Dada de Baja">
-                Dada de Baja
-              </option>
+              <option value="Dada de Baja">Dada de Baja</option>
             </select>
 
             <select
               value={obraFiltro}
-              onChange={(e) =>
-                setObraFiltro(
-                  e.target.value,
-                )
-              }
+              onChange={(e) => setObraFiltro(e.target.value)}
             >
-              <option value="">
-                Todas las obras
-              </option>
+              <option value="">Todas las obras</option>
 
-              {[...obrasMap.entries()].map(
-                ([id, name]) => (
-                  <option
-                    key={id}
-                    value={id}
-                  >
-                    {name}
-                  </option>
-                ),
-              )}
+              {[...obrasMap.entries()].map(([id, name]) => (
+                <option key={id} value={id}>
+                  {name}
+                </option>
+              ))}
             </select>
 
             {rol === "Admin" && (
-              <button
-                className="btn-seleccion"
-                onClick={
-                  toggleModoSeleccion
-                }
-              >
+              <button className="btn-seleccion" onClick={toggleModoSeleccion}>
                 {seleccionMultiple
                   ? "Cancelar selección"
                   : "Selección múltiple"}
@@ -914,19 +791,12 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
               <div className="acciones-masivas-info">
                 {esModoCantidadMasiva ? (
                   <>
-                    Disponibles:{" "}
-                    <strong>
-                      {stockDisponible}
-                    </strong>
+                    Disponibles: <strong>{stockDisponible}</strong>
                   </>
                 ) : (
                   <>
                     Seleccionadas:{" "}
-                    <strong>
-                      {
-                        unidadesSeleccionadas.length
-                      }
-                    </strong>
+                    <strong>{unidadesSeleccionadas.length}</strong>
                   </>
                 )}
               </div>
@@ -940,16 +810,9 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
                   <input
                     type="radio"
                     name="modo-seleccion-masiva"
-                    checked={
-                      !esModoCantidadMasiva
-                    }
-                    onChange={() =>
-                      cambiarModoSeleccionMasiva(
-                        "manual",
-                      )
-                    }
+                    checked={!esModoCantidadMasiva}
+                    onChange={() => cambiarModoSeleccionMasiva("manual")}
                   />
-
                   Manual
                 </label>
 
@@ -957,42 +820,24 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
                   <input
                     type="radio"
                     name="modo-seleccion-masiva"
-                    checked={
-                      esModoCantidadMasiva
-                    }
-                    onChange={() =>
-                      cambiarModoSeleccionMasiva(
-                        "cantidad",
-                      )
-                    }
+                    checked={esModoCantidadMasiva}
+                    onChange={() => cambiarModoSeleccionMasiva("cantidad")}
                   />
-
                   Por cantidad
                 </label>
               </div>
 
               {esModoCantidadMasiva && (
                 <label className="cantidad-masiva-field">
-                  <span>
-                    Cantidad
-                  </span>
+                  <span>Cantidad</span>
 
                   <input
                     type="number"
                     min="1"
-                    max={
-                      stockDisponible ||
-                      1
-                    }
+                    max={stockDisponible || 1}
                     step="1"
-                    value={
-                      cantidadMasiva
-                    }
-                    onChange={(e) =>
-                      setCantidadMasiva(
-                        e.target.value,
-                      )
-                    }
+                    value={cantidadMasiva}
+                    onChange={(e) => setCantidadMasiva(e.target.value)}
                     placeholder="0"
                   />
                 </label>
@@ -1000,47 +845,25 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
 
               <select
                 value={accionMasiva}
-                onChange={(e) =>
-                  setAccionMasiva(
-                    e.target.value,
-                  )
-                }
+                onChange={(e) => setAccionMasiva(e.target.value)}
               >
-                <option value="">
-                  Elegí una acción
-                </option>
+                <option value="">Elegí una acción</option>
 
-                <option value="baja">
-                  Dar de baja
-                </option>
+                <option value="baja">Dar de baja</option>
 
-                <option value="asignar">
-                  Asignar a obra
-                </option>
+                <option value="asignar">Asignar a obra</option>
 
-                <option value="fecha">
-                  Agregar fecha de compra
-                </option>
+                <option value="fecha">Agregar fecha de compra</option>
               </select>
 
               <div className="acciones-masivas-botones">
                 {!esModoCantidadMasiva && (
                   <>
-                    <button
-                      type="button"
-                      onClick={
-                        seleccionarTodasFiltradas
-                      }
-                    >
+                    <button type="button" onClick={seleccionarTodasFiltradas}>
                       Seleccionar todo
                     </button>
 
-                    <button
-                      type="button"
-                      onClick={
-                        limpiarSeleccion
-                      }
-                    >
+                    <button type="button" onClick={limpiarSeleccion}>
                       Limpiar selección
                     </button>
                   </>
@@ -1049,14 +872,10 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
                 <button
                   type="button"
                   className="btn-aplicar-masiva"
-                  onClick={
-                    ejecutarAccionMasiva
-                  }
+                  onClick={ejecutarAccionMasiva}
                   disabled={bulkLoading}
                 >
-                  {bulkLoading
-                    ? "Aplicando..."
-                    : "Aplicar"}
+                  {bulkLoading ? "Aplicando..." : "Aplicar"}
                 </button>
               </div>
             </div>
@@ -1067,25 +886,13 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
             data={unidadesPaginadas}
             paginaActual={paginaActual}
             totalPaginas={totalPaginas}
-            onPaginaAnterior={() =>
-              setPaginaActual((p) =>
-                Math.max(p - 1, 1),
-              )
-            }
+            onPaginaAnterior={() => setPaginaActual((p) => Math.max(p - 1, 1))}
             onPaginaSiguiente={() =>
-              setPaginaActual((p) =>
-                Math.min(
-                  p + 1,
-                  totalPaginas,
-                ),
-              )
+              setPaginaActual((p) => Math.min(p + 1, totalPaginas))
             }
           />
 
-          <button
-            className="btn-cerrar"
-            onClick={onClose}
-          >
+          <button className="btn-cerrar" onClick={onClose}>
             Cerrar
           </button>
         </div>
@@ -1131,18 +938,14 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
       {unidadFechaExistente && (
         <FechaCompraExistenteModal
           unidad={unidadFechaExistente}
-          onClose={() =>
-            setUnidadFechaExistente(null)
-          }
+          onClose={() => setUnidadFechaExistente(null)}
         />
       )}
 
       {confirmMantenimientoUnidad && (
         <FinalizarMantenimientoModal
           unidad={confirmMantenimientoUnidad}
-          onClose={() =>
-            setConfirmMantenimientoUnidad(null)
-          }
+          onClose={() => setConfirmMantenimientoUnidad(null)}
           onUpdated={handleUpdated}
         />
       )}
@@ -1155,9 +958,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
         <ModalBajaMasiva
           cantidad={cantidadObjetivoMasiva}
           onConfirm={confirmarBajaMasiva}
-          onClose={() =>
-            setModalBajaMasiva(false)
-          }
+          onClose={() => setModalBajaMasiva(false)}
         />
       )}
 
@@ -1165,9 +966,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
         <ModalFechaMasiva
           cantidad={cantidadObjetivoMasiva}
           onConfirm={confirmarFechaMasiva}
-          onClose={() =>
-            setModalFechaMasiva(false)
-          }
+          onClose={() => setModalFechaMasiva(false)}
         />
       )}
 
@@ -1175,9 +974,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
         <ModalObraMasiva
           cantidad={cantidadObjetivoMasiva}
           onConfirm={confirmarObraMasiva}
-          onClose={() =>
-            setModalObraMasiva(false)
-          }
+          onClose={() => setModalObraMasiva(false)}
         />
       )}
 

@@ -452,8 +452,11 @@
 }
 
 .detalle-top {
-  background:
-    linear-gradient(135deg, rgba(17, 24, 39, 0.22), rgba(17, 24, 39, 0)),
+  background: linear-gradient(
+      135deg,
+      rgba(17, 24, 39, 0.22),
+      rgba(17, 24, 39, 0)
+    ),
     var(--color-brand-red);
   padding: 24px 24px 26px 24px;
   display: flex;
@@ -695,6 +698,7 @@
   background-color: #fafafa;
 }
 
+.btn-removerUnidades,
 .btn-finalizar-obra,
 .btn-exportar-equipos {
   width: 100%;
@@ -709,6 +713,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.btn-removerUnidades {
+  background-color: #7e2323d4;
+  margin-bottom: 8px;
 }
 
 .btn-finalizar-obra {

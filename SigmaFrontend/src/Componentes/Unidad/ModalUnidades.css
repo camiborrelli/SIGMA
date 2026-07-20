@@ -714,6 +714,7 @@
   .modal-obra-masiva-acciones {
     grid-template-columns: 1fr;
   }
+}
 
   /* .acciones {
     gap: 10px;

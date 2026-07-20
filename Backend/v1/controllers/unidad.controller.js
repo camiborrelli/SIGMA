@@ -11,6 +11,7 @@ import {
   eliminarUnidad,
   actualizarFechaCompra,
   quitarUnidadDeObra,
+  quitarUnidadesDeObra,
   trasladarUnidadesAotraObra,
   actualizarDescripcionUnidad,
   actualizarEtiquetaUnidad,
@@ -60,7 +61,10 @@ export const agregarUnidadController = async (req, res) => {
     const { equipoId } = req.params;
     const { fechaCompra, cantidad } = req.body;
 
-    const nuevaUnidad = await agregarUnidad(equipoId, { fechaCompra, cantidad });
+    const nuevaUnidad = await agregarUnidad(equipoId, {
+      fechaCompra,
+      cantidad,
+    });
 
     res.status(201).json(nuevaUnidad);
   } catch (error) {
@@ -165,7 +169,7 @@ export const revisarGarantiasPorVencerController = async (req, res) => {
   try {
     console.log("INICIO REVISION GARANTIAS");
     const resultado = await notificarGarantiasPorVencer(req.query.dias);
-     console.log("RESULTADO GARANTIAS:", resultado);
+    console.log("RESULTADO GARANTIAS:", resultado);
     res.status(200).json(resultado);
   } catch (error) {
     console.error("ERROR COMPLETO GARANTIAS:", error);
@@ -588,5 +592,29 @@ export const eliminarComentarioMantenimientoController = async (req, res) => {
     res
       .status(500)
       .json({ error: "Error al eliminar comentario de mantenimiento" });
+  }
+};
+
+export const desasignarMultiplesUnidadesController = async (req, res) => {
+  try {
+    const { obraId, equipoId, cantidad } = req.body;
+
+    if (!obraId || !equipoId) {
+      return res.status(400).json({
+        error: "Debe indicar la obra y el equipo",
+      });
+    }
+
+    const resultado = await quitarUnidadesDeObra({
+      obraId,
+      equipoId,
+      cantidad,
+    });
+
+    res.status(200).json(resultado);
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      error: error.message || "Error al remover unidades",
+    });
   }
 };

@@ -25,6 +25,7 @@ import {
   agregarComentarioMantenimientoController,
   revisarGarantiasPorVencerController,
   eliminarComentarioMantenimientoController,
+  desasignarMultiplesUnidadesController,
 } from "../controllers/unidad.controller.js";
 import { verificarToken } from "../middlewares/auth.js";
 import { soloAdmin } from "../middlewares/roles.js";
@@ -100,7 +101,12 @@ router.post(
   verificarToken,
   quitarUnidadDeObraController,
 );
-router.post("/trasladar", verificarToken, soloAdmin, trasladarUnidadesController);
+router.post(
+  "/trasladar",
+  verificarToken,
+  soloAdmin,
+  trasladarUnidadesController,
+);
 router.post(
   "/asignar-obra-multiples",
   verificarToken,
@@ -111,6 +117,7 @@ router.post(
   verificarToken,
   asignarFechaCompraMultiplesUnidadesController,
 );
+router.post("/remover", verificarToken, desasignarMultiplesUnidadesController);
 router.post("/baja-multiple", verificarToken, bajaMultiplesUnidadesController);
 router.post(
   "/masivo-por-cantidad",

@@ -3,6 +3,7 @@ import {
   getEquiposConStock,
   getStatsEquipos,
   editarEquipo,
+  getEquiposConStockPorObra,
 } from "../services/equipo.services.js";
 
 export const crearEquipoController = async (req, res) => {
@@ -86,6 +87,21 @@ export const editarEquipoController = async (req, res) => {
 
     res.status(500).json({
       error: "Error al editar equipo",
+    });
+  }
+};
+
+//listar todos los equipos con unidades en la obra seleccionada
+export const getEquiposPorObraController = async (req, res) => {
+  try {
+    const { obraId } = req.params;
+    const equipos = await getEquiposConStockPorObra(obraId);
+
+    res.status(200).json(equipos);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "Error al obtener equipos por obra",
     });
   }
 };

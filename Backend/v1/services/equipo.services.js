@@ -4,58 +4,58 @@ import Unidad from "../models/unidad.model.js";
 import Obra from "../models/obra.model.js";
 
 const normalizarCantidad = (cantidad, fallback = 1) => {
-if (cantidad === undefined || cantidad === null || cantidad === "") {
-return fallback;
-}
+  if (cantidad === undefined || cantidad === null || cantidad === "") {
+    return fallback;
+  }
 
-const numero = Number(cantidad);
+  const numero = Number(cantidad);
 
-if (!Number.isFinite(numero) || numero < 1) {
-throw new Error("La cantidad debe ser un numero mayor a 0");
-}
+  if (!Number.isFinite(numero) || numero < 1) {
+    throw new Error("La cantidad debe ser un numero mayor a 0");
+  }
 
-return Math.trunc(numero);
+  return Math.trunc(numero);
 };
 
 export const crearEquipoConUnidades = async ({
-nombre,
-modelo,
-tipo,
-cantidad,
+  nombre,
+  modelo,
+  tipo,
+  cantidad,
 }) => {
-const cantidadFinal = normalizarCantidad(cantidad, 1);
+  const cantidadFinal = normalizarCantidad(cantidad, 1);
 
-const equipo = await Equipo.create({
-nombre,
-modelo,
-tipo,
-});
+  const equipo = await Equipo.create({
+    nombre,
+    modelo,
+    tipo,
+  });
 
-const codigo = `EQ-${String(equipo._id).slice(-6).toUpperCase()}`;
+  const codigo = `EQ-${String(equipo._id).slice(-6).toUpperCase()}`;
 
-equipo.codigo = codigo;
-await equipo.save();
+  equipo.codigo = codigo;
+  await equipo.save();
 
-const unidades = [];
+  const unidades = [];
 
-for (let i = 1; i <= cantidadFinal; i++) {
-unidades.push({
-equipo: equipo._id,
-identificador: `${codigo}-${i}`,
-descripcion: "",
-etiqueta: null,
-estado: "Disponible",
-});
-}
+  for (let i = 1; i <= cantidadFinal; i++) {
+    unidades.push({
+      equipo: equipo._id,
+      identificador: `${codigo}-${i}`,
+      descripcion: "",
+      etiqueta: null,
+      estado: "Disponible",
+    });
+  }
 
-const unidadesCreadas = await Unidad.insertMany(unidades);
+  const unidadesCreadas = await Unidad.insertMany(unidades);
 
-return {
-equipo,
-unidadesCreadas,
-cantidadGenerada: cantidadFinal,
-registrosGenerados: unidadesCreadas.length,
-};
+  return {
+    equipo,
+    unidadesCreadas,
+    cantidadGenerada: cantidadFinal,
+    registrosGenerados: unidadesCreadas.length,
+  };
 };
 
 export const getEquiposConStock = async () => {
@@ -84,11 +84,7 @@ export const getEquiposConStock = async () => {
 
         stockMantenimiento: {
           $sum: {
-            $cond: [
-              { $eq: ["$estado", "En mantenimiento"] },
-              1,
-              0,
-            ],
+            $cond: [{ $eq: ["$estado", "En mantenimiento"] }, 1, 0],
           },
         },
 
@@ -144,32 +140,60 @@ export const getEquiposConStock = async () => {
 };
 
 export const getStatsEquipos = async () => {
-const total = await Equipo.countDocuments();
+  const total = await Equipo.countDocuments();
 
-return {
-total,
+  return {
+    total,
+  };
 };
+
+export const editarEquipo = async (id, { nombre, modelo, tipo }) => {
+  const equipo = await Equipo.findById(id);
+
+  if (!equipo) {
+    throw new Error("Equipo no encontrado");
+  }
+
+  equipo.nombre = nombre;
+  equipo.modelo = modelo;
+  equipo.tipo = tipo;
+
+  const equipoGuardado = await equipo.save();
+
+  return equipoGuardado;
 };
 
-export const editarEquipo = async (
-id,
-{
-nombre,
-modelo,
-tipo,
-},
-) => {
-const equipo = await Equipo.findById(id);
+//listar todos los equipos de la obra seleccionada, con su stock en esa obra
+export const getEquiposConStockPorObra = async (obraId) => {
+  const obra = await Obra.findById(obraId);
+  if (!obra) {
+    throw new Error("Obra no encontrada");
+  }
 
-if (!equipo) {
-throw new Error("Equipo no encontrado");
-}
+  const unidades = await Unidad.find({ ubicacion: obra._id }).populate(
+    "equipo",
+  );
 
-equipo.nombre = nombre;
-equipo.modelo = modelo;
-equipo.tipo = tipo;
+  const equiposPorId = new Map();
 
-const equipoGuardado = await equipo.save();
+  for (let i = 0; i < unidades.length; i++) {
+    const unidad = unidades[i];
 
-return equipoGuardado;
+    if (!unidad.equipo) continue;
+
+    const equipoId = String(unidad.equipo._id);
+
+    if (!equiposPorId.has(equipoId)) {
+      equiposPorId.set(equipoId, {
+        id: equipoId,
+        nombre: unidad.equipo.nombre,
+        modelo: unidad.equipo.modelo,
+        stock: 0,
+      });
+    }
+
+    equiposPorId.get(equipoId).stock += 1;
+  }
+
+  return Array.from(equiposPorId.values());
 };
