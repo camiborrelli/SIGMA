@@ -45,6 +45,7 @@ const Mapa = () => {
   const [verModalRemoverUnidades, setVerModalRemoverUnidades] = useState(false);
   const [equipos, setEquipos] = useState([]);
   const [equipoSeleccionado, setEquipoSeleccionado] = useState(null);
+  const [cargandoEquipos, setCargandoEquipos] = useState(false);
 
   const usuario = JSON.parse(localStorage.getItem("usuario"));
 
@@ -193,6 +194,7 @@ const Mapa = () => {
   };
 
   const fetchEquipos = async () => {
+    setCargandoEquipos(true);
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`${API_URL}/equipos/obra/${detalleObra._id}`, {
@@ -212,6 +214,8 @@ const Mapa = () => {
     } catch (err) {
       console.error(err);
       toast.error("Error al obtener equipos");
+    } finally {
+      setCargandoEquipos(false);
     }
   };
 
@@ -577,10 +581,8 @@ const Mapa = () => {
                       </p>
                     )}
                   </>
-                ) : equipos.length === 0 ? (
-                  <p className="sin-datos">
-                    No hay equipos asignados a esta obra.
-                  </p>
+                ) : cargandoEquipos ? (
+                  <p className="cargando-equipos">Cargando equipos...</p> // 👈 ACÁ (nuevo)
                 ) : (
                   equipos.map((equipo) => (
                     <div
