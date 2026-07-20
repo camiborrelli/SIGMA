@@ -44,8 +44,15 @@ const RemoverUnidadesModal = ({ onClose, obra, onUpdated }) => {
     }
   }, [obra]);
 
+  useEffect(() => {
+    if (equipos.length > 0) {
+      setEquipoSeleccionado(equipos[0].id);
+      setCantidad("");
+    }
+  }, [equipos]);
+
   const equipoActual = equipos.find((e) => e.id === equipoSeleccionado);
-  const stockDisponible = equipoActual?.stock ?? 0;
+  const stockDisponible = equipoActual?.stock;
 
   const handleRemover = async () => {
     if (!equipoSeleccionado) {
@@ -115,7 +122,7 @@ const RemoverUnidadesModal = ({ onClose, obra, onUpdated }) => {
           <p>Seleccionar equipo</p>
           <select
             name="equipo"
-            value={equipoSeleccionado}
+            value={equipoSeleccionado || ""}
             onChange={(e) => {
               setEquipoSeleccionado(e.target.value);
               setCantidad("");
@@ -151,14 +158,14 @@ const RemoverUnidadesModal = ({ onClose, obra, onUpdated }) => {
         <div className="remover-unidades-actions">
           <button
             type="button"
-            className="remover-unidades-btn cancelar"
+            className="remover-unidades-btn btn-cancelar"
             onClick={onClose}
           >
             Cancelar
           </button>
           <button
             type="button"
-            className="remover-unidades-btn confirmar"
+            className="remover-unidades-btn btn-confirmar"
             onClick={handleRemover}
             disabled={removiendo}
           >
