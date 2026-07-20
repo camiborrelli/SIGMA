@@ -1,42 +1,67 @@
 import nodemailer from "nodemailer";
+import { lookup } from "dns/promises";
 
 const SMTP_SEND_TIMEOUT_MS = Number(
   process.env.SMTP_TIMEOUT_MS || 60000,
 );
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  family: 4,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
-  },
-  connectionTimeout: 60000,
-  greetingTimeout: 60000,
-  socketTimeout: 120000,
-});
+const SMTP_HOST = "smtp.gmail.com";
 
-if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
-  console.warn(
-    "Servicio de correo sin credenciales: configura EMAIL_USER y EMAIL_PASSWORD",
-  );
-} else {
-  transporter.verify((error, success) => {
-    if (error) {
-      console.error(
-        "No se pudo verificar el servicio de correo:",
-        error.message,
-      );
-      return;
-    }
-
-    if (success) {
-      console.log("Servicio de correo listo para enviar mensajes");
-    }
+const obtenerIpV4Gmail = async () => {
+  const resultado = await lookup(SMTP_HOST, {
+    family: 4,
   });
-}
+
+  return resultado.address;
+};
+
+const crearTransporter = async () => {
+  const ipV4 = await obtenerIpV4Gmail();
+
+  console.log(`Conectando Gmail SMTP mediante IPv4: ${ipV4}`);
+
+  return nodemailer.createTransport({
+    host: ipV4,
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+    tls: {
+      servername: SMTP_HOST,
+    },
+    connectionTimeout: 60000,
+    greetingTimeout: 60000,
+    socketTimeout: 120000,
+  });
+};
+
+let transporter;
+
+const inicializarCorreo = async () => {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+    console.warn(
+      "Servicio de correo sin credenciales: configura EMAIL_USER y EMAIL_PASSWORD",
+    );
+    return;
+  }
+
+  try {
+    transporter = await crearTransporter();
+
+    await transporter.verify();
+
+    console.log("Servicio de correo listo para enviar mensajes");
+  } catch (error) {
+    console.error(
+      "No se pudo verificar el servicio de correo:",
+      error.message,
+    );
+  }
+};
+
+await inicializarCorreo();
 
 const ejecutarConTimeout = async (promesa, mensajeError) => {
   let timeoutId;
@@ -60,6 +85,12 @@ export const enviarCorreo = async ({
   mensaje,
 }) => {
   try {
+    if (!transporter) {
+      throw new Error(
+        "El servicio de correo no está disponible",
+      );
+    }
+
     const contenido = /<\/?[a-z][\s\S]*>/i.test(mensaje)
       ? mensaje
       : `<p>${mensaje}</p>`;
