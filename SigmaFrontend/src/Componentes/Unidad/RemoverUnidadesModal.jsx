@@ -8,9 +8,11 @@ const RemoverUnidadesModal = ({ onClose, obra, onUpdated }) => {
   const [equipoSeleccionado, setEquipoSeleccionado] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [removiendo, setRemoviendo] = useState(false);
+  const [cargandoEquipos, setCargandoEquipos] = useState(false);
 
   //listar equipos de la obra
   const fetchEquipos = async () => {
+    setCargandoEquipos(true);
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`${API_URL}/equipos/obra/${obra._id}`, {
@@ -34,6 +36,8 @@ const RemoverUnidadesModal = ({ onClose, obra, onUpdated }) => {
     } catch (err) {
       console.error(err);
       toast.error("Error al obtener equipos");
+    } finally {
+      setCargandoEquipos(false);
     }
   };
 
@@ -120,24 +124,28 @@ const RemoverUnidadesModal = ({ onClose, obra, onUpdated }) => {
 
         <div className="remover-unidades-equipos">
           <p>Seleccionar equipo</p>
-          <select
-            name="equipo"
-            value={equipoSeleccionado || ""}
-            onChange={(e) => {
-              setEquipoSeleccionado(e.target.value);
-              setCantidad("");
-            }}
-          >
-            {equipos.length > 0 ? (
-              equipos.map((equipo) => (
-                <option key={equipo.id} value={equipo.id}>
-                  {equipo.nombre}
-                </option>
-              ))
-            ) : (
-              <option disabled>No hay equipos</option>
-            )}
-          </select>
+          {cargandoEquipos ? (
+            <p>Cargando equipos...</p>
+          ) : (
+            <select
+              name="equipo"
+              value={equipoSeleccionado || ""}
+              onChange={(e) => {
+                setEquipoSeleccionado(e.target.value);
+                setCantidad("");
+              }}
+            >
+              {equipos.length > 0 ? (
+                equipos.map((equipo) => (
+                  <option key={equipo.id} value={equipo.id}>
+                    {equipo.nombre}
+                  </option>
+                ))
+              ) : (
+                <option disabled>No hay equipos</option>
+              )}
+            </select>
+          )}
         </div>
 
         <div className="remover-unidades-stock">
@@ -151,6 +159,7 @@ const RemoverUnidadesModal = ({ onClose, obra, onUpdated }) => {
             min={1}
             max={stockDisponible}
             value={cantidad}
+            placeholder="0"
             onChange={(e) => setCantidad(e.target.value)}
           />
           <p>Max: {stockDisponible}</p>
