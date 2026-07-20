@@ -43,6 +43,8 @@ const Mapa = () => {
   const [removingIds, setRemovingIds] = useState([]);
   const [verModalEditarObra, setVerModalEditarObra] = useState(false);
   const [verModalRemoverUnidades, setVerModalRemoverUnidades] = useState(false);
+  const [equipos, setEquipos] = useState([]);
+  const [equipoSeleccionado, setEquipoSeleccionado] = useState(null);
 
   const usuario = JSON.parse(localStorage.getItem("usuario"));
 
@@ -74,6 +76,16 @@ const Mapa = () => {
   useEffect(() => {
     fetchObras();
   }, []);
+
+  useEffect(() => {
+    if (detalleObra) {
+      fetchEquipos();
+      setEquipoSeleccionado(null);
+    } else {
+      setEquipos([]);
+      setEquipoSeleccionado(null);
+    }
+  }, [detalleObra?._id]);
 
   const obrasFiltradas = obras.filter((obra) => {
     const termino = busqueda.toLowerCase();
@@ -179,6 +191,52 @@ const Mapa = () => {
     if (!texto) return "";
     return texto.replace(/[📍📌]/g, "").trim();
   };
+
+  const fetchEquipos = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/equipos/obra/${detalleObra._id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("No se pudieron obtener los equipos de la obra");
+      }
+
+      const data = await res.json();
+      setEquipos(data);
+    } catch (err) {
+      console.error(err);
+      toast.error("Error al obtener equipos");
+    }
+  };
+
+  //filtrar unidades segun el equipo seleccionado
+  const todasLasUnidades = [
+    ...(detalleObra?.maquinas || []).map((u) => ({
+      ...u,
+      tipoUnidad: "maquina",
+    })),
+    ...(detalleObra?.herramientas || []).map((u) => ({
+      ...u,
+      tipoUnidad: "herramienta",
+    })),
+  ];
+
+  // console.log("todasLasUnidades", todasLasUnidades);
+  // console.log("equipo seleccionado", equipoSeleccionado);
+
+  const unidadesDelEquipoSeleccionado = equipoSeleccionado
+    ? todasLasUnidades.filter(
+        (u) =>
+          u.equipoId === equipoSeleccionado.id ||
+          u.nombreEquipo === equipoSeleccionado.nombre,
+      )
+    : [];
 
   return (
     <>
@@ -442,7 +500,116 @@ const Mapa = () => {
                 </div>
               </div>
 
-              <div className="seccion-equipos">
+              <div className="listado-equipos">
+                <h3>Listado de equipos</h3>
+
+                {equipoSeleccionado ? (
+                  <>
+                    <button
+                      className="btn-volver-equipos"
+                      onClick={() => setEquipoSeleccionado(null)}
+                    >
+                      ← Volver a equipos
+                    </button>
+
+                    <h4>{equipoSeleccionado.nombre}</h4>
+
+                    {unidadesDelEquipoSeleccionado.length > 0 ? (
+                      unidadesDelEquipoSeleccionado.map((unidad) => {
+                        const claseEstado = (unidad.estado || "asignado")
+                          .toLowerCase()
+                          .replace(/\s+/g, "-");
+                        const estaEliminando = removingIds.includes(unidad._id);
+
+                        return (
+                          <div className="equipo-card" key={unidad._id}>
+                            <div className="equipo-circle-avatar">
+                              {unidad.tipoUnidad === "maquina" ? (
+                                <FiTruck className="equipo-svg" />
+                              ) : (
+                                <LuWrench className="equipo-svg" />
+                              )}
+                            </div>
+                            <div className="equipo-detalles-texto">
+                              <strong>
+                                {unidad.identificador || "Sin código"}
+                              </strong>
+                              <p>{unidad.modelo || ""}</p>
+                            </div>
+                            <span
+                              className={`estado-equipo-pill status-${claseEstado}`}
+                            >
+                              {renderIconoEstadoEquipo(
+                                unidad.estado || "Asignado",
+                              )}
+                              {unidad.estado || "Asignado"}
+                            </span>
+                            {usuario?.rol === "Admin" && (
+                              <button
+                                onClick={() => quitarUnidad(unidad._id)}
+                                disabled={estaEliminando}
+                                className="btn-quitar-unidad"
+                              >
+                                {estaEliminando ? (
+                                  <FiRefreshCcw
+                                    className="spinner"
+                                    style={{
+                                      animation: "spin 1s linear infinite",
+                                    }}
+                                  />
+                                ) : (
+                                  <CiCircleRemove
+                                    style={{
+                                      fontSize: "1.25rem",
+                                      color: "#c0392b",
+                                    }}
+                                    title="Quitar unidad"
+                                  />
+                                )}
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <p className="sin-datos">
+                        Este equipo no tiene unidades en esta obra.
+                      </p>
+                    )}
+                  </>
+                ) : equipos.length === 0 ? (
+                  <p className="sin-datos">
+                    No hay equipos asignados a esta obra.
+                  </p>
+                ) : (
+                  equipos.map((equipo) => (
+                    <div
+                      className="equipo-card equipo-card-clickable"
+                      key={equipo.id}
+                      onClick={() => setEquipoSeleccionado(equipo)}
+                    >
+                      <div className="equipo-circle-avatar">
+                        {equipo.tipo === "maquina" ? (
+                          <FiTruck className="equipo-svg" />
+                        ) : (
+                          <LuWrench className="equipo-svg" />
+                        )}
+                      </div>
+                      <div className="equipo-detalles-texto">
+                        <strong>{equipo.nombre}</strong>
+                        <p>
+                          {equipo.identificador ||
+                            equipo.modelo ||
+                            "Sin código"}
+                        </p>
+                        <p>Cantidad de unidades: {equipo.stock || 0}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* <div className="seccion-equipos">
                 <h3>Máquinas Asignadas</h3>
                 {detalleObra.maquinas?.length > 0 ? (
                   detalleObra.maquinas.map((unidad) => {
@@ -557,7 +724,7 @@ const Mapa = () => {
                 ) : (
                   <p className="sin-datos">No hay herramientas asignadas.</p>
                 )}
-              </div>
+              </div> */}
 
               <div className="detalle-acciones">
                 {usuario?.rol === "Admin" && (
