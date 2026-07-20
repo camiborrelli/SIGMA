@@ -23,7 +23,7 @@ router.post("/register", register);
 router.post("/login", login);
 router.post("/verificar-email", verificarEmail);
 router.post("/recuperar-contrasenia", solicitarRecuperacionContrasenia);
-router.post("/restablecer-contrasenia/:token", restablecerContrasenia);
+router.post("/restablecer-contrasenia", restablecerContrasenia);
 
 router.get(
   "/accionesUsuario",

@@ -195,7 +195,7 @@ export const solicitarRecuperacionContrasenia = async (req, res) => {
 
 export const restablecerContrasenia = async (req, res) => {
   try {
-    const { token } = req.params;
+    const { token } = req.query;
     const { nuevaContrasenia, confirmarContrasenia } = req.body;
 
     if (!nuevaContrasenia || !confirmarContrasenia) {
