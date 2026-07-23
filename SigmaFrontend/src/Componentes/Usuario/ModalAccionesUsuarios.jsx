@@ -8,6 +8,7 @@ const ITEMS_POR_PAGINA = 10;
 const ModalAcciones = ({ isOpen, onClose }) => {
   const [acciones, setAcciones] = useState([]);
   const [paginaActual, setPaginaActual] = useState(1);
+  const [cargandoAcciones, setCargandoAcciones] = useState(false);
 
   useEffect(() => {
     // if (!isOpen) return;
@@ -19,6 +20,7 @@ const ModalAcciones = ({ isOpen, onClose }) => {
     };
 
     const getAccionesUsuarios = async () => {
+      setCargandoAcciones(true);
       try {
         const token = localStorage.getItem("token");
         const res = await fetch(`${API_URL}/usuarios/accionesUsuario`, {
@@ -41,6 +43,8 @@ const ModalAcciones = ({ isOpen, onClose }) => {
       } catch (err) {
         console.error(err);
         toast.error("Error al obtener acciones de usuarios");
+      } finally {
+        setCargandoAcciones(false);
       }
     };
 
@@ -77,7 +81,7 @@ const ModalAcciones = ({ isOpen, onClose }) => {
       <div className="modal-card">
         <h3>Registro de acciones</h3>
 
-        {acciones.length === 0 ? (
+        {!cargandoAcciones && acciones.length === 0 ? (
           <p>No hay acciones registradas.</p>
         ) : (
           <>
