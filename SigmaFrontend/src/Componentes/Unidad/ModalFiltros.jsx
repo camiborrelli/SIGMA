@@ -9,6 +9,7 @@ const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
   const navigate = useNavigate();
   const [paginaActual, setPaginaActual] = useState(1);
   const [porPagina, setPorPagina] = useState(6);
+  const [cargandoUnidades, setCargandoUnidades] = useState(false);
 
   useEffect(() => {
     const actualizarCantidad = () => {
@@ -43,6 +44,7 @@ const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
   };
 
   const fetchUnidadesFiltradas = async () => {
+    setCargandoUnidades(true);
     const token = localStorage.getItem("token");
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     try {
@@ -60,6 +62,8 @@ const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
       setUnidades(data || []);
     } catch (err) {
       console.error("Error unidades filtradas:", err);
+    } finally {
+      setCargandoUnidades(false);
     }
   };
 
@@ -83,14 +87,15 @@ const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
   const indiceFin = indiceInicio + porPagina;
   const unidadesPaginadas = equiposFiltrados.slice(indiceInicio, indiceFin);
 
-
   return (
     <div className="modal-filtros-overlay" onClick={cerrarModal}>
       <div
         className="modal-filtros-content"
         onClick={(e) => e.stopPropagation()}
       >
-        {equiposFiltrados.length === 1 ? (
+        {cargandoUnidades ? (
+          <p>Cargando unidades...</p>
+        ) : equiposFiltrados.length === 1 ? (
           <h2>Unidad {estadoFilter}</h2>
         ) : estadoFilter == "Disponible" ? (
           <h2>Unidades Disponibles</h2>
