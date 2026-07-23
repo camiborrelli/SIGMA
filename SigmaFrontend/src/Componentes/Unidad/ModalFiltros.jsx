@@ -93,9 +93,7 @@ const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
         className="modal-filtros-content"
         onClick={(e) => e.stopPropagation()}
       >
-        {cargandoUnidades ? (
-          <p>Cargando unidades...</p>
-        ) : equiposFiltrados.length === 1 ? (
+        {equiposFiltrados.length === 1 ? (
           <h2>Unidad {estadoFilter}</h2>
         ) : estadoFilter == "Disponible" ? (
           <h2>Unidades Disponibles</h2>
@@ -119,6 +117,13 @@ const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
             </tr>
           </thead>
           <tbody>
+            {cargandoUnidades ? (
+              <tr>
+                <td colSpan="4" className="cargando-unidades">
+                  Cargando unidades...
+                </td>
+              </tr>
+            ) : null}
             {unidadesPaginadas.map((unidad) => (
               <tr key={unidad.identificador}>
                 <td>{unidad.identificador}</td>
