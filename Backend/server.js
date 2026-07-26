@@ -22,13 +22,7 @@ await connectDB();
 iniciarMonitorGarantiasPorVencer();
 
 const allowedOrigins = [
-  "http://localhost:8081",
-  "http://localhost:19000",
-  "http://localhost:19006",
-  "http://localhost:5173",
-  "http://localhost:5174",
   "https://sigma-front-five.vercel.app",
-  "https://sigma-front-git-develop-camilas-projects-2b00654e.vercel.app",
 ];
 
 const esOrigenPermitido = (origin) =>
