@@ -572,7 +572,7 @@
   padding: 24px;
   border-radius: 12px;
   width: 95%;
-  max-width: 500px;
+  /* max-width: 500px; */
   display: flex;
   flex-direction: column;
   gap: 16px;
