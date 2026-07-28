@@ -95,6 +95,21 @@ const ModalAcciones = ({ isOpen, onClose }) => {
                   </tr>
                 </thead>
                 <tbody>
+                  {cargandoAcciones ? (
+                    <tr>
+                      <td
+                        colSpan="3"
+                        className="cargando-acciones"
+                        style={{ textAlign: "center" }}
+                      >
+                        <div
+                          className="gm-loader"
+                          style={{ margin: "0 auto 14px" }}
+                        ></div>
+                        Cargando unidades...
+                      </td>
+                    </tr>
+                  ) : null}
                   {accionesVisibles.map((accion) => (
                     <tr key={accion._id}>
                       <td>

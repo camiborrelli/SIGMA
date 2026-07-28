@@ -19,6 +19,8 @@ import EditarObraModal from "../Obra/EditarObraModal";
 import { FaEdit } from "react-icons/fa";
 import { API_URL } from "../../../api";
 import RemoverUnidadesModal from "../Unidad/RemoverUnidadesModal";
+import { IoIosCheckmarkCircleOutline } from "react-icons/io";
+import { AiOutlineUnorderedList } from "react-icons/ai";
 
 let DefaultIcon = L.icon({
   iconUrl: markerIcon,
@@ -242,6 +244,13 @@ const Mapa = () => {
       )
     : [];
 
+  const iconosEstado = {
+    "": <AiOutlineUnorderedList />,
+    Activa: <IoIosCheckmarkCircleOutline />,
+    Finalizada: <FiCheck />,
+    Cancelada: <CiCircleRemove />,
+  };
+
   return (
     <>
       <div className="mapa-container">
@@ -265,7 +274,6 @@ const Mapa = () => {
             onChange={(e) => setBusqueda(e.target.value)}
             className="buscador"
           />
-
           <div className="filtros-estado">
             {["", "Activa", "Finalizada", "Cancelada"].map((estado) => (
               <button
@@ -275,6 +283,7 @@ const Mapa = () => {
                 }`}
                 onClick={() => setEstadoFilter(estado)}
               >
+                {iconosEstado[estado]}
                 {estado === "" ? "Todos" : estado}
               </button>
             ))}

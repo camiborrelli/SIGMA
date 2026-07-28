@@ -119,7 +119,15 @@ const ModalFiltros = ({ estadoFilter, setEstadoFilter }) => {
           <tbody>
             {cargandoUnidades ? (
               <tr>
-                <td colSpan="4" className="cargando-unidades">
+                <td
+                  colSpan="4"
+                  className="cargando-acciones"
+                  style={{ textAlign: "center" }}
+                >
+                  <div
+                    className="gm-loader"
+                    style={{ margin: "0 auto 14px" }}
+                  ></div>
                   Cargando unidades...
                 </td>
               </tr>
