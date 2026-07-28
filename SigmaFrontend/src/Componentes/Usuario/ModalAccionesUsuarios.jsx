@@ -106,7 +106,7 @@ const ModalAcciones = ({ isOpen, onClose }) => {
                           className="gm-loader"
                           style={{ margin: "0 auto 14px" }}
                         ></div>
-                        Cargando unidades...
+                        Cargando registros...
                       </td>
                     </tr>
                   ) : null}
