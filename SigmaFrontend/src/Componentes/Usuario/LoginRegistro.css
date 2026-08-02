@@ -1,4 +1,3 @@
-/* Styles specific for Login and Registro components (moved from Dashboard.css) */
 .root {
   --red: #f82727;
   --white: #fff;
@@ -25,11 +24,12 @@
   padding: 12px;
   margin-top: 20px;
   width: 100%;
-  background: #c62828; /* rojo original usado en el proyecto */
-  color: white;
+  background: #c62828;
   border: none;
   border-radius: 10px;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn:hover {
@@ -50,6 +50,44 @@
   transform: none;
 }
 
+/* ---- Barra de carga dentro del botón de login ---- */
+
+.btn-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 0%;
+  background: rgba(255, 255, 255, 0.28);
+  z-index: 0;
+  border-radius: 10px;
+}
+
+.btn-label {
+  position: relative;
+  z-index: 1;
+}
+
+.btn.is-loading {
+  cursor: not-allowed;
+}
+
+.btn.is-loading .btn-fill {
+  animation: btnLoadingFill 1.6s ease-out forwards;
+}
+
+@keyframes btnLoadingFill {
+  0% {
+    width: 0%;
+  }
+  60% {
+    width: 75%;
+  }
+  100% {
+    width: 92%;
+  }
+}
+
 .btn-restore {
   background: white;
   color: #c62828;
@@ -62,6 +100,11 @@
 .btn-restore:hover {
   background: white;
   color: #a61c1c;
+}
+
+.btn-restore:disabled {
+  color: #d98c8c;
+  cursor: not-allowed;
 }
 
 .card {

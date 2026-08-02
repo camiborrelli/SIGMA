@@ -12,6 +12,7 @@ const Login = () => {
   const [erros, setErrors] = useState({});
   const [showmodal, setShowModal] = useState(false);
   const [usuario, setUsuario] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const [rolSeleccionado, setRolSeleccionado] = useState("Funcionario");
 
@@ -52,29 +53,36 @@ const Login = () => {
     e.preventDefault();
     setMensaje("");
     setErrors({});
+    setLoading(true);
 
-    const res = await fetch(`${API_URL}/usuarios/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(loginData),
-    });
+    try {
+      const res = await fetch(`${API_URL}/usuarios/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(loginData),
+      });
 
-    const result = await res.json();
+      const result = await res.json();
 
-    if (!res.ok) {
-      setMensaje(result.error || "Error en login");
-      return;
+      if (!res.ok) {
+        setMensaje(result.error || "Error en login");
+        return;
+      }
+
+      localStorage.setItem("token", result.token);
+
+      if (result.usuario) {
+        localStorage.setItem("usuario", JSON.stringify(result.usuario));
+        setUsuario(result.usuario);
+      }
+
+      setIsAuthenticated(true);
+      navigate("/dashboard");
+    } catch (err) {
+      setMensaje("No se pudo conectar con el servidor");
+    } finally {
+      setLoading(false);
     }
-
-    localStorage.setItem("token", result.token);
-
-    if (result.usuario) {
-      localStorage.setItem("usuario", JSON.stringify(result.usuario));
-      setUsuario(result.usuario);
-    }
-
-    setIsAuthenticated(true);
-    navigate("/dashboard");
   };
 
   const logout = () => {
@@ -138,11 +146,20 @@ const Login = () => {
             type="button"
             className=" btn-restore"
             onClick={() => setShowCambiarContrasenia(true)}
+            disabled={loading}
           >
             ¿Olvidaste tu contraseña?
           </button>
 
-          <button className="btn btn-register">INICIAR SESIÓN</button>
+          <button
+            className={`btn btn-register ${loading ? "is-loading" : ""}`}
+            disabled={loading}
+          >
+            <span className="btn-fill" />
+            <span className="btn-label">
+              {loading ? "Iniciando sesión..." : "INICIAR SESIÓN"}
+            </span>
+          </button>
         </form>
 
         <p className="link">
