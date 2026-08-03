@@ -14,7 +14,7 @@ const Registro = ({ setIsLogin }) => {
     confirmPassword: "",
   });
   const [mensaje, setMensaje] = useState("");
-  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const toggle = () => {
     navigate("/");
@@ -29,68 +29,72 @@ const Registro = ({ setIsLogin }) => {
       return;
     }
 
-    const res = await fetch(`${API_URL}/usuarios/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        nombre: registerData.nombre,
-        apellido: registerData.apellido,
-        email: registerData.email,
-        password: registerData.password,
-      }),
-    });
-
-    const result = await res.json();
-
-    if (!res.ok) {
-      toast.error(result.error || "Error en registro");
-      return;
-    }
-
-    toast.success("Usuario registrado correctamente. Iniciando sesión...");
-
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
+    setLoading(true);
     try {
-      const loginRes = await fetch(`${API_URL}/usuarios/login`, {
+      const res = await fetch(`${API_URL}/usuarios/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          nombre: registerData.nombre,
+          apellido: registerData.apellido,
           email: registerData.email,
           password: registerData.password,
         }),
       });
 
-      const loginResult = await loginRes.json();
+      const result = await res.json();
 
-      if (loginRes.ok) {
+      if (!res.ok) {
+        toast.error(result.error || "Error en registro");
+        return;
+      }
 
-        localStorage.setItem("token", loginResult.token);
+      toast.success("Usuario registrado correctamente. Iniciando sesión...");
 
-        if (loginResult.usuario) {
-          localStorage.setItem("usuario", JSON.stringify(loginResult.usuario));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      try {
+        const loginRes = await fetch(`${API_URL}/usuarios/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: registerData.email,
+            password: registerData.password,
+          }),
+        });
+
+        const loginResult = await loginRes.json();
+
+        if (loginRes.ok) {
+          localStorage.setItem("token", loginResult.token);
+
+          if (loginResult.usuario) {
+            localStorage.setItem("usuario", JSON.stringify(loginResult.usuario));
+          }
+
+          navigate("/dashboard");
+        } else {
+          setIsLogin?.(true);
+          navigate("/");
         }
-
-        navigate("/dashboard");
-
-      } else {
-
-        setIsLogin(true);
+      } catch (err) {
+        console.error("Error en auto-login:", err);
+        setIsLogin?.(true);
         navigate("/");
       }
-    } catch (err) {
-      console.error("Error en auto-login:", err);
-      setIsLogin(true);
-      navigate("/");
-    }
 
-    setRegisterData({
-      nombre: "",
-      apellido: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    });
+      setRegisterData({
+        nombre: "",
+        apellido: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+    } catch {
+      toast.error("No se pudo conectar con el servidor");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -147,7 +151,15 @@ const Registro = ({ setIsLogin }) => {
             }
           />
           {mensaje && <p className="error">{mensaje}</p>}
-          <button className="btn">CREAR CUENTA</button>
+          <button
+            className={`btn btn-register ${loading ? "is-loading" : ""}`}
+            disabled={loading}
+          >
+            <span className="btn-fill" />
+            <span className="btn-label">
+              {loading ? "Creando usuario..." : "CREAR CUENTA"}
+            </span>
+          </button>
         </form>
 
         <p className="link">
