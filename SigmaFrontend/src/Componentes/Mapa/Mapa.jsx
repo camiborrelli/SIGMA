@@ -3,11 +3,18 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import toast from "react-hot-toast";
 import { BsCalendarCheck, BsCalendarX } from "react-icons/bs";
-import { FiTruck, FiRefreshCcw, FiCheck } from "react-icons/fi";
+import {
+  FiTruck,
+  FiRefreshCcw,
+  FiCheck,
+  FiArrowLeft,
+  FiBox,
+  FiChevronRight,
+} from "react-icons/fi";
 import { LuWrench, LuEye, LuEyeOff } from "react-icons/lu";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { AiOutlineCheckCircle } from "react-icons/ai";
-import { CiCircleRemove } from "react-icons/ci";
+import { FiXCircle } from "react-icons/fi";
 import FinalizarObraModal from "../Obra/FinalizarObraModal";
 import TrasladarUnidadesModal from "../Obra/TrasladarUnidadesModal";
 import ReactivarObraModal from "../Obra/ReactivarObraModal";
@@ -21,6 +28,7 @@ import { API_URL } from "../../../api";
 import RemoverUnidadesModal from "../Unidad/RemoverUnidadesModal";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { AiOutlineUnorderedList } from "react-icons/ai";
+import { CiCircleRemove } from "react-icons/ci";
 
 let DefaultIcon = L.icon({
   iconUrl: markerIcon,
@@ -181,7 +189,7 @@ const Mapa = () => {
 
   const renderIconoEstadoEquipo = (estado) => {
     const est = estado?.toLowerCase();
-    if (est === "asignado")
+    if (est === "asignado" || est === "asignada")
       return <HiOutlineLocationMarker className="pill-icon" />;
     if (est === "mantenimiento" || est === "en mantenimiento")
       return <LuWrench className="pill-icon" />;
@@ -192,7 +200,7 @@ const Mapa = () => {
 
   const limpiarTextoUbicacion = (texto) => {
     if (!texto) return "";
-    return texto.replace(/[📍📌]/g, "").trim();
+    return texto.replace(/[📍📌]/gu, "").trim();
   };
 
   const fetchEquipos = async () => {
@@ -519,23 +527,35 @@ const Mapa = () => {
                 {equipoSeleccionado ? (
                   <>
                     <button
+                      type="button"
                       className="btn-volver-equipos"
                       onClick={() => setEquipoSeleccionado(null)}
                     >
-                      ← Volver a equipos
+                      <FiArrowLeft />
+                      <span>Volver a equipos</span>
                     </button>
 
-                    <h4>{equipoSeleccionado.nombre}</h4>
+                    <h4 className="equipo-detalle-titulo">
+                      {equipoSeleccionado.nombre}
+                    </h4>
 
                     {unidadesDelEquipoSeleccionado.length > 0 ? (
                       unidadesDelEquipoSeleccionado.map((unidad) => {
-                        const claseEstado = (unidad.estado || "asignado")
+                        const estadoUnidad = unidad.estado || "Asignada";
+                        const etiquetaEstado =
+                          estadoUnidad.toLowerCase() === "asignado"
+                            ? "Asignada"
+                            : estadoUnidad;
+                        const claseEstado = estadoUnidad
                           .toLowerCase()
                           .replace(/\s+/g, "-");
                         const estaEliminando = removingIds.includes(unidad._id);
 
                         return (
-                          <div className="equipo-card" key={unidad._id}>
+                          <div
+                            className="equipo-card unidad-card-detalle"
+                            key={unidad._id}
+                          >
                             <div className="equipo-circle-avatar">
                               {unidad.tipoUnidad === "maquina" ? (
                                 <FiTruck className="equipo-svg" />
@@ -547,18 +567,17 @@ const Mapa = () => {
                               <strong>
                                 {unidad.identificador || "Sin código"}
                               </strong>
-                              <p>{unidad.modelo || ""}</p>
+                              <p>{unidad.modelo || "Sin modelo"}</p>
                             </div>
                             <span
                               className={`estado-equipo-pill status-${claseEstado}`}
                             >
-                              {renderIconoEstadoEquipo(
-                                unidad.estado || "Asignado",
-                              )}
-                              {unidad.estado || "Asignado"}
+                              {renderIconoEstadoEquipo(estadoUnidad)}
+                              {etiquetaEstado}
                             </span>
                             {usuario?.rol === "Admin" && (
                               <button
+                                type="button"
                                 onClick={() => quitarUnidad(unidad._id)}
                                 disabled={estaEliminando}
                                 className="btn-quitar-unidad"
@@ -571,13 +590,7 @@ const Mapa = () => {
                                     }}
                                   />
                                 ) : (
-                                  <CiCircleRemove
-                                    style={{
-                                      fontSize: "1.25rem",
-                                      color: "#c0392b",
-                                    }}
-                                    title="Quitar unidad"
-                                  />
+                                  <FiXCircle title="Quitar unidad" />
                                 )}
                               </button>
                             )}
@@ -591,32 +604,37 @@ const Mapa = () => {
                     )}
                   </>
                 ) : cargandoEquipos ? (
-                  <p className="cargando-equipos">Cargando equipos...</p> // 👈 ACÁ (nuevo)
+                  <p className="cargando-equipos">Cargando equipos...</p>
                 ) : (
-                  equipos.map((equipo) => (
-                    <div
-                      className="equipo-card equipo-card-clickable"
-                      key={equipo.id}
-                      onClick={() => setEquipoSeleccionado(equipo)}
-                    >
-                      <div className="equipo-circle-avatar">
-                        {equipo.tipo === "maquina" ? (
-                          <FiTruck className="equipo-svg" />
-                        ) : (
-                          <LuWrench className="equipo-svg" />
-                        )}
-                      </div>
-                      <div className="equipo-detalles-texto">
-                        <strong>{equipo.nombre}</strong>
-                        <p>
-                          {equipo.identificador ||
-                            equipo.modelo ||
-                            "Sin código"}
-                        </p>
-                        <p>Cantidad de unidades: {equipo.stock || 0}</p>
-                      </div>
-                    </div>
-                  ))
+                  equipos.map((equipo) => {
+                    const cantidadUnidades = Number(equipo.stock) || 0;
+
+                    return (
+                      <button
+                        type="button"
+                        className="equipo-card equipo-card-clickable"
+                        key={equipo.id}
+                        onClick={() => setEquipoSeleccionado(equipo)}
+                      >
+                        <div className="equipo-circle-avatar">
+                          {equipo.tipo === "maquina" ? (
+                            <FiTruck className="equipo-svg" />
+                          ) : (
+                            <LuWrench className="equipo-svg" />
+                          )}
+                        </div>
+                        <div className="equipo-detalles-texto">
+                          <strong>{equipo.nombre}</strong>
+                          <p>{equipo.modelo || "Sin modelo"}</p>
+                        </div>
+                        <span className="equipo-card-count">
+                          <FiBox />
+                          {cantidadUnidades}{" "}
+                          {cantidadUnidades === 1 ? "unidad" : "unidades"}
+                        </span>
+                      </button>
+                    );
+                  })
                 )}
               </div>
 
