@@ -44,6 +44,10 @@ export const registrarUsuario = async (data) => {
     throw new Error("Todos los campos son obligatorios");
   }
 
+  if (password.length < 6) {
+    throw new Error("La contraseña debe tener al menos 6 caracteres");
+  }
+
   //Verificar si ya existe
   const existe = await Usuario.findOne({ email });
   if (existe) {
