@@ -29,7 +29,7 @@ const Registro = ({ setIsLogin }) => {
       return;
     }
 
-    if (password.length < 6) {
+    if (registerData.password.length < 6) {
       toast.error("La contraseña debe tener al menos 6 caracteres");
       return;
     }
