@@ -44,6 +44,12 @@ const Registro = ({ setIsLogin }) => {
 
       const result = await res.json();
 
+      if (password.length < 6) {
+        toast.error("La contraseña debe tener al menos 6 caracteres");
+        setLoading(false);
+        return;
+      }
+
       if (!res.ok) {
         toast.error(result.error || "Error en registro");
         return;
@@ -69,7 +75,10 @@ const Registro = ({ setIsLogin }) => {
           localStorage.setItem("token", loginResult.token);
 
           if (loginResult.usuario) {
-            localStorage.setItem("usuario", JSON.stringify(loginResult.usuario));
+            localStorage.setItem(
+              "usuario",
+              JSON.stringify(loginResult.usuario),
+            );
           }
 
           navigate("/dashboard");
