@@ -29,6 +29,12 @@ const Registro = ({ setIsLogin }) => {
       return;
     }
 
+    if (password.length < 6) {
+      toast.error("La contraseña debe tener al menos 6 caracteres");
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/usuarios/register`, {
@@ -43,12 +49,6 @@ const Registro = ({ setIsLogin }) => {
       });
 
       const result = await res.json();
-
-      if (password.length < 6) {
-        toast.error("La contraseña debe tener al menos 6 caracteres");
-        setLoading(false);
-        return;
-      }
 
       if (!res.ok) {
         toast.error(result.error || "Error en registro");
