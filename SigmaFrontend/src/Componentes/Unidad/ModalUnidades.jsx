@@ -526,18 +526,39 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
   // FILTROS Y PAGINACIÓN
   // ─────────────────────────────────────────────
 
+  const obtenerObraId = (unidad) => {
+    const ubicacion = unidad?.ubicacion;
+
+    if (!ubicacion) return "";
+
+    if (typeof ubicacion === "object") {
+      return String(ubicacion._id || ubicacion.id || "");
+    }
+
+    return String(ubicacion);
+  };
+
+  const obtenerObraNombre = (unidad) => {
+    const ubicacion = unidad?.ubicacion;
+
+    if (!ubicacion) return "Sin asignar";
+
+    if (typeof ubicacion === "object") {
+      return ubicacion.nombre || "Sin asignar";
+    }
+
+    return String(ubicacion);
+  };
+
   const obrasMap = new Map();
 
   unidades.forEach((u) => {
-    const o = u.ubicacion;
+    const obraId = obtenerObraId(u);
+    const obraNombre = obtenerObraNombre(u);
 
-    if (!o) return;
+    if (!obraId) return;
 
-    if (typeof o === "object") {
-      obrasMap.set(String(o._id), o.nombre || String(o._id));
-    } else {
-      obrasMap.set(String(o), String(o));
-    }
+    obrasMap.set(obraId, obraNombre);
   });
 
   const unidadesFiltradas = unidades.filter((u) => {
@@ -545,11 +566,7 @@ const ModalUnidades = ({ equipo, onClose, onUpdated }) => {
       ? String(u.estado || "").toLowerCase() === estadoFiltro.toLowerCase()
       : true;
 
-    const okObra = obraFiltro
-      ? typeof u.ubicacion === "object"
-        ? String(u.ubicacion._id) === obraFiltro
-        : String(u.ubicacion) === obraFiltro
-      : true;
+    const okObra = obraFiltro ? obtenerObraId(u) === String(obraFiltro) : true;
 
     return okEstado && okObra;
   });
