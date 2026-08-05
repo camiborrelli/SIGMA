@@ -283,7 +283,7 @@ const Mapa = () => {
             className="buscador"
           />
           <div className="filtros-estado">
-            {["", "Activa", "Finalizada", "Cancelada"].map((estado) => (
+            {["", "Activa", "Finalizada"].map((estado) => (
               <button
                 key={estado}
                 className={`filtro-btn ${
@@ -313,8 +313,7 @@ const Mapa = () => {
                     ?.toLowerCase()
                     .replace(/\s+/g, "-");
                   const esInactivaCard =
-                    obra.estado?.toLowerCase() === "finalizada" ||
-                    obra.estado?.toLowerCase() === "cancelada";
+                    obra.estado?.toLowerCase() === "finalizada";
 
                   return (
                     <div

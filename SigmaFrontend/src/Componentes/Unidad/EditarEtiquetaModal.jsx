@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { FaTag, FaInfoCircle, FaTimes } from "react-icons/fa";
-import "./EditarEtiquetaModal.css";
 import { API_URL } from "../../../api";
 
 const EditarEtiquetaModal = ({ unidad, onClose, onUpdated }) => {
@@ -44,8 +43,14 @@ const EditarEtiquetaModal = ({ unidad, onClose, onUpdated }) => {
   };
 
   return (
-    <div className="etiqueta-modal-overlay" onClick={onClose}>
-      <div className="etiqueta-modal-card" onClick={(e) => e.stopPropagation()}>
+    <div
+  className="modal-overlay unidad-child-modal-overlay"
+  onClick={onClose}
+>
+  <div
+    className="etiqueta-modal-card"
+    onClick={(e) => e.stopPropagation()}
+  >
         <div className="etiqueta-modal-header">
           <h2>Editar etiqueta</h2>
           <button className="close-icon-btn" onClick={onClose} title="Cerrar">

@@ -1,17 +1,3 @@
-.etiqueta-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10000;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
 .etiqueta-modal-card {
   background-color: #ffffff;
   width: 90%;
@@ -22,11 +8,19 @@
   flex-direction: column;
   overflow: hidden;
   animation: modalFadeIn 0.3s ease;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 @keyframes modalFadeIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .etiqueta-modal-header {
@@ -107,7 +101,8 @@
   box-sizing: border-box;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group textarea:focus {
   outline: none;
   border-color: #c81e1e;
   box-shadow: 0 0 0 3px rgba(200, 30, 30, 0.1);
@@ -181,15 +176,10 @@
   cursor: not-allowed;
 }
 
-/* Ocultar las flechas de incremento/decremento en Chrome, Safari, Edge, Opera */
 .form-group input::-webkit-outer-spin-button,
 .form-group input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
-}
-
-.form-group input[type=number] {
-  -moz-appearance: textfield;
 }
 
 .form-group textarea {
@@ -202,8 +192,8 @@
   box-sizing: border-box;
   resize: vertical;
   min-height: 120px;
-  background-color: #ffffff !important; 
-  color: #1a202c !important; 
+  background-color: #ffffff;
+  color: #1a202c;
 }
 
 .form-group textarea::placeholder {
