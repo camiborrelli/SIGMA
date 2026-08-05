@@ -33,10 +33,29 @@ const CambiarContrasenia = ({ isOpen, onClose, desdePerfil = false }) => {
     if (!isOpen) return;
 
     if (desdePerfil) {
-      const usuarioIdLocal = localStorage.getItem("usuarioId");
+      const usuarioGuardado = localStorage.getItem("usuario");
 
-      setRecoveryStep(2);
-      setUsuarioId(usuarioIdLocal);
+      if (!usuarioGuardado) {
+        toast.error("No se pudo obtener la información del usuario");
+        return;
+      }
+
+      try {
+        const usuario = JSON.parse(usuarioGuardado);
+
+        const id = usuario?._id || usuario?.id;
+
+        if (!id) {
+          toast.error("No se pudo obtener el ID del usuario");
+          return;
+        }
+
+        setUsuarioId(id);
+        setRecoveryStep(2);
+      } catch (error) {
+        console.error("Error leyendo usuario:", error);
+        toast.error("No se pudo obtener la información del usuario");
+      }
     } else {
       setRecoveryStep(1);
       setUsuarioId(null);
@@ -143,7 +162,7 @@ const CambiarContrasenia = ({ isOpen, onClose, desdePerfil = false }) => {
       toast.error("La contraseña debe tener al menos 6 caracteres");
       return;
     }
-
+    console.log("usuarioId:", usuarioId);
     setLoadingRecovery(true);
 
     try {
