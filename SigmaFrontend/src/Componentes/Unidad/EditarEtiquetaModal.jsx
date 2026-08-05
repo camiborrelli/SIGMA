@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { FaTag, FaInfoCircle, FaTimes } from "react-icons/fa";
-import "./EditarEtiquetaModal.css";
 import { API_URL } from "../../../api";
 
 const EditarEtiquetaModal = ({ unidad, onClose, onUpdated }) => {
