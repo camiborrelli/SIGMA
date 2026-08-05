@@ -12,16 +12,16 @@ import "./EstadoChart.css";
 import { API_URL } from "../../../api";
 
 const COLORS = [
-  "#16a34a",
-  "#2563eb",
-  "#d97706",
-  "#dc2626",
+  "#6d28d9",
+  "#a855f7",
+  "#d946ef",
+  "#4f46e5",
 ];
 
 const ESTADO_COLORS = {
-  Disponible: "#16a34a",
-  Asignada: "#2563eb",
-  "En mantenimiento": "#d97706",
+  Disponible: "#6d28d9",
+  Asignada: "#bf81f9",
+  "En mantenimiento": "#d946ef",
   "Dada de Baja": "#dc2626",
 };
 

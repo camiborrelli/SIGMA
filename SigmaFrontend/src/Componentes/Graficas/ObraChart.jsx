@@ -14,11 +14,11 @@ import "./ObraChart.css";
 import { API_URL } from "../../../api";
 
 const COLORS = [
-  "#c90036",
-  "#2563eb",
-  "#16a34a",
-  "#d97706",
-  "#64748b",
+  "#f43f5e",
+  "#3b82f6",
+  "#22c55e",
+  "#f97316",
+  "#64748b", 
 ];
 
 const truncar = (value = "") => {

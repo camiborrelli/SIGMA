@@ -15,10 +15,10 @@ import { API_URL } from "../../../api";
 
 const COLORS = [
   "#c90036",
-  "#2563eb",
-  "#16a34a",
-  "#d97706",
-  "#64748b",
+  "#0ea5e9",
+  "#10b981",
+  "#f59e0b",
+  "#94a3b8",
 ];
 
 const truncar = (value = "") => {

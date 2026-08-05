@@ -29,13 +29,7 @@
 
 .grafica-filtros {
   display: grid;
-  grid-template-columns:
-    180px
-    180px
-    1fr
-    1fr
-    180px;
-
+  grid-template-columns: 180px 180px 1fr 1fr 180px;
   gap: 16px;
   align-items: end;
   width: 100%;
@@ -48,6 +42,7 @@
 }
 
 .filtro-group label {
+  margin: 0;
   height: 20px;
   display: flex;
   align-items: center;
@@ -61,6 +56,13 @@
 .btn-limpiar {
   height: 44px;
   box-sizing: border-box;
+  font-family: inherit;
+}
+
+.filtro-group input,
+.filtro-group select {
+  width: 100%;
+  margin: 0;
 }
 
 .btn-limpiar {
@@ -72,11 +74,11 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  transition: all 0.2s ease;
 }
 
 .btn-limpiar:hover {
@@ -90,7 +92,9 @@
   }
 
   .btn-limpiar {
-    width: fit-content;
+    width: 100%;
+    grid-column: 1 / -1;
+    margin-top: 8px;
   }
 }
 
@@ -108,6 +112,8 @@
   }
 
   .btn-limpiar {
+    grid-column: auto;
     width: 100%;
+    margin-top: 0;
   }
 }
