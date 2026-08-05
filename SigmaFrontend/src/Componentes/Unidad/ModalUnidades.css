@@ -17,7 +17,7 @@
   --mobile-footer-space: 65px;
   inset: 0;
   height: 100dvh;
-  z-index: 10000;
+  z-index: 110000;
 }
 
 .modal-content.modal-unidades-content {

@@ -44,8 +44,14 @@ const EditarEtiquetaModal = ({ unidad, onClose, onUpdated }) => {
   };
 
   return (
-    <div className="etiqueta-modal-overlay" onClick={onClose}>
-      <div className="etiqueta-modal-card" onClick={(e) => e.stopPropagation()}>
+    <div
+    className="modal-overlay unidad-child-modal-overlay"
+    onClick={onClose}
+  >
+    <div
+      className="modal-card etiqueta-modal-card"
+      onClick={(e) => e.stopPropagation()}
+    >
         <div className="etiqueta-modal-header">
           <h2>Editar etiqueta</h2>
           <button className="close-icon-btn" onClick={onClose} title="Cerrar">
