@@ -24,7 +24,13 @@ const Registro = ({ setIsLogin }) => {
     e.preventDefault();
     setMensaje("");
 
-    if (registerData == null || registerData == undefined) {
+    if (
+      !registerData.nombre.trim() ||
+      !registerData.apellido.trim() ||
+      !registerData.email.trim() ||
+      !registerData.password.trim() ||
+      !registerData.confirmPassword.trim()
+    ) {
       toast.error("Por favor, complete todos los campos");
       return;
     }
