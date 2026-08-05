@@ -24,6 +24,11 @@ const Registro = ({ setIsLogin }) => {
     e.preventDefault();
     setMensaje("");
 
+    if (registerData == null || registerData == undefined) {
+      toast.error("Por favor, complete todos los campos");
+      return;
+    }
+
     if (registerData.password !== registerData.confirmPassword) {
       toast.error("Las contraseñas no coinciden");
       return;
